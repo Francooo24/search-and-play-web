@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
   const show_kids: number   = body.show_kids  ? 1 : 0;
   const show_teen: number   = body.show_teen  ? 1 : 0;
   const show_adult: number  = body.show_adult ? 1 : 0;
+  const country: string     = (body.country ?? "").trim().toUpperCase().slice(0, 2);
 
   const errors: string[] = [];
   if (!player_name)                                            errors.push("Player name is required");
@@ -65,8 +66,8 @@ export async function POST(req: NextRequest) {
   const hashed     = await bcrypt.hash(password, 10);
 
   const [result] = await pool.query<ResultSetHeader>(
-    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, token, expires, otp, otp_expires) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [player_name, email, hashed, birthdate, show_kids, show_teen, show_adult, token, expires, otp, otp_expires]
+    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country, token, expires, otp, otp_expires) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [player_name, email, hashed, birthdate, show_kids, show_teen, show_adult, country || null, token, expires, otp, otp_expires]
   );
   if (!result.insertId)
     return NextResponse.json({ error: "An error occurred. Please try again later." }, { status: 500 });

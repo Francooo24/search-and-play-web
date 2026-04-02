@@ -21,7 +21,7 @@ function getAgeGroup(age: number) {
 export default function SignupPage() {
   const router = useRouter();
   const [form, setForm] = useState({
-    player_name: "", email: "", password: "", confirm: "", birthdate: "",
+    player_name: "", email: "", password: "", confirm: "", birthdate: "", country: "",
     show_kids: false, show_teen: false, show_adult: false,
   });
   const [showPw, setShowPw]   = useState(false);
@@ -60,6 +60,7 @@ export default function SignupPage() {
         password:         form.password,
         confirm_password: form.confirm,
         birthdate:        form.birthdate,
+        country:          form.country,
         show_kids:        form.show_kids,
         show_teen:        form.show_teen,
         show_adult:       form.show_adult,
@@ -214,6 +215,37 @@ export default function SignupPage() {
             </div>
             <input type="text" placeholder="Player Name" required value={form.player_name} onChange={e => setForm({ ...form, player_name: e.target.value })}
               className="w-full pl-12 pr-5 py-4 text-base rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
+          </div>
+
+          {/* Country */}
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 opacity-70 pointer-events-none">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" /></svg>
+            </div>
+            <select value={form.country} onChange={e => setForm({ ...form, country: e.target.value })}
+              className="w-full pl-12 pr-5 py-4 text-base rounded-xl bg-white/5 border border-white/12 text-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition appearance-none">
+              <option value="" className="bg-[#1a1a2e]">🌍 Select Country (optional)</option>
+              <option value="PH" className="bg-[#1a1a2e]">🇵🇭 Philippines</option>
+              <option value="US" className="bg-[#1a1a2e]">🇺🇸 United States</option>
+              <option value="GB" className="bg-[#1a1a2e]">🇬🇧 United Kingdom</option>
+              <option value="AU" className="bg-[#1a1a2e]">🇦🇺 Australia</option>
+              <option value="CA" className="bg-[#1a1a2e]">🇨🇦 Canada</option>
+              <option value="GR" className="bg-[#1a1a2e]">🇬🇷 Greece</option>
+              <option value="DE" className="bg-[#1a1a2e]">🇩🇪 Germany</option>
+              <option value="FR" className="bg-[#1a1a2e]">🇫🇷 France</option>
+              <option value="JP" className="bg-[#1a1a2e]">🇯🇵 Japan</option>
+              <option value="KR" className="bg-[#1a1a2e]">🇰🇷 South Korea</option>
+              <option value="IN" className="bg-[#1a1a2e]">🇮🇳 India</option>
+              <option value="SG" className="bg-[#1a1a2e]">🇸🇬 Singapore</option>
+              <option value="MY" className="bg-[#1a1a2e]">🇲🇾 Malaysia</option>
+              <option value="ID" className="bg-[#1a1a2e]">🇮🇩 Indonesia</option>
+              <option value="TH" className="bg-[#1a1a2e]">🇹🇭 Thailand</option>
+              <option value="VN" className="bg-[#1a1a2e]">🇻🇳 Vietnam</option>
+              <option value="BR" className="bg-[#1a1a2e]">🇧🇷 Brazil</option>
+              <option value="MX" className="bg-[#1a1a2e]">🇲🇽 Mexico</option>
+              <option value="ZA" className="bg-[#1a1a2e]">🇿🇦 South Africa</option>
+              <option value="NG" className="bg-[#1a1a2e]">🇳🇬 Nigeria</option>
+            </select>
           </div>
 
           {/* Email */}

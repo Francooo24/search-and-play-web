@@ -1,9 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const POPULAR = ["apple", "peace", "love", "happy", "world"];
+
+const FEATURED_GAMES = [
+  { slug: "wordle",      name: "WordGuess",     icon: "📝", desc: "Guess the 5-letter word in 6 tries!",        color: "from-green-500/20 to-teal-500/10",   border: "border-green-500/30",  badge: "Teen"  },
+  { slug: "wordblitz",   name: "Word Blitz",    icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-500/20 to-amber-500/10", border: "border-orange-500/30", badge: "Adult" },
+  { slug: "memory",      name: "Memory Game",   icon: "🧠", desc: "Flip cards and find all matching pairs!",      color: "from-blue-500/20 to-cyan-500/10",    border: "border-blue-500/30",   badge: "Kids"  },
+];
 const CATEGORIES = [
   { emoji: "🌿", label: "Nature",   words: ["ocean","forest","mountain","river","storm"] },
   { emoji: "❤️", label: "Emotions", words: ["love","joy","grief","hope","fear"] },
@@ -13,22 +20,159 @@ const CATEGORIES = [
   { emoji: "🧠", label: "Mind",     words: ["logic","wisdom","memory","dream","soul"] },
 ];
 
+function DailyChallengeBanner() {
+  const [challenge, setChallenge] = useState<{ game: string; title: string; bonus_points: number } | null>(null);
+  const [completed, setCompleted] = useState(false);
+  const [countdown, setCountdown] = useState("");
+  const [authed, setAuthed]       = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/daily-challenge")
+      .then(r => r.json())
+      .then(d => {
+        setAuthed(true);
+        setChallenge(d.challenge ?? null);
+        setCompleted(d.completed ?? false);
+      })
+      .catch(() => setAuthed(false));
+  }, []);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+      const diff = midnight.getTime() - now.getTime();
+      const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      setCountdown(`${h}:${m}:${s}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const GAME_LINKS: Record<string, string> = {
+    "Hangman": "/games/hangman", "WordGuess": "/games/wordle", "Crossword": "/games/crossword",
+    "Word Puzzle": "/games/puzzle", "Word Blitz": "/games/wordblitz", "Word Search": "/games/wordsearch",
+    "Spelling Bee": "/games/spellingbee", "Cryptogram": "/games/cryptogram", "Anagram Master": "/games/anagram",
+    "Memory Game": "/games/memory", "Trivia Blitz": "/games/triviablitz", "Speed Trivia": "/games/trivia",
+  };
+
+  if (authed === null) return null;
+
+  return (
+    <div className="w-full max-w-xl mb-10">
+      <div className={`relative overflow-hidden rounded-2xl border px-5 py-4 flex items-center gap-4
+        ${ completed ? "border-green-500/30 bg-green-500/5" : "border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent" }`}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(249,115,22,0.08),transparent_60%)] pointer-events-none" />
+        <div className="text-3xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
+        <div className="flex-1 min-w-0 relative">
+          <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-0.5">Daily Challenge</p>
+          {!authed || !challenge ? (
+            <p className="text-white font-bold text-sm">Sign in to see today&apos;s challenge</p>
+          ) : completed ? (
+            <p className="text-white font-bold text-sm">Challenge complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
+          ) : (
+            <>
+              <p className="text-white font-bold text-sm truncate">{challenge.title}</p>
+              <p className="text-gray-500 text-xs">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
+            </>
+          )}
+        </div>
+        {!authed ? (
+          <Link href="/login" className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition">
+            Sign In
+          </Link>
+        ) : completed ? (
+          <Link href="/daily-challenge" className="flex-shrink-0 text-xs font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-4 py-2 rounded-xl transition">
+            View
+          </Link>
+        ) : challenge ? (
+          <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition whitespace-nowrap">
+            Play Now →
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function TopPlayers() {
+  const [players, setPlayers] = useState<{ player_name: string; total_score: number; country?: string | null }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/leaderboard?period=all&offset=0", { cache: "no-store" })
+      .then(r => r.json())
+      .then(d => setPlayers((d.players ?? []).slice(0, 3)))
+      .catch(() => {});
+  }, []);
+
+  if (players.length === 0) return null;
+
+  const medals = ["🥇", "🥈", "🥉"];
+  const AVATAR_COLORS = ["from-violet-500 to-purple-700", "from-blue-500 to-cyan-600", "from-emerald-500 to-teal-700"];
+
+  function flag(code?: string | null) {
+    if (!code || code.length !== 2) return "";
+    return code.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+  }
+
+  return (
+    <div className="glass-card rounded-2xl overflow-hidden">
+      {players.map((p, i) => (
+        <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i < players.length - 1 ? "border-b border-white/5" : ""}`}>
+          <span className="text-lg w-6 text-center flex-shrink-0">{medals[i]}</span>
+          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-xs flex-shrink-0`}>
+            {p.player_name.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-semibold text-sm truncate">
+              {p.player_name} {flag(p.country)}
+            </p>
+          </div>
+          <p className="text-orange-400 font-black text-sm flex-shrink-0">{p.total_score.toLocaleString()} pts</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function HomeClient() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const playerName = (session?.user as any)?.name ?? (session?.user as any)?.player_name ?? null;
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [wordOfDay, setWordOfDay] = useState<any>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [query, setQuery]                   = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestions = query.trim()
+    ? recentSearches.filter(r => r.toLowerCase().startsWith(query.trim().toLowerCase()))
+    : [];
 
   useEffect(() => {
     fetch("/api/word-of-day").then(r => r.json()).then(data => { if (data) setWordOfDay(data); });
+    const stored = localStorage.getItem("recent_searches");
+    if (stored) setRecentSearches(JSON.parse(stored));
   }, []);
 
   const handleSearch = (w: string) => {
     if (!w.trim()) return;
+    const updated = [w.trim(), ...recentSearches.filter(r => r.toLowerCase() !== w.trim().toLowerCase())].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem("recent_searches", JSON.stringify(updated));
     router.push(`/search?word=${encodeURIComponent(w.trim())}`);
   };
 
   return (
     <div className="flex-grow flex flex-col items-center text-center px-4 relative z-10 pt-12">
+      {playerName && (
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-5">
+          👋 Welcome back, <span className="text-white font-black">{playerName}</span>!
+        </div>
+      )}
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
         Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">Greek</span> word
       </h1>
@@ -38,14 +182,37 @@ export default function HomeClient() {
 
       {/* Search */}
       <div className="w-full max-w-xl mb-6 md:mb-8">
-        <form action="/search" method="GET" className="flex mb-4">
-          <input
-            name="word"
-            type="text"
-            placeholder="Enter a word..."
-            className="flex-grow px-6 py-5 text-lg md:text-xl rounded-l-2xl focus:outline-none bg-white/5 border border-white/12 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/25 transition"
-            autoFocus
-          />
+        <form action="/search" method="GET" className="flex mb-4" onSubmit={e => { e.preventDefault(); handleSearch(query); }}>
+          <div className="relative flex-grow">
+            <input
+              ref={inputRef}
+              name="word"
+              type="text"
+              value={query}
+              onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              placeholder="Enter a word..."
+              className="w-full px-6 py-5 text-lg md:text-xl rounded-l-2xl focus:outline-none bg-white/5 border border-white/12 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/25 transition"
+              autoFocus
+              autoComplete="off"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 top-full mt-1 bg-[#1a1a2e] border border-white/10 rounded-xl overflow-hidden z-50 shadow-xl">
+                {suggestions.map(s => (
+                  <li key={s}>
+                    <button type="button" onMouseDown={() => { setQuery(s); setShowSuggestions(false); handleSearch(s); }}
+                      className="w-full text-left px-5 py-3 text-sm text-gray-300 hover:bg-orange-500/15 hover:text-orange-300 transition flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {s}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button type="submit" className="bg-gradient-to-r from-orange-500 to-amber-500 px-8 py-5 text-lg font-semibold rounded-r-2xl hover:from-orange-600 hover:to-amber-600 transition shadow-xl flex items-center gap-3">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -59,6 +226,22 @@ export default function HomeClient() {
             <a key={w} href={`/search?word=${w}`} className="text-sm bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 transition border border-white/10">{w}</a>
           ))}
         </div>
+        {recentSearches.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap justify-center mt-4">
+            <span className="text-xs text-gray-500 font-semibold uppercase tracking-widest">Recent:</span>
+            {recentSearches.map(w => (
+              <button key={w} onClick={() => handleSearch(w)}
+                className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
+                <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {w}
+              </button>
+            ))}
+            <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
+              className="text-[10px] text-gray-600 hover:text-gray-400 transition ml-1">clear</button>
+          </div>
+        )}
       </div>
 
       {/* Word of the Day */}
@@ -89,6 +272,60 @@ export default function HomeClient() {
           <p className="text-gray-400 text-sm line-clamp-2 cursor-pointer" onClick={() => handleSearch(wordOfDay.word)}>{wordOfDay.definition}</p>
         </div>
       )}
+
+      {/* Daily Challenge Banner */}
+      <DailyChallengeBanner />
+
+      {/* Top Players */}
+      <div className="w-full max-w-xl mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-gray-400">Top players:</p>
+          <Link href="/leaderboard" className="text-xs text-orange-400 hover:text-orange-300 transition font-semibold">View all →</Link>
+        </div>
+        <TopPlayers />
+      </div>
+
+      {/* Featured Games */}
+      <div className="w-full max-w-xl mb-10">
+        <p className="text-sm text-gray-400 mb-4">Featured games:</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {FEATURED_GAMES.map(g => (
+            <div key={g.slug} className={`glass-card rounded-2xl p-4 flex flex-col gap-2 bg-gradient-to-br ${g.color} border ${g.border} hover:-translate-y-1 transition`}>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">{g.icon}</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-gray-400">{g.badge}</span>
+              </div>
+              <p className="text-white font-black text-sm">{g.name}</p>
+              <p className="text-gray-400 text-xs flex-1">{g.desc}</p>
+              <Link href={`/games/${g.slug}`} className="mt-1 w-full text-center text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-3 py-2 rounded-xl transition">
+                Play Now →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="w-full max-w-xl mb-10">
+        <p className="text-sm text-gray-400 mb-4">Explore:</p>
+        <div className="grid grid-cols-3 gap-3">
+          <Link href="/games" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
+            <span className="text-3xl">🎮</span>
+            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Games</span>
+            <span className="text-[10px] text-gray-600 text-center">Play word games</span>
+          </Link>
+          <Link href="/leaderboard" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
+            <span className="text-3xl">🏆</span>
+            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Leaderboard</span>
+            <span className="text-[10px] text-gray-600 text-center">Top players</span>
+          </Link>
+          <Link href="/culture" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
+            <span className="text-3xl">🏛️</span>
+            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Culture</span>
+            <span className="text-[10px] text-gray-600 text-center">Greek culture</span>
+          </Link>
+        </div>
+      </div>
 
       {/* Categories */}
       <div className="w-full max-w-xl mb-10 md:mb-14">

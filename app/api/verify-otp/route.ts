@@ -22,8 +22,8 @@ export async function POST(req: NextRequest) {
   }
 
   await pool.query(
-    "INSERT INTO players (player_name, email, password, birthdate, show_kids, show_teen, show_adult) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [pending.player_name, pending.email, pending.password, pending.birthdate, pending.show_kids, pending.show_teen, pending.show_adult]
+    "INSERT INTO players (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [pending.player_name, pending.email, pending.password, pending.birthdate, pending.show_kids, pending.show_teen, pending.show_adult, pending.country ?? null]
   );
 
   await pool.query("DELETE FROM pending_verifications WHERE email = ?", [email]);

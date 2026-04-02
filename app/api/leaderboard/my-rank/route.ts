@@ -21,7 +21,22 @@ export async function GET() {
     const userTotal = Number((userRows as any)[0]?.total ?? 0);
     const userBest  = Number((userRows as any)[0]?.best ?? 0);
     const bestGame  = (userRows as any)[0]?.best_game ?? null;
-    if (userTotal === 0) return NextResponse.json({ rank: null, total: 0, best: 0, best_game: null });
+    if (userTotal === 0) return NextResponse.json({ rank: null, total: 0, best: 0, best_game: null, streak: 0 });
+
+    // Compute win streak — consecutive distinct days played up to today
+    const [dateRows] = await pool.query<RowDataPacket[]>(
+      "SELECT DISTINCT DATE(created_at) AS day FROM leaderboard WHERE user_id = ? ORDER BY day DESC",
+      [userId]
+    );
+    let streak = 0;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    for (let i = 0; i < (dateRows as RowDataPacket[]).length; i++) {
+      const day = new Date((dateRows as RowDataPacket[])[i].day);
+      day.setHours(0, 0, 0, 0);
+      const expected = new Date(today); expected.setDate(today.getDate() - i);
+      if (day.getTime() === expected.getTime()) streak++;
+      else break;
+    }
 
     // Count how many non-admin players have a higher total score
     const [rankRows] = await pool.query<RowDataPacket[]>(
@@ -43,7 +58,7 @@ export async function GET() {
     );
     const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
 
-    return NextResponse.json({ rank, total: totalPlayers, score: userTotal, best: userBest, best_game: bestGame });
+    return NextResponse.json({ rank, total: totalPlayers, score: userTotal, best: userBest, best_game: bestGame, streak });
   } catch {
     return NextResponse.json({ rank: null });
   }

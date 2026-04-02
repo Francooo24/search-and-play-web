@@ -117,7 +117,7 @@ export default function CultureClient() {
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-10 pb-2">
         <div className="flex flex-col sm:flex-row gap-3 items-center mb-4">
           <div className="relative w-full sm:max-w-xs">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></span>
             <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search topics..."
               className="w-full pl-9 pr-8 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-orange-500 transition" />
             {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition text-xs">✕</button>}

@@ -6,11 +6,11 @@ import { useSession } from "next-auth/react";
 type Period = "all" | "daily" | "weekly" | "monthly";
 type Tab    = "leaderboard" | "rankings" | "pergame" | "improved";
 
-interface LeaderboardPlayer { player_name: string; user_id: number | null; total_score: number; last_played: string; game?: string | null; age_group?: string | null; }
-interface GameTopPlayer     { player_name: string; score: number; created_at: string; }
-interface GameEntry         { player_name: string; best_score: number; plays: number; last_played: string; }
+interface LeaderboardPlayer { player_name: string; user_id: number | null; total_score: number; last_played: string; game?: string | null; age_group?: string | null; country?: string | null; total_games?: number; }
+interface GameTopPlayer     { player_name: string; score: number; created_at: string; country?: string | null; }
+interface GameEntry         { player_name: string; best_score: number; plays: number; last_played: string; country?: string | null; }
 interface RankTier          { name: string; min: number; max: number; icon: string; color: string; bg: string; border: string; desc: string; }
-interface RankedPlayer      { id: number; player_name: string; total_points: number; total_games: number; avg_score: number; last_played: string; tier: RankTier; progress: number; age_group?: string | null; }
+interface RankedPlayer      { id: number; player_name: string; total_points: number; total_games: number; avg_score: number; last_played: string; tier: RankTier; progress: number; age_group?: string | null; country?: string | null; }
 
 const PERIODS: { key: Period; label: string }[] = [
   { key: "all",     label: "All Time"   },
@@ -30,6 +30,19 @@ const AVATAR_COLORS = [
 
 function fmt(d: string) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function flag(code?: string | null) {
+  if (!code || code.length !== 2) return "";
+  return code.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+}
+
+function lastSeenDot(d: string) {
+  const diff = Date.now() - new Date(d).getTime();
+  const day  = 86_400_000;
+  if (diff < day)       return <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block flex-shrink-0" title="Active today" />;
+  if (diff < day * 7)   return <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block flex-shrink-0" title="Active this week" />;
+  return                       <span className="w-1.5 h-1.5 rounded-full bg-gray-600 inline-block flex-shrink-0" title="Inactive" />;
 }
 
 function Avatar({ name, size = "md" }: { name: string; size?: "xs" | "sm" | "md" | "lg" | "xl" }) {
@@ -78,14 +91,34 @@ function AgeBadge({ age_group }: { age_group?: string | null }) {
 
 // ── Leaderboard Tab ────────────────────────────────────────────────────────
 function LeaderboardTab() {
+  const { data: session } = useSession();
+  const currentUserId = (session?.user as any)?.id;
   const [period, setPeriod]         = useState<Period>("all");
   const [gameFilter, setGameFilter] = useState("");
   const [players, setPlayers]       = useState<LeaderboardPlayer[]>([]);
   const [gameTypes, setGameTypes]   = useState<string[]>([]);
   const [loading, setLoading]       = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore]       = useState(false);
+  const [offset, setOffset]         = useState(0);
   const [error, setError]           = useState("");
-  const [myRank, setMyRank] = useState<{ rank: number; total: number; score: number; best: number; best_game: string | null } | null>(null);
+  const [myRank, setMyRank] = useState<{ rank: number; total: number; score: number; best: number; best_game: string | null; streak: number } | null>(null);
   const [search, setSearch]         = useState("");
+  const [copied, setCopied]         = useState(false);
+
+  const handleShare = () => {
+    if (!myRank) return;
+    const text = `🏆 I'm ranked #${myRank.rank} out of ${myRank.total} players on Search & Play with ${myRank.score.toLocaleString()} points! Can you beat me? 🎮`;
+    const url  = typeof window !== "undefined" ? window.location.href : "";
+    if (navigator.share) {
+      navigator.share({ title: "Search & Play Leaderboard", text, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
 
   useEffect(() => {
     fetch("/api/leaderboard/my-rank", { cache: "no-store" })
@@ -94,21 +127,26 @@ function LeaderboardTab() {
       .catch(() => {});
   }, []);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true); setError("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const fetchData = useCallback(async (off = 0) => {
+    off === 0 ? setLoading(true) : setLoadingMore(true);
+    setError("");
     try {
-      const p = new URLSearchParams({ period });
+      const p = new URLSearchParams({ period, offset: String(off) });
       if (gameFilter) p.append("game", gameFilter);
       const res  = await fetch(`/api/leaderboard?${p}`, { cache: "no-store" });
       const data = await res.json();
       if (data.error) { setError(data.error); return; }
-      setPlayers(data.players ?? []);
+      setPlayers(prev => off === 0 ? (data.players ?? []) : [...prev, ...(data.players ?? [])]);
       setGameTypes(data.game_types ?? []);
+      setHasMore(data.has_more ?? false);
+      setOffset(off + (data.players?.length ?? 0));
     } catch { setError("Could not connect to server."); }
-    finally { setLoading(false); }
-  }, [period, gameFilter]);
+    finally { setLoading(false); setLoadingMore(false); }
+  }, [period, gameFilter, refreshKey]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { setOffset(0); fetchData(0); }, [period, gameFilter, refreshKey]);
 
   const top3   = players.slice(0, 3);
   const podium = [
@@ -120,7 +158,7 @@ function LeaderboardTab() {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-5">
       {myRank && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Rank card */}
           <div className="relative overflow-hidden rounded-2xl border border-orange-500/30 bg-[#0f0f18] px-6 py-5">
             <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent pointer-events-none" />
@@ -141,6 +179,10 @@ function LeaderboardTab() {
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Total Score</p>
                 <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{myRank.score.toLocaleString()}</p>
                 <p className="text-gray-600 text-xs">points</p>
+                <button onClick={handleShare}
+                  className="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-400 hover:text-orange-300 transition ml-auto">
+                  {copied ? "✓ Copied!" : "↗ Share"}
+                </button>
               </div>
             </div>
           </div>
@@ -163,6 +205,28 @@ function LeaderboardTab() {
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Single Game</p>
                 <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-400">{(myRank.best ?? 0).toLocaleString()}</p>
                 <p className="text-gray-600 text-xs">best score</p>
+              </div>
+            </div>
+          </div>
+          {/* Streak card */}
+          <div className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-[#0f0f18] px-6 py-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500/8 via-orange-500/5 to-transparent pointer-events-none" />
+            <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-red-500/10 blur-2xl pointer-events-none" />
+            <div className="relative flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex flex-col items-center justify-center shadow-lg shadow-red-500/30 flex-shrink-0">
+                  <span className="text-white text-2xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "📅"}</span>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-red-400 mb-0.5">Win Streak</p>
+                  <p className="text-white font-black text-lg leading-tight">{myRank.streak} day{myRank.streak !== 1 ? "s" : ""}</p>
+                  <p className="text-gray-500 text-xs mt-0.5">{myRank.streak === 0 ? "Play today to start!" : myRank.streak >= 7 ? "You're on fire!" : "Keep it up!"}</p>
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Consecutive</p>
+                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">{myRank.streak}</p>
+                <p className="text-gray-600 text-xs">days</p>
               </div>
             </div>
           </div>
@@ -235,7 +299,7 @@ function LeaderboardTab() {
                           {idx + 1}
                         </div>
                       </div>
-                      <p className="text-white font-bold text-xs truncate max-w-full text-center">{p.player_name}</p>
+                      <p className="text-white font-bold text-xs truncate max-w-full text-center">{p.player_name} {flag(p.age_group === undefined ? null : (p as any).country)}</p>
                       <AgeBadge age_group={p.age_group} />
                       <p className="text-orange-400 font-black text-sm">{p.total_score.toLocaleString()}</p>
                       <div className={`w-full ${h} bg-gradient-to-t from-white/8 to-white/3 border-t border-x border-white/10 rounded-t-2xl flex items-center justify-center shadow-lg ${glow}`}>
@@ -251,30 +315,57 @@ function LeaderboardTab() {
           <div className="bg-[#0f0f18] border border-white/8 rounded-2xl overflow-hidden">
             <div className="px-5 py-3 border-b border-white/8 flex items-center justify-between">
               <p className="text-xs uppercase tracking-widest text-gray-600 font-bold">Rankings</p>
-              <p className="text-xs text-gray-600">{filtered.length} players</p>
+              <div className="flex items-center gap-3">
+                <p className="text-xs text-gray-600">{filtered.length} players</p>
+                <button onClick={() => setRefreshKey(k => k + 1)} disabled={loading}
+                  className="text-gray-600 hover:text-orange-400 transition disabled:opacity-40" title="Refresh">
+                  <svg className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <div className="divide-y divide-white/5">
-              {filtered.map((player, i) => (
-                <div key={i} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/3 transition">
-                  <span className="text-gray-600 text-sm font-bold w-7 text-center flex-shrink-0">
-                    {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
-                  </span>
-                  <Avatar name={player.player_name} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-semibold text-sm truncate">{player.player_name}</p>
-                      <AgeBadge age_group={player.age_group} />
+              {filtered.map((player, i) => {
+                const isMe = currentUserId && player.user_id && Number(currentUserId) === Number(player.user_id);
+                return (
+                  <div key={i} className={`flex items-center gap-4 px-5 py-3.5 hover:bg-white/3 transition ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
+                    <span className="text-gray-600 text-sm font-bold w-7 text-center flex-shrink-0">
+                      {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                    </span>
+                    <Avatar name={player.player_name} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-white font-semibold text-sm truncate">{player.player_name}</p>
+                        {flag(player.country) && <span className="text-sm">{flag(player.country)}</span>}
+                        {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
+                        <AgeBadge age_group={player.age_group} />
+                      </div>
+                      {!gameFilter && player.game && <p className="text-gray-600 text-xs truncate mt-0.5">{player.game}</p>}
+                      {player.total_games != null && (
+                        <p className="text-gray-600 text-xs mt-0.5">{player.total_games} game{player.total_games !== 1 ? "s" : ""}</p>
+                      )}
                     </div>
-                    {!gameFilter && player.game && <p className="text-gray-600 text-xs truncate mt-0.5">{player.game}</p>}
+                    <div className="text-right">
+                      <p className="text-white font-black text-sm">{player.total_score.toLocaleString()}</p>
+                      <div className="flex items-center justify-end gap-1 mt-0.5">
+                        {lastSeenDot(player.last_played)}
+                        <p className="text-gray-700 text-[10px]">{fmt(player.last_played)}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-white font-black text-sm">{player.total_score.toLocaleString()}</p>
-                    <p className="text-gray-700 text-[10px]">{fmt(player.last_played)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
+          {hasMore && (
+            <div className="px-5 py-3 border-t border-white/8 flex justify-center">
+              <button onClick={() => fetchData(offset)} disabled={loadingMore}
+                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/8 text-gray-400 hover:text-white text-xs font-bold transition disabled:opacity-50">
+                {loadingMore ? <><div className="w-3 h-3 rounded-full border-2 border-white/20 border-t-orange-500 animate-spin" /> Loading...</> : "Load More"}
+              </button>
+            </div>
+          )}
         </>
         );
       })()}
@@ -333,7 +424,11 @@ function PerGameTab() {
                 <Avatar name={p.player_name} size="sm" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-semibold text-sm truncate">{p.player_name}</p>
-                  <p className="text-gray-600 text-xs">{p.plays} play{p.plays !== 1 ? "s" : ""} · {fmt(p.last_played)}</p>
+                  <p className="text-gray-600 text-xs">{p.plays} play{p.plays !== 1 ? "s" : ""} · {fmt(p.last_played)} {flag(p.country)}</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {lastSeenDot(p.last_played)}
+                    <p className="text-gray-700 text-[10px]">{fmt(p.last_played)}</p>
+                  </div>
                 </div>
                 <p className="text-white font-black">{p.best_score.toLocaleString()}</p>
               </div>
@@ -364,7 +459,7 @@ function PerGameTab() {
                 <div key={i} className="flex items-center gap-2.5">
                   <span className="text-xs w-4 text-center">{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</span>
                   <Avatar name={p.player_name} size="xs" />
-                  <span className="text-gray-400 text-xs flex-1 truncate">{p.player_name}</span>
+                  <span className="text-gray-400 text-xs flex-1 truncate">{p.player_name} {flag((p as any).country)}</span>
                   <span className="text-white text-xs font-black">{p.score.toLocaleString()}</span>
                 </div>
               ))}
@@ -419,9 +514,14 @@ function GroupRankList({ ag, label, icon, headerColor, borderColor }: {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <p className="text-white font-semibold text-sm truncate">{row.player_name}</p>
+                    {flag(row.country) && <span className="text-sm">{flag(row.country)}</span>}
                     {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
                   </div>
                   <p className="text-gray-700 text-[10px]">{row.total_games} games</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {lastSeenDot(row.last_played)}
+                    <p className="text-gray-700 text-[10px]">{fmt(row.last_played)}</p>
+                  </div>
                 </div>
                 <div className={`hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg border ${row.tier.border} bg-white/3 flex-shrink-0`}>
                   <span className="text-sm">{row.tier.icon}</span>
@@ -485,15 +585,17 @@ function MostImprovedTab() {
   const { data: session } = useSession();
   const [players, setPlayers] = useState<{ player_name: string; this_week: number; last_week: number; diff: number; age_group: string | null }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const currentUserId = (session?.user as any)?.id;
 
   useEffect(() => {
+    setLoading(true);
     fetch("/api/leaderboard/most-improved", { cache: "no-store" })
       .then(r => r.json())
       .then(d => setPlayers(d.players ?? []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [refreshKey]);
 
   if (loading) return <Spinner />;
   if (players.length === 0) return <Empty msg="No improvement data yet — play more games!" />;
@@ -502,7 +604,15 @@ function MostImprovedTab() {
     <div className="w-full max-w-3xl mx-auto bg-[#0f0f18] border border-white/8 rounded-2xl overflow-hidden">
       <div className="px-5 py-3 border-b border-white/8 flex items-center justify-between">
         <p className="text-xs uppercase tracking-widest text-gray-600 font-bold">Most Improved This Week</p>
-        <p className="text-xs text-gray-600">{players.length} players</p>
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-gray-600">{players.length} players</p>
+          <button onClick={() => setRefreshKey(k => k + 1)} disabled={loading}
+            className="text-gray-600 hover:text-orange-400 transition disabled:opacity-40" title="Refresh">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
       </div>
       <div className="divide-y divide-white/5">
         {players.map((row, i) => {
@@ -516,6 +626,7 @@ function MostImprovedTab() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-white font-semibold text-sm truncate">{row.player_name}</p>
+                  {flag((row as any).country) && <span className="text-sm">{flag((row as any).country)}</span>}
                   <AgeBadge age_group={row.age_group} />
                 </div>
                 <p className="text-gray-600 text-xs">last week: {row.last_week.toLocaleString()}</p>
@@ -553,6 +664,7 @@ export default function LeaderboardClient() {
     { key: "leaderboard" as Tab, label: "Scores",   icon: "📊" },
     { key: "pergame"     as Tab, label: "Per Game", icon: "🎮" },
     { key: "rankings"   as Tab, label: "Rankings", icon: "🏅" },
+    { key: "improved"   as Tab, label: "Improved",  icon: "📈" },
   ];
 
   return (
@@ -565,24 +677,29 @@ export default function LeaderboardClient() {
           Leader<span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">board</span>
         </h1>
         <p className="text-gray-600 text-sm mt-4 max-w-sm mx-auto">Compete, climb, and claim your spot at the top of the rankings.</p>
-        <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-gray-400 text-xs font-semibold px-4 py-1.5 rounded-full mt-3" suppressHydrationWarning>
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-white font-black" suppressHydrationWarning>{totalPlayers ? totalPlayers.toLocaleString() : "—"}</span> players competing
+        {mounted && (
+          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-gray-400 text-xs font-semibold px-4 py-1.5 rounded-full mt-3">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-white font-black">{totalPlayers ? totalPlayers.toLocaleString() : "—"}</span> players competing
+          </div>
+        )}
+      </div>
+
+      {mounted && (
+        <div className="flex bg-[#0a0a12] border border-white/8 rounded-2xl p-1 gap-1 mb-8 w-full max-w-md">
+          {tabs.map(t => (
+            <button key={t.key} onClick={() => setTab(t.key)}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all duration-200 flex items-center justify-center gap-1.5 ${tab === t.key ? "bg-white/10 text-white shadow-sm" : "text-gray-600 hover:text-gray-400"}`}>
+              {t.icon} {t.label}
+            </button>
+          ))}
         </div>
-      </div>
+      )}
 
-      <div suppressHydrationWarning className="flex flex-wrap bg-[#0a0a12] border border-white/8 rounded-2xl p-1 gap-1 mb-8 w-full max-w-md">
-        {tabs.map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all duration-200 flex items-center justify-center gap-1.5 ${tab === t.key ? "bg-white/10 text-white shadow-sm" : "text-gray-600 hover:text-gray-400"}`}>
-            {t.icon} {t.label}
-          </button>
-        ))}
-      </div>
-
-      {tab === "leaderboard" && <LeaderboardTab />}
-      {tab === "pergame"     && <PerGameTab />}
-      {tab === "rankings"    && <RankingsTab />}
+      {mounted && tab === "leaderboard" && <LeaderboardTab />}
+      {mounted && tab === "pergame"     && <PerGameTab />}
+      {mounted && tab === "rankings"    && <RankingsTab />}
+      {mounted && tab === "improved"    && <MostImprovedTab />}
 
     </div>
   );
