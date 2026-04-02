@@ -1,0 +1,17 @@
+# env files — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# Next.js build output
+.next/
+out/
+
+# dependencies
+node_modules/
+
+# misc
+*.mp3
+build_output.txt
+cookies.txt
+tsconfig.tsbuildinfo
