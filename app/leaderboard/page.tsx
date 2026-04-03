@@ -1,4 +1,7 @@
-import LeaderboardClient from "./leaderboard-client";
+"use client";
+import dynamic from "next/dynamic";
+
+const LeaderboardClient = dynamic(() => import("./leaderboard-client"), { ssr: false });
 
 export default function Page() {
   return <LeaderboardClient />;

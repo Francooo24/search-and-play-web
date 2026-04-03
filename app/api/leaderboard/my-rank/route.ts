@@ -8,7 +8,14 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return NextResponse.json({ rank: null });
+
+  // Always return total players count (public)
+  const [totalRows] = await pool.query<RowDataPacket[]>(
+    "SELECT COUNT(DISTINCT l.user_id) AS total FROM leaderboard l JOIN players p ON l.user_id = p.id WHERE p.is_admin = 0"
+  );
+  const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
+
+  if (!session?.user) return NextResponse.json({ rank: null, total: totalPlayers });
 
   const userId = (session.user as any).id;
 
@@ -52,11 +59,7 @@ export async function GET() {
     // rankRows length = number of players ahead of user
     const rank = (rankRows as RowDataPacket[]).length + 1;
 
-    // Total ranked non-admin players
-    const [totalRows] = await pool.query<RowDataPacket[]>(
-      "SELECT COUNT(DISTINCT l.user_id) AS total FROM leaderboard l JOIN players p ON l.user_id = p.id WHERE p.is_admin = 0"
-    );
-    const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
+    // Total ranked non-admin players — already computed above
 
     // Rank tier
     const TIERS = [

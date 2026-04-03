@@ -824,8 +824,8 @@ export default function LeaderboardClient() {
     <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen" suppressHydrationWarning>
 
       {/* ── Hero Header ── */}
-      <div className="text-center mb-10 w-full max-w-2xl">
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5">
+      <div className="text-center mb-10 w-full max-w-2xl" suppressHydrationWarning>
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5" suppressHydrationWarning>
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
           Hall of Fame
         </div>
@@ -833,6 +833,12 @@ export default function LeaderboardClient() {
           Leader<span className="text-orange-400">board</span>
         </h1>
         <p className="text-gray-500 text-sm leading-relaxed">Compete, climb, and claim your spot at the top.</p>
+        {totalPlayers && (
+          <div className="mt-4 inline-flex items-center gap-2 bg-white/5 border border-white/8 text-gray-400 text-xs font-semibold px-4 py-2 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            {totalPlayers.toLocaleString()} players competing
+          </div>
+        )}
       </div>
 
       {/* ── Tab Switcher ── */}
