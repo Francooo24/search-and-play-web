@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type HistoryItem = { id: number; word: string; created_at: string };
 
@@ -15,17 +16,21 @@ function timeAgo(dateStr: string) {
 
 export default function SearchHistoryPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("/api/search")
+    if (status !== "authenticated") return;
+    router.refresh();
+    setLoading(true);
+    fetch(`/api/search?t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
       .then(d => setHistory(d.history ?? []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [status]);
 
   async function deleteOne(id: number) {
     setHistory(h => h.filter(x => x.id !== id));

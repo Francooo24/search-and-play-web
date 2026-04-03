@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ history: [] });
@@ -20,7 +22,9 @@ export async function GET() {
     created_at: r.created_at,
   }));
 
-  return NextResponse.json({ history });
+  return NextResponse.json({ history }, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 export async function DELETE(req: NextRequest) {

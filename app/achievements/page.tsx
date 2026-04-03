@@ -86,12 +86,11 @@ const ADULT_ACHIEVEMENTS = [
   { icon: "🧩", name: "Deduction King",    description: "Score 100+ in Deduction",             group: "game_badges" },
 ];
 
-function getAchievements(ageGroup: string | null) {
+function getAchievements(ageGroup: string) {
   const gameBadges =
     ageGroup === "kids"  ? KIDS_ACHIEVEMENTS  :
     ageGroup === "teen"  ? TEEN_ACHIEVEMENTS  :
-    ageGroup === "adult" ? ADULT_ACHIEVEMENTS :
-    [...KIDS_ACHIEVEMENTS, ...TEEN_ACHIEVEMENTS, ...ADULT_ACHIEVEMENTS];
+                           ADULT_ACHIEVEMENTS;
   return [...SHARED_ACHIEVEMENTS, ...gameBadges];
 }
 
@@ -152,14 +151,14 @@ export default function AchievementsPage() {
   }, [session, status]);
 
   const userAge         = (session?.user as any)?.age ?? null;
-  const ageGroup        = !session?.user ? null : userAge === null ? "adult" : userAge <= 12 ? "kids" : userAge <= 17 ? "teen" : "adult";
-  const ALL_ACHIEVEMENTS = getAchievements(ageGroup ?? "adult");
+  const ageGroup        = userAge === null ? "adult" : userAge <= 12 ? "kids" : userAge <= 17 ? "teen" : "adult";
+  const ALL_ACHIEVEMENTS = getAchievements(ageGroup);
 
   const earnedNames  = new Set(earned.map(e => e.name));
   const earnedMap    = Object.fromEntries(earned.map(e => [e.name, e.earned_at]));
   const total        = loading ? 0 : ALL_ACHIEVEMENTS.length;
-  const earnedCount  = loading ? 0 : earned.filter(e => ALL_ACHIEVEMENTS.some(a => a.name === e.name)).length;
-  const progress     = total > 0 ? Math.min(100, Math.round((earnedCount / total) * 100)) : 0;
+  const earnedCount  = loading ? 0 : ALL_ACHIEVEMENTS.filter(a => earnedNames.has(a.name)).length;
+  const progress     = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
 
   if (!session?.user && !loading) {
     return (
@@ -213,7 +212,9 @@ export default function AchievementsPage() {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-white font-black text-xl">{earnedCount} <span className="text-gray-500 font-normal text-base">/ {total} unlocked</span></p>
-                <p className="text-gray-500 text-xs mt-0.5">Keep playing to unlock more badges</p>
+                {earnedCount < total && (
+                  <p className="text-gray-500 text-xs mt-0.5">Keep playing to unlock more badges</p>
+                )}
               </div>
               <div className="hidden sm:flex gap-2">
                 {(["all", "earned", "locked"] as const).map(f => (

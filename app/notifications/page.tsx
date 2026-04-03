@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type Notification = { id: number; activity: string; created_at: string };
 
@@ -22,16 +24,20 @@ function getIcon(activity: string) {
 }
 
 export default function NotificationsPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/notifications")
+    if (status !== "authenticated") return;
+    router.refresh();
+    fetch(`/api/notifications?t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
       .then(d => setNotifications(d.notifications ?? []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [status]);
 
   return (
     <div className="flex-grow w-full max-w-2xl mx-auto px-4 py-10">

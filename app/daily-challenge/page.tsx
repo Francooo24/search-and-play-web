@@ -185,7 +185,11 @@ export default function DailyChallengePage() {
         <p className="text-gray-600 text-sm mt-4">{today}</p>
       </div>
 
-      {!session?.user && !loading ? (
+      {status === "loading" || loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-orange-500 animate-spin" />
+        </div>
+      ) : !session?.user ? (
         <div className="bg-[#0f0f18] border border-white/8 rounded-2xl p-10 text-center max-w-md w-full">
           <p className="text-4xl mb-4">🔒</p>
           <p className="text-white font-semibold text-lg mb-2">Sign in to participate</p>
@@ -193,10 +197,6 @@ export default function DailyChallengePage() {
           <Link href="/login" className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-6 py-3 rounded-xl hover:from-orange-600 hover:to-amber-600 transition">
             Sign In
           </Link>
-        </div>
-      ) : loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-orange-500 animate-spin" />
         </div>
       ) : (
         <div className="w-full max-w-2xl space-y-5">

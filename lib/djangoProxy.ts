@@ -63,7 +63,10 @@ export async function djangoProxy(
     return NextResponse.json({ error: errorMsg }, { status: res.status });
   }
 
-  return NextResponse.json(data, { status: res.status });
+  return NextResponse.json(data, {
+    status: res.status,
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 export function djangoAuthHeaders(accessToken: string): HeadersInit {

@@ -1,8 +1,8 @@
-"use client";
-import dynamic from "next/dynamic";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-const LeaderboardClient = dynamic(() => import("./leaderboard-client"), { ssr: false });
+import LeaderboardWrapper from "./leaderboard-wrapper";
 
 export default function Page() {
-  return <LeaderboardClient />;
+  return <LeaderboardWrapper />;
 }

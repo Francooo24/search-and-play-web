@@ -136,7 +136,7 @@ function LeaderboardTab() {
   };
 
   useEffect(() => {
-    fetch("/api/leaderboard/my-rank", { cache: "no-store" })
+    fetch(`/api/leaderboard/my-rank?t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
       .then(d => {
         if (d.rank) {
@@ -169,7 +169,7 @@ function LeaderboardTab() {
     off === 0 ? setLoading(true) : setLoadingMore(true);
     setError("");
     try {
-      const p = new URLSearchParams({ period, offset: String(off) });
+      const p = new URLSearchParams({ period, offset: String(off), t: String(Date.now()) });
       if (gameFilter) p.append("game", gameFilter);
       const res  = await fetch(`/api/leaderboard?${p}`, { cache: "no-store" });
       const data = await res.json();
@@ -807,7 +807,7 @@ export default function LeaderboardClient() {
   const [totalPlayers, setTotalPlayers] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/leaderboard/my-rank", { cache: "no-store" })
+    fetch(`/api/leaderboard/my-rank?t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
       .then(d => { if (d.total) setTotalPlayers(d.total); })
       .catch(() => {});
@@ -821,13 +821,13 @@ export default function LeaderboardClient() {
   ];
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen" suppressHydrationWarning>
+    <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen">
 
       {/* ── Hero Header ── */}
-      <div className="text-center mb-10 w-full max-w-2xl" suppressHydrationWarning>
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5" suppressHydrationWarning>
+      <div suppressHydrationWarning className="text-center mb-10 w-full max-w-2xl">
+        <div suppressHydrationWarning className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5">
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-          Hall of Fame
+          <span suppressHydrationWarning>Hall of Fame</span>
         </div>
         <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
           Leader<span className="text-orange-400">board</span>

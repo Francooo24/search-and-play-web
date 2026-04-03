@@ -104,15 +104,15 @@ export default function Navbar() {
                 {dropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-50">
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
                       <Link href="/profile" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-t-xl transition">
                         <span>👤</span> My Profile
                       </Link>
-                      <Link href="/favorites" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                        <span>⭐</span> My Favorites
-                      </Link>
                       <Link href="/search-history" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                         <span>🔍</span> Search History
+                      </Link>
+                      <Link href="/favorites" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>⭐</span> My Favorites
                       </Link>
                       <Link href="/stats" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                         <span>📊</span> Game Statistics
@@ -192,11 +192,11 @@ export default function Navbar() {
               <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>👤</span> My Profile
               </Link>
-              <Link href="/favorites" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
-                <span>⭐</span> My Favorites
-              </Link>
               <Link href="/search-history" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>🔍</span> Search History
+              </Link>
+              <Link href="/favorites" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
+                <span>⭐</span> My Favorites
               </Link>
               <Link href="/stats" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>📊</span> Game Statistics

@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ notifications: [] });
@@ -15,11 +17,12 @@ export async function GET(req: NextRequest) {
     [playerName]
   ).catch(() => [[]] as any);
 
-  // If "since" param provided, also return unread count
   let unread = 0;
   if (since) {
     unread = (rows as any[]).filter((r: any) => new Date(r.created_at) > new Date(since)).length;
   }
 
-  return NextResponse.json({ notifications: rows, unread });
+  return NextResponse.json({ notifications: rows, unread }, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
