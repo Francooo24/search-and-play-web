@@ -158,10 +158,8 @@ export default function AchievementsPage() {
   const earnedNames  = new Set(earned.map(e => e.name));
   const earnedMap    = Object.fromEntries(earned.map(e => [e.name, e.earned_at]));
   const total        = loading ? 0 : ALL_ACHIEVEMENTS.length;
-  const earnedCount  = loading ? 0 : ALL_ACHIEVEMENTS.filter(a => earnedNames.has(a.name)).length;
+  const earnedCount  = loading ? 0 : earned.filter(e => ALL_ACHIEVEMENTS.some(a => a.name === e.name)).length;
   const progress     = total > 0 ? Math.min(100, Math.round((earnedCount / total) * 100)) : 0;
-
-  if (!mounted) return null;
 
   if (!session?.user && !loading) {
     return (
@@ -181,7 +179,8 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-10 md:py-14 w-full min-h-screen">
+    <div className="flex flex-col items-center px-4 sm:px-6 py-10 md:py-14 w-full min-h-screen" suppressHydrationWarning>
+      {mounted && <>
 
       {/* ── Header ── */}
       <div className="text-center mb-10">
@@ -344,6 +343,8 @@ export default function AchievementsPage() {
           })
         )}
       </div>
+      </>
+      }
     </div>
   );
 }

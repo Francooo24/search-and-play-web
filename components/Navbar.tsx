@@ -15,6 +15,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -23,9 +24,10 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!session?.user) return;
-    fetch("/api/notifications")
+    const since = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
+    fetch(`/api/notifications?since=${encodeURIComponent(since)}`)
       .then(r => r.json())
-      .then(d => setUnreadCount((d.notifications ?? []).length))
+      .then(d => setUnreadCount(d.unread ?? 0))
       .catch(() => {});
   }, [session]);
 
@@ -73,6 +75,7 @@ export default function Navbar() {
             </Link>
           ))}
 
+
           {isAdmin ? (
             <>
               <Link href="/admin" className="flex items-center gap-2.5 bg-gradient-to-r from-indigo-500/15 to-violet-500/15 border border-indigo-500/30 hover:border-indigo-400/60 py-2 px-4 rounded-xl transition-all duration-300 group">
@@ -90,41 +93,45 @@ export default function Navbar() {
             </>
           ) : session?.user ? (
             <>
-              <div className="relative group">
-                <button className="flex items-center space-x-3 bg-gradient-to-r from-orange-500/10 to-amber-500/10 py-2 px-5 rounded-lg border border-orange-400/20 hover:border-orange-400/40 transition">
+              <div className="relative">
+                <button onClick={() => setDropdownOpen(o => !o)} className="flex items-center space-x-3 bg-gradient-to-r from-orange-500/10 to-amber-500/10 py-2 px-5 rounded-lg border border-orange-400/20 hover:border-orange-400/40 transition">
                   <div className="w-9 h-9 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center text-sm font-bold">
                     {session.user.name?.charAt(0).toUpperCase()}
                   </div>
                   <span className="font-medium text-orange-100">{session.user.name}</span>
                   <svg className="w-3.5 h-3.5 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <Link href="/profile" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-t-xl transition">
-                    <span>👤</span> My Profile
-                  </Link>
-                  <Link href="/favorites" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                    <span>⭐</span> My Favorites
-                  </Link>
-                  <Link href="/search-history" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                    <span>🔍</span> Search History
-                  </Link>
-                  <Link href="/stats" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                    <span>📊</span> Game Statistics
-                  </Link>
-                  <Link href="/achievements" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                    <span>🏆</span> Achievements
-                  </Link>
-                  <Link href="/notifications" onClick={() => setUnreadCount(0)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
-                    <span>🔔</span> Notifications
-                    {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
-                  </Link>
-                  <div className="border-t border-white/8 mx-3" />
-                  <button onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-b-xl transition">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                    Log Out
-                  </button>
-                </div>
+                {dropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-50">
+                      <Link href="/profile" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-t-xl transition">
+                        <span>👤</span> My Profile
+                      </Link>
+                      <Link href="/favorites" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>⭐</span> My Favorites
+                      </Link>
+                      <Link href="/search-history" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>🔍</span> Search History
+                      </Link>
+                      <Link href="/stats" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>📊</span> Game Statistics
+                      </Link>
+                      <Link href="/achievements" onClick={() => setDropdownOpen(false)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>🏆</span> Achievements
+                      </Link>
+                      <Link href="/notifications" onClick={() => { setDropdownOpen(false); setUnreadCount(0); localStorage.setItem("notif_last_read", new Date().toISOString()); }} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                        <span>🔔</span> Notifications
+                        {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                      </Link>
+                      <div className="border-t border-white/8 mx-3" />
+                      <button onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-b-xl transition">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        Log Out
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : (
@@ -197,7 +204,7 @@ export default function Navbar() {
               <Link href="/achievements" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>🏆</span> Achievements
               </Link>
-              <Link href="/notifications" onClick={() => { setMenuOpen(false); setUnreadCount(0); }} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
+              <Link href="/notifications" onClick={() => { setMenuOpen(false); setUnreadCount(0); localStorage.setItem("notif_last_read", new Date().toISOString()); }} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>🔔</span> Notifications
                 {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
               </Link>

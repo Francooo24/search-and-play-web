@@ -24,21 +24,21 @@ const CATEGORIES = [
 ];
 
 function DailyChallengeBanner() {
+  const { data: session, status } = useSession();
   const [challenge, setChallenge] = useState<{ game: string; title: string; bonus_points: number } | null>(null);
   const [completed, setCompleted] = useState(false);
   const [countdown, setCountdown] = useState("");
-  const [authed, setAuthed]       = useState<boolean | null>(null);
 
   useEffect(() => {
+    if (status !== "authenticated") return;
     fetch("/api/daily-challenge")
       .then(r => r.json())
       .then(d => {
-        setAuthed(true);
         setChallenge(d.challenge ?? null);
         setCompleted(d.completed ?? false);
       })
-      .catch(() => setAuthed(false));
-  }, []);
+      .catch(() => {});
+  }, [status]);
 
   useEffect(() => {
     const tick = () => {
@@ -62,7 +62,9 @@ function DailyChallengeBanner() {
     "Memory Game": "/games/memory", "Trivia Blitz": "/games/triviablitz", "Speed Trivia": "/games/trivia",
   };
 
-  if (authed === null) return null;
+  if (status === "loading") return null;
+
+  const authed = status === "authenticated";
 
   return (
     <div className="w-full max-w-xl mb-10">
@@ -72,8 +74,10 @@ function DailyChallengeBanner() {
         <div className="text-3xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
         <div className="flex-1 min-w-0 relative">
           <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-0.5">Daily Challenge</p>
-          {!authed || !challenge ? (
+          {!authed ? (
             <p className="text-white font-bold text-sm">Sign in to see today&apos;s challenge</p>
+          ) : !challenge ? (
+            <p className="text-white font-bold text-sm">No challenge available today</p>
           ) : completed ? (
             <p className="text-white font-bold text-sm">Challenge complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
           ) : (
@@ -165,11 +169,6 @@ export default function HomeClient() {
 
   return (
     <div className="flex-grow flex flex-col items-center text-center px-4 relative z-10 pt-12">
-      {playerName && (
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-5">
-          👋 Welcome back, <span className="text-white font-black">{playerName}</span>!
-        </div>
-      )}
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
         Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">Greek</span> word
       </h1>

@@ -28,16 +28,21 @@ export async function POST(req: NextRequest) {
   const guard = adminGuard(session);
   if (guard) return guard;
 
-  const { challenge_date, game, title, description, target_type, target_value, bonus_points } =
+  const { challenge_date, game, title, description, target_type, target_value, bonus_points, age_group } =
     await req.json();
 
   if (!challenge_date || !game || !title)
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 
+  // Add age_group column if not exists
+  await (pool as any).query(
+    "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS age_group VARCHAR(10) NULL DEFAULT NULL"
+  ).catch(() => {});
+
   const [result] = await pool.query<ResultSetHeader>(
-    `INSERT INTO daily_challenges (challenge_date, game, title, description, target_type, target_value, bonus_points)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50]
+    `INSERT INTO daily_challenges (challenge_date, game, title, description, target_type, target_value, bonus_points, age_group)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50, age_group ?? null]
   );
   return NextResponse.json({ ok: true, id: result.insertId });
 }
@@ -48,15 +53,15 @@ export async function PUT(req: NextRequest) {
   const guard = adminGuard(session);
   if (guard) return guard;
 
-  const { id, challenge_date, game, title, description, target_type, target_value, bonus_points } =
+  const { id, challenge_date, game, title, description, target_type, target_value, bonus_points, age_group } =
     await req.json();
 
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
   await pool.query(
-    `UPDATE daily_challenges SET challenge_date=?, game=?, title=?, description=?, target_type=?, target_value=?, bonus_points=?
+    `UPDATE daily_challenges SET challenge_date=?, game=?, title=?, description=?, target_type=?, target_value=?, bonus_points=?, age_group=?
      WHERE id=?`,
-    [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50, id]
+    [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50, age_group ?? null, id]
   );
   return NextResponse.json({ ok: true });
 }

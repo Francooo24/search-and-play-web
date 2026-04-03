@@ -225,137 +225,154 @@ function LeaderboardTab() {
             ))}
           </div>
         )}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Rank card */}
-          <div className="relative overflow-hidden rounded-2xl border border-orange-500/30 bg-[#0f0f18] px-6 py-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent pointer-events-none" />
-            <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-orange-500/10 blur-2xl pointer-events-none" />
-            <div className="relative flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex flex-col items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
-                  <span className="text-white text-[10px] font-bold uppercase tracking-wider opacity-80">RANK</span>
-                  <span className="text-white text-2xl font-black leading-none">#{displayRank}</span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-xs font-bold uppercase tracking-widest text-orange-400">Your Position</p>
-                    {myRank.rank === 1 && <span className="text-[10px] bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 px-1.5 py-0.5 rounded-full font-black">🥇 #1</span>}
-                  </div>
-                  <p className="text-white font-black text-lg leading-tight">Ranked #{displayRank}</p>
-                  <p className="text-gray-500 text-xs mt-0.5">out of <span className="text-gray-300 font-semibold">{myRank.total}</span> players</p>
-                  <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className="text-sm">{myRank.tier?.icon}</span>
-                    <span className="text-xs font-black text-orange-300">{myRank.tier?.name}</span>
-                  </div>
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+          {/* ── Rank Card ── */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1008] to-[#0f0f18] border border-orange-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-orange-500/5">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.12),transparent_60%)] pointer-events-none" />
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-orange-400/80">Global Rank</span>
+                {myRank.rank === 1 && (
+                  <span className="text-[10px] bg-yellow-400/15 border border-yellow-400/30 text-yellow-300 px-2 py-0.5 rounded-full font-black">🥇 #1</span>
+                )}
               </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Total Score</p>
-                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{displayScore.toLocaleString()}</p>
-                <p className="text-gray-600 text-xs">points</p>
-                <button onClick={handleShare} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-400 hover:text-orange-300 transition ml-auto">
-                  {copied ? "✓ Copied!" : "↗ Share"}
-                </button>
+              <button onClick={handleShare} className="text-[10px] font-bold text-orange-400/70 hover:text-orange-300 transition flex items-center gap-1">
+                {copied ? "✓ Copied" : "↗ Share"}
+              </button>
+            </div>
+            {/* Big rank number */}
+            <div className="flex items-end gap-3">
+              <span className="text-6xl font-black text-white leading-none">#{displayRank}</span>
+              <div className="pb-1">
+                <p className="text-white font-bold text-sm leading-tight">{displayScore.toLocaleString()} pts</p>
+                <p className="text-gray-500 text-xs">of {myRank.total} players</p>
               </div>
             </div>
-            {/* Progress bar to next tier */}
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-gray-600">{myRank.tier?.name}</span>
-                <span className="text-[10px] text-gray-600">{myRank.nextTier ? myRank.nextTier.name : "MAX ⭐"}</span>
-              </div>
-              <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000"
-                  style={{ width: `${myRank.tierProgress}%` }} />
-              </div>
-              {myRank.nextTier && (
-                <p className="text-[10px] text-gray-600 mt-1">
-                  {myRank.nextTier.min - myRank.score > 0
-                    ? `${(myRank.nextTier.min - myRank.score).toLocaleString()} pts to ${myRank.nextTier.name}`
-                    : "Ready to rank up! 🚀"}
+            {/* Tier */}
+            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
+              <span className="text-2xl">{myRank.tier?.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-black text-sm">{myRank.tier?.name}</p>
+                <div className="mt-1.5 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000" style={{ width: `${myRank.tierProgress}%` }} />
+                </div>
+                <p className="text-gray-600 text-[10px] mt-1">
+                  {myRank.nextTier
+                    ? `${(myRank.nextTier.min - myRank.score).toLocaleString()} pts → ${myRank.nextTier.name}`
+                    : "Max tier reached ⭐"}
                 </p>
-              )}
-            </div>
-          </div>
-          {/* Personal best card */}
-          <div className="relative overflow-hidden rounded-2xl border border-yellow-500/30 bg-[#0f0f18] px-6 py-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/8 via-amber-500/5 to-transparent pointer-events-none" />
-            <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-yellow-500/10 blur-2xl pointer-events-none" />
-            <div className="relative flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-amber-500 flex flex-col items-center justify-center shadow-lg shadow-yellow-500/30 flex-shrink-0">
-                  <span className="text-amber-900 text-2xl">⭐</span>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-yellow-400 mb-0.5">Personal Best</p>
-                  <p className="text-white font-black text-lg leading-tight">{(myRank.best ?? 0).toLocaleString()} pts</p>
-                  {myRank.best_game && <p className="text-gray-500 text-xs mt-0.5 truncate max-w-[120px]">{myRank.best_game}</p>}
-                </div>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Single Game</p>
-                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-400">{(myRank.best ?? 0).toLocaleString()}</p>
-                <p className="text-gray-600 text-xs">best score</p>
               </div>
             </div>
           </div>
-          {/* Streak card */}
-          <div className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-[#0f0f18] px-6 py-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/8 via-orange-500/5 to-transparent pointer-events-none" />
-            <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-red-500/10 blur-2xl pointer-events-none" />
-            <div className="relative flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex flex-col items-center justify-center shadow-lg shadow-red-500/30 flex-shrink-0">
-                  <span className="text-white text-2xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "📅"}</span>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-red-400 mb-0.5">Win Streak</p>
-                  <p className="text-white font-black text-lg leading-tight">{myRank.streak} day{myRank.streak !== 1 ? "s" : ""}</p>
-                  <p className="text-gray-500 text-xs mt-0.5">{myRank.streak === 0 ? "Play today to start!" : myRank.streak >= 7 ? "You're on fire!" : "Keep it up!"}</p>
-                </div>
+
+          {/* ── Personal Best Card ── */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1500] to-[#0f0f18] border border-yellow-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-yellow-500/5">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(234,179,8,0.10),transparent_60%)] pointer-events-none" />
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400/80">Personal Best</span>
+              <span className="text-lg">⭐</span>
+            </div>
+            {/* Big score */}
+            <div className="flex items-end gap-3">
+              <span className="text-6xl font-black text-white leading-none">{(myRank.best ?? 0).toLocaleString()}</span>
+              <div className="pb-1">
+                <p className="text-white font-bold text-sm leading-tight">points</p>
+                <p className="text-gray-500 text-xs">single game</p>
               </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Consecutive</p>
-                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">{myRank.streak}</p>
-                <p className="text-gray-600 text-xs">days</p>
+            </div>
+            {/* Game */}
+            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
+              <span className="text-2xl">🎮</span>
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Best Game</p>
+                <p className="text-white font-black text-sm truncate max-w-[160px]">{myRank.best_game ?? "No games yet"}</p>
               </div>
             </div>
           </div>
+
+          {/* ── Streak Card ── */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#180a08] to-[#0f0f18] border border-red-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-red-500/5">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(239,68,68,0.10),transparent_60%)] pointer-events-none" />
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-red-400/80">Win Streak</span>
+              <span className="text-lg">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "📅"}</span>
+            </div>
+            {/* Big streak */}
+            <div className="flex items-end gap-3">
+              <span className="text-6xl font-black text-white leading-none">{myRank.streak}</span>
+              <div className="pb-1">
+                <p className="text-white font-bold text-sm leading-tight">day{myRank.streak !== 1 ? "s" : ""}</p>
+                <p className="text-gray-500 text-xs">consecutive</p>
+              </div>
+            </div>
+            {/* Status */}
+            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
+              <span className="text-2xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "🎯"}</span>
+              <div>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Status</p>
+                <p className="text-white font-black text-sm">
+                  {myRank.streak === 0 ? "Play today to start!" : myRank.streak >= 7 ? "You're on fire!" : myRank.streak >= 3 ? "Hot streak!" : "Keep going!"}
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
         </>
       )}
-      <div className="flex bg-[#0f0f18] border border-white/8 rounded-2xl p-1 gap-1">
-        {PERIODS.map(p => (
-          <button key={p.key} onClick={() => setPeriod(p.key)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-widest uppercase transition-all duration-200 ${period === p.key ? "bg-white/10 text-white" : "text-gray-600 hover:text-gray-400"}`}>
-            {p.label}
-          </button>
-        ))}
-      </div>
-
-      {gameTypes.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {["", ...gameTypes].map(g => (
-            <button key={g} onClick={() => setGameFilter(g)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 ${gameFilter === g ? "bg-orange-500/20 border-orange-500/50 text-orange-300" : "bg-white/4 border-white/8 text-gray-500 hover:text-gray-300 hover:border-white/20"}`}>
-              {g === "" ? "All Games" : g}
+      {/* ── Controls ── */}
+      <div className="w-full space-y-3">
+        {/* Period tabs */}
+        <div className="relative flex bg-[#0a0a12] rounded-2xl p-1 border border-white/6">
+          {PERIODS.map((p, i) => (
+            <button key={p.key} onClick={() => setPeriod(p.key)}
+              className={`relative flex-1 py-2.5 text-xs font-bold tracking-wide transition-all duration-300 rounded-xl z-10 ${
+                period === p.key ? "text-white" : "text-gray-600 hover:text-gray-400"
+              }`}>
+              {period === p.key && (
+                <span className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30" />
+              )}
+              <span className="relative">{p.label}</span>
             </button>
           ))}
         </div>
-      )}
 
-      {/* Search bar */}
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></span>
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search player by name..."
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0f0f18] border border-white/8 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-orange-500 transition"
-        />
-        {search && (
-          <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition text-xs">✕</button>
+        {/* Game filter + Search row */}
+        <div className="flex gap-2">
+          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="Search player..."
+            className="flex-1 px-4 py-2.5 rounded-xl bg-[#0a0a12] border border-white/6 text-white text-sm placeholder-gray-700 focus:outline-none focus:border-orange-500/40 transition" />
+          {search && (
+            <button onClick={() => setSearch("")} className="px-4 py-2.5 rounded-xl bg-[#0a0a12] border border-white/6 text-gray-600 hover:text-white text-xs transition">
+              Clear
+            </button>
+          )}
+          <button onClick={() => setRefreshKey(k => k + 1)} disabled={loading}
+            className="px-3 py-2.5 rounded-xl bg-[#0a0a12] border border-white/6 text-gray-600 hover:text-orange-400 hover:border-orange-500/30 transition disabled:opacity-40">
+            <svg className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Game chips */}
+        {gameTypes.length > 0 && (
+          <div className="flex gap-1.5 flex-wrap">
+            {["", ...gameTypes].map(g => (
+              <button key={g} onClick={() => setGameFilter(g)}
+                className={`px-3 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-150 ${
+                  gameFilter === g
+                    ? "bg-orange-500 border-orange-500 text-white"
+                    : "bg-transparent border-white/8 text-gray-600 hover:border-white/20 hover:text-gray-300"
+                }`}>
+                {g === "" ? "All Games" : g}
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
@@ -369,7 +386,7 @@ function LeaderboardTab() {
           : players;
         if (filtered.length === 0) return (
           <div className="bg-[#0f0f18] border border-white/8 rounded-2xl p-8 text-center">
-            <p className="text-4xl mb-3">🔍</p>
+            <p className="text-4xl mb-3"></p>
             <p className="text-gray-400 font-semibold">No player found for "{search}"</p>
             <button onClick={() => setSearch("")} className="mt-3 text-xs text-orange-400 hover:text-orange-300 transition">Clear search</button>
           </div>
@@ -404,47 +421,92 @@ function LeaderboardTab() {
             </div>
           )}
 
-          <div className="bg-[#0f0f18] border border-white/8 rounded-2xl overflow-hidden">
-            <div className="px-5 py-3 border-b border-white/8 flex items-center justify-between">
-              <p className="text-xs uppercase tracking-widest text-gray-600 font-bold">Rankings</p>
+          {/* ── Rankings Table ── */}
+          <div className="rounded-2xl overflow-hidden border border-white/6" style={{ background: "linear-gradient(180deg, #0d0d1a 0%, #0a0a12 100%)" }}>
+            {/* Header */}
+            <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
               <div className="flex items-center gap-3">
-                <p className="text-xs text-gray-600">{filtered.length} players</p>
-                <button onClick={() => setRefreshKey(k => k + 1)} disabled={loading}
-                  className="text-gray-600 hover:text-orange-400 transition disabled:opacity-40" title="Refresh">
-                  <svg className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-orange-400 to-amber-600" />
+                <div>
+                  <p className="text-sm font-black text-white">Player Rankings</p>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">
+                    {filtered.length} player{filtered.length !== 1 ? "s" : ""}
+                    {gameFilter ? ` · ${gameFilter}` : ""}
+                    {period !== "all" ? ` · ${PERIODS.find(p => p.key === period)?.label}` : ""}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="divide-y divide-white/5">
+
+            {/* Rows */}
+            <div>
               {filtered.map((player, i) => {
                 const isMe = currentUserId && player.user_id && Number(currentUserId) === Number(player.user_id);
+                const isTop3 = i < 3;
+                const rankColors = ["from-yellow-400/20 to-transparent", "from-slate-400/10 to-transparent", "from-orange-700/15 to-transparent"];
                 return (
                   <Link key={i} href={`/players/${encodeURIComponent(player.player_name)}`}
-                    className={`flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition cursor-pointer ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
-                    <span className="text-gray-600 text-sm font-bold w-7 text-center flex-shrink-0">
-                      {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
-                    </span>
-                    <Avatar name={player.player_name} size="sm" avatarUrl={avatars[player.player_name]} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-white hover:text-orange-400 font-semibold text-sm truncate transition">{player.player_name}</span>
-                        {flag(player.country) && <span className="text-sm">{flag(player.country)}</span>}
-                        {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
-                        <AgeBadge age_group={player.age_group} />
-                      </div>
-                      {!gameFilter && player.game && <p className="text-gray-600 text-xs truncate mt-0.5">{player.game}</p>}
-                      {player.total_games != null && (
-                        <p className="text-gray-600 text-xs mt-0.5">{player.total_games} game{player.total_games !== 1 ? "s" : ""}</p>
+                    className={`relative flex items-center gap-4 px-6 py-4 transition-all duration-200 cursor-pointer group ${
+                      isMe
+                        ? "bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent"
+                        : "hover:bg-white/3"
+                    }`}
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+
+                    {/* Left accent for top 3 */}
+                    {isTop3 && (
+                      <div className={`absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b ${rankColors[i]}`} />
+                    )}
+                    {isMe && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-500 to-amber-500" />}
+
+                    {/* Rank */}
+                    <div className="w-8 flex-shrink-0 flex items-center justify-center">
+                      {i === 0 ? (
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                          <span className="text-xs font-black text-amber-900">1</span>
+                        </div>
+                      ) : i === 1 ? (
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center">
+                          <span className="text-xs font-black text-slate-800">2</span>
+                        </div>
+                      ) : i === 2 ? (
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                          <span className="text-xs font-black text-white">3</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold text-gray-700 tabular-nums">#{i + 1}</span>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-white font-black text-sm">{player.total_score.toLocaleString()}</p>
-                      <div className="flex items-center justify-end gap-1 mt-0.5">
-                        {lastSeenDot(player.last_played)}
-                        <p className="text-gray-700 text-[10px]">{fmt(player.last_played)}</p>
+
+                    {/* Avatar */}
+                    <Avatar name={player.player_name} size="sm" avatarUrl={avatars[player.player_name]} />
+
+                    {/* Player info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-white group-hover:text-orange-300 font-bold text-sm truncate transition-colors duration-200">{player.player_name}</span>
+                        {flag(player.country) && <span className="text-sm leading-none">{flag(player.country)}</span>}
+                        {isMe && (
+                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-orange-500/20 text-orange-400 border border-orange-500/30">YOU</span>
+                        )}
+                        <AgeBadge age_group={player.age_group} />
                       </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {!gameFilter && player.game && <span className="text-gray-700 text-[10px] truncate">{player.game}</span>}
+                        {player.total_games != null && <span className="text-gray-700 text-[10px]">{player.total_games} games</span>}
+                        <div className="flex items-center gap-1">
+                          {lastSeenDot(player.last_played)}
+                          <span className="text-gray-700 text-[10px]">{fmt(player.last_played)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Score */}
+                    <div className="text-right flex-shrink-0">
+                      <p className={`font-black text-base tabular-nums ${
+                        i === 0 ? "text-yellow-400" : i === 1 ? "text-slate-300" : i === 2 ? "text-orange-400" : "text-white"
+                      }`}>{player.total_score.toLocaleString()}</p>
+                      <p className="text-gray-700 text-[10px] uppercase tracking-widest">pts</p>
                     </div>
                   </Link>
                 );
@@ -697,7 +759,7 @@ function MostImprovedTab() {
   return (
     <div className="w-full max-w-3xl mx-auto bg-[#0f0f18] border border-white/8 rounded-2xl overflow-hidden">
       <div className="px-5 py-3 border-b border-white/8 flex items-center justify-between">
-        <p className="text-xs uppercase tracking-widest text-gray-600 font-bold">Most Improved This Week</p>
+        <p className="text-xs uppercase tracking-widest text-gray-600 font-bold">Most Improved This Week <span className="text-gray-700 normal-case font-normal">(falls back to all-time if no recent data)</span></p>
         <div className="flex items-center gap-3">
           <p className="text-xs text-gray-600">{players.length} players</p>
           <button onClick={() => setRefreshKey(k => k + 1)} disabled={loading}
@@ -743,9 +805,6 @@ function MostImprovedTab() {
 export default function LeaderboardClient() {
   const [tab, setTab] = useState<Tab>("leaderboard");
   const [totalPlayers, setTotalPlayers] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     fetch("/api/leaderboard/my-rank", { cache: "no-store" })
@@ -762,38 +821,41 @@ export default function LeaderboardClient() {
   ];
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-10 md:py-14 relative z-10 w-full min-h-screen" suppressHydrationWarning>
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
-          🏆 Hall of Fame
+    <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen" suppressHydrationWarning>
+
+      {/* ── Hero Header ── */}
+      <div className="text-center mb-10 w-full max-w-2xl">
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5">
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+          Hall of Fame
         </div>
-        <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Leader<span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">board</span>
+        <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Leader<span className="text-orange-400">board</span>
         </h1>
-        <p className="text-gray-600 text-sm mt-4 max-w-sm mx-auto">Compete, climb, and claim your spot at the top of the rankings.</p>
-        {mounted && (
-          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-gray-400 text-xs font-semibold px-4 py-1.5 rounded-full mt-3">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-white font-black">{totalPlayers ? totalPlayers.toLocaleString() : "—"}</span> players competing
-          </div>
-        )}
+        <p className="text-gray-500 text-sm leading-relaxed">Compete, climb, and claim your spot at the top.</p>
       </div>
 
-      {mounted && (
-        <div className="flex bg-[#0a0a12] border border-white/8 rounded-2xl p-1 gap-1 mb-8 w-full max-w-md">
-          {tabs.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all duration-200 flex items-center justify-center gap-1.5 ${tab === t.key ? "bg-white/10 text-white shadow-sm" : "text-gray-600 hover:text-gray-400"}`}>
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* ── Tab Switcher ── */}
+      <div className="flex items-center gap-1 mb-8 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-md">
+        {tabs.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${
+              tab === t.key
+                ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30"
+                : "text-gray-500 hover:text-gray-300"
+            }`}>
+            <span className="text-sm leading-none">{t.icon}</span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </div>
 
-      {mounted && tab === "leaderboard" && <LeaderboardTab />}
-      {mounted && tab === "pergame"     && <PerGameTab />}
-      {mounted && tab === "rankings"    && <RankingsTab />}
-      {mounted && tab === "improved"    && <MostImprovedTab />}
+      <div className="w-full max-w-4xl">
+      {tab === "leaderboard" && <LeaderboardTab />}
+      {tab === "pergame"     && <PerGameTab />}
+      {tab === "rankings"    && <RankingsTab />}
+      {tab === "improved"    && <MostImprovedTab />}
+      </div>
 
     </div>
   );
