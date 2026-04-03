@@ -142,6 +142,7 @@ export default function HomeClient() {
   const router = useRouter();
   const { data: session } = useSession();
   const playerName = (session?.user as any)?.name ?? (session?.user as any)?.player_name ?? null;
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [wordOfDay, setWordOfDay] = useState<any>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -153,6 +154,7 @@ export default function HomeClient() {
     : [];
 
   useEffect(() => {
+    setMounted(true);
     fetch("/api/word-of-day").then(r => r.json()).then(data => { if (data) setWordOfDay(data); });
     const stored = localStorage.getItem("recent_searches");
     if (stored) setRecentSearches(JSON.parse(stored));
@@ -194,7 +196,7 @@ export default function HomeClient() {
               onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               placeholder="Enter a word..."
               className="w-full px-6 py-5 text-lg md:text-xl rounded-l-2xl focus:outline-none bg-white/5 border border-white/12 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/25 transition"
-              autoFocus
+              autoFocus={mounted}
               autoComplete="off"
             />
             {showSuggestions && suggestions.length > 0 && (

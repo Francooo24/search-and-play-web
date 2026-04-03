@@ -10,26 +10,26 @@ import { submitScore, fetchBestScore } from "@/lib/submitScore";
 import { useSound } from "@/lib/useSound";
 
 const ALL_FLAGS = [
-  { flag:"🇯🇵", country:"Japan", options:["Japan","China","South Korea","Vietnam"] },
-  { flag:"🇧🇷", country:"Brazil", options:["Brazil","Argentina","Colombia","Chile"] },
-  { flag:"🇫🇷", country:"France", options:["France","Belgium","Italy","Spain"] },
-  { flag:"🇩🇪", country:"Germany", options:["Germany","Austria","Switzerland","Netherlands"] },
-  { flag:"🇦🇺", country:"Australia", options:["Australia","New Zealand","Canada","UK"] },
-  { flag:"🇮🇳", country:"India", options:["India","Pakistan","Bangladesh","Sri Lanka"] },
-  { flag:"🇲🇽", country:"Mexico", options:["Mexico","Colombia","Peru","Venezuela"] },
-  { flag:"🇿🇦", country:"South Africa", options:["South Africa","Nigeria","Kenya","Ghana"] },
-  { flag:"🇸🇦", country:"Saudi Arabia", options:["Saudi Arabia","UAE","Qatar","Kuwait"] },
-  { flag:"🇰🇷", country:"South Korea", options:["South Korea","Japan","China","North Korea"] },
-  { flag:"🇮🇹", country:"Italy", options:["Italy","France","Spain","Portugal"] },
-  { flag:"🇨🇦", country:"Canada", options:["Canada","USA","Australia","UK"] },
-  { flag:"🇷🇺", country:"Russia", options:["Russia","Ukraine","Belarus","Poland"] },
-  { flag:"🇪🇬", country:"Egypt", options:["Egypt","Libya","Sudan","Morocco"] },
-  { flag:"🇦🇷", country:"Argentina", options:["Argentina","Brazil","Chile","Uruguay"] },
-  { flag:"🇵🇭", country:"Philippines", options:["Philippines","Indonesia","Malaysia","Thailand"] },
-  { flag:"🇳🇬", country:"Nigeria", options:["Nigeria","Ghana","Kenya","Ethiopia"] },
-  { flag:"🇹🇷", country:"Turkey", options:["Turkey","Iran","Iraq","Syria"] },
-  { flag:"🇵🇱", country:"Poland", options:["Poland","Czech Republic","Hungary","Slovakia"] },
-  { flag:"🇸🇪", country:"Sweden", options:["Sweden","Norway","Denmark","Finland"] },
+  { flag:"https://flagcdn.com/w320/jp.png", country:"Japan", options:["Japan","China","South Korea","Vietnam"] },
+  { flag:"https://flagcdn.com/w320/br.png", country:"Brazil", options:["Brazil","Argentina","Colombia","Chile"] },
+  { flag:"https://flagcdn.com/w320/fr.png", country:"France", options:["France","Belgium","Italy","Spain"] },
+  { flag:"https://flagcdn.com/w320/de.png", country:"Germany", options:["Germany","Austria","Switzerland","Netherlands"] },
+  { flag:"https://flagcdn.com/w320/au.png", country:"Australia", options:["Australia","New Zealand","Canada","UK"] },
+  { flag:"https://flagcdn.com/w320/in.png", country:"India", options:["India","Pakistan","Bangladesh","Sri Lanka"] },
+  { flag:"https://flagcdn.com/w320/mx.png", country:"Mexico", options:["Mexico","Colombia","Peru","Venezuela"] },
+  { flag:"https://flagcdn.com/w320/za.png", country:"South Africa", options:["South Africa","Nigeria","Kenya","Ghana"] },
+  { flag:"https://flagcdn.com/w320/sa.png", country:"Saudi Arabia", options:["Saudi Arabia","UAE","Qatar","Kuwait"] },
+  { flag:"https://flagcdn.com/w320/kr.png", country:"South Korea", options:["South Korea","Japan","China","North Korea"] },
+  { flag:"https://flagcdn.com/w320/it.png", country:"Italy", options:["Italy","France","Spain","Portugal"] },
+  { flag:"https://flagcdn.com/w320/ca.png", country:"Canada", options:["Canada","USA","Australia","UK"] },
+  { flag:"https://flagcdn.com/w320/ru.png", country:"Russia", options:["Russia","Ukraine","Belarus","Poland"] },
+  { flag:"https://flagcdn.com/w320/eg.png", country:"Egypt", options:["Egypt","Libya","Sudan","Morocco"] },
+  { flag:"https://flagcdn.com/w320/ar.png", country:"Argentina", options:["Argentina","Brazil","Chile","Uruguay"] },
+  { flag:"https://flagcdn.com/w320/ph.png", country:"Philippines", options:["Philippines","Indonesia","Malaysia","Thailand"] },
+  { flag:"https://flagcdn.com/w320/ng.png", country:"Nigeria", options:["Nigeria","Ghana","Kenya","Ethiopia"] },
+  { flag:"https://flagcdn.com/w320/tr.png", country:"Turkey", options:["Turkey","Iran","Iraq","Syria"] },
+  { flag:"https://flagcdn.com/w320/pl.png", country:"Poland", options:["Poland","Czech Republic","Hungary","Slovakia"] },
+  { flag:"https://flagcdn.com/w320/se.png", country:"Sweden", options:["Sweden","Norway","Denmark","Finland"] },
 ];
 
 const CONFIG: Record<Difficulty, { total: number; streakBonus: boolean; desc: string }> = {
@@ -84,7 +84,7 @@ function FlagQuizGame() {
         <Link href="/games" className="text-gray-400 hover:text-white transition text-sm">← Back to Games</Link>
         <span className="font-bold text-lg text-orange-400">🗺️ Flag Quiz</span>
         <div className="flex gap-2">
-          <HowToPlay title="Flag Quiz" icon="🗺️" steps={["🗺️ A country flag emoji is shown.","👆 Pick the correct country name from 4 options.","✅ Correct = +10 pts (or +20 pts on a 3+ streak!).","🔥 Keep a streak going for bonus points on Medium/Hard.","🏆 Complete all flags to see your final score!"]} />
+          <HowToPlay title="Flag Quiz" icon="🗺️" steps={["🗺️ A country flag image is shown.","👆 Pick the correct country name from 4 options.","✅ Correct = +10 pts (or +20 pts on a 3+ streak!).","🔥 Keep a streak going for bonus points on Medium/Hard.","🏆 Complete all flags to see your final score!"]} />
           <PauseButton onPause={setPaused} disabled={done} />
         </div>
       </nav>
@@ -102,7 +102,9 @@ function FlagQuizGame() {
       </div>
       {!done ? (
         <div className="flex flex-col items-center w-full max-w-sm">
-          <div className="text-[120px] leading-none mb-6 select-none">{current.flag}</div>
+          <div className="mb-6 select-none flex items-center justify-center">
+            <img src={current.flag} alt="Flag" className="w-48 h-32 object-cover rounded-xl shadow-lg border border-white/10" />
+          </div>
           <p className="text-white font-semibold mb-4">Which country does this flag belong to?</p>
           <div className="grid grid-cols-1 gap-3 w-full">
             {shuffle(current.options).map(opt => (

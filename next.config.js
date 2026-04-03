@@ -21,6 +21,7 @@ const nextConfig = {
       { hostname: "www.oliveoil.com" },
       { hostname: "wp.en.aleteia.org" },
       { hostname: "encrypted-tbn0.gstatic.com" },
+      { hostname: "flagcdn.com" },
     ],
   },
   // Compress responses
