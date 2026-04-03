@@ -17,8 +17,17 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    fetch("/api/notifications")
+      .then(r => r.json())
+      .then(d => setUnreadCount((d.notifications ?? []).length))
+      .catch(() => {});
+  }, [session]);
 
   const isAdmin = (session?.user as any)?.is_admin;
 
@@ -97,11 +106,18 @@ export default function Navbar() {
                   <Link href="/favorites" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                     <span>⭐</span> My Favorites
                   </Link>
+                  <Link href="/search-history" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <span>🔍</span> Search History
+                  </Link>
                   <Link href="/stats" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                     <span>📊</span> Game Statistics
                   </Link>
                   <Link href="/achievements" className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                     <span>🏆</span> Achievements
+                  </Link>
+                  <Link href="/notifications" onClick={() => setUnreadCount(0)} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
+                    <span>🔔</span> Notifications
+                    {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
                   </Link>
                   <div className="border-t border-white/8 mx-3" />
                   <button onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-b-xl transition">
@@ -172,11 +188,18 @@ export default function Navbar() {
               <Link href="/favorites" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>⭐</span> My Favorites
               </Link>
+              <Link href="/search-history" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
+                <span>🔍</span> Search History
+              </Link>
               <Link href="/stats" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>📊</span> Game Statistics
               </Link>
               <Link href="/achievements" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>🏆</span> Achievements
+              </Link>
+              <Link href="/notifications" onClick={() => { setMenuOpen(false); setUnreadCount(0); }} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
+                <span>🔔</span> Notifications
+                {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
               </Link>
               <button onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }); }} className="bg-gradient-to-r from-red-600 to-red-700 py-4 px-6 rounded-xl text-base font-bold transition text-left">Log Out</button>
             </>

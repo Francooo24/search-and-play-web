@@ -45,12 +45,15 @@ function lastSeenDot(d: string) {
   return                       <span className="w-1.5 h-1.5 rounded-full bg-gray-600 inline-block flex-shrink-0" title="Inactive" />;
 }
 
-function Avatar({ name, size = "md" }: { name: string; size?: "xs" | "sm" | "md" | "lg" | "xl" }) {
+function Avatar({ name, size = "md", avatarUrl }: { name: string; size?: "xs" | "sm" | "md" | "lg" | "xl"; avatarUrl?: string | null }) {
   const sz = { xs: "w-6 h-6 text-[10px]", sm: "w-8 h-8 text-xs", md: "w-10 h-10 text-sm", lg: "w-12 h-12 text-base", xl: "w-16 h-16 text-xl" }[size];
   const color = AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
   return (
-    <div className={`${sz} rounded-full bg-gradient-to-br ${color} flex items-center justify-center font-black text-white flex-shrink-0 ring-2 ring-white/10`}>
-      {name.charAt(0).toUpperCase()}
+    <div className={`${sz} rounded-full overflow-hidden bg-gradient-to-br ${color} flex items-center justify-center font-black text-white flex-shrink-0 ring-2 ring-white/10`}>
+      {avatarUrl
+        ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+        : name.charAt(0).toUpperCase()
+      }
     </div>
   );
 }
@@ -105,6 +108,7 @@ function LeaderboardTab() {
   const [myRank, setMyRank] = useState<{ rank: number; total: number; score: number; best: number; best_game: string | null; streak: number } | null>(null);
   const [search, setSearch]         = useState("");
   const [copied, setCopied]         = useState(false);
+  const [avatars, setAvatars]       = useState<Record<string, string>>({});
 
   const handleShare = () => {
     if (!myRank) return;
@@ -138,10 +142,24 @@ function LeaderboardTab() {
       const res  = await fetch(`/api/leaderboard?${p}`, { cache: "no-store" });
       const data = await res.json();
       if (data.error) { setError(data.error); return; }
-      setPlayers(prev => off === 0 ? (data.players ?? []) : [...prev, ...(data.players ?? [])]);
+      const newPlayers = data.players ?? [];
+      setPlayers(prev => off === 0 ? newPlayers : [...prev, ...newPlayers]);
       setGameTypes(data.game_types ?? []);
       setHasMore(data.has_more ?? false);
-      setOffset(off + (data.players?.length ?? 0));
+      setOffset(off + newPlayers.length);
+
+      // Batch fetch avatars for new players
+      const names = newPlayers.map((p: any) => p.player_name).filter(Boolean);
+      if (names.length > 0) {
+        fetch("/api/avatars", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ names }),
+        })
+          .then(r => r.json())
+          .then(d => setAvatars(prev => ({ ...prev, ...d.avatars })))
+          .catch(() => {});
+      }
     } catch { setError("Could not connect to server."); }
     finally { setLoading(false); setLoadingMore(false); }
   }, [period, gameFilter, refreshKey]);
@@ -294,7 +312,7 @@ function LeaderboardTab() {
                   return (
                     <div key={pi} className="flex-1 flex flex-col items-center gap-2 pb-0">
                       <div className={`relative ${pi === 1 ? "scale-110" : ""}`}>
-                        <Avatar name={p.player_name} size={pi === 1 ? "xl" : "lg"} />
+                        <Avatar name={p.player_name} size={pi === 1 ? "xl" : "lg"} avatarUrl={avatars[p.player_name]} />
                         <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br ${medal} flex items-center justify-center text-[9px] font-black text-white ring-2 ring-[#0f0f18]`}>
                           {idx + 1}
                         </div>
@@ -329,14 +347,15 @@ function LeaderboardTab() {
               {filtered.map((player, i) => {
                 const isMe = currentUserId && player.user_id && Number(currentUserId) === Number(player.user_id);
                 return (
-                  <div key={i} className={`flex items-center gap-4 px-5 py-3.5 hover:bg-white/3 transition ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
+                  <Link key={i} href={`/players/${encodeURIComponent(player.player_name)}`}
+                    className={`flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition cursor-pointer ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
                     <span className="text-gray-600 text-sm font-bold w-7 text-center flex-shrink-0">
                       {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
                     </span>
-                    <Avatar name={player.player_name} size="sm" />
+                    <Avatar name={player.player_name} size="sm" avatarUrl={avatars[player.player_name]} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-white font-semibold text-sm truncate">{player.player_name}</p>
+                        <span className="text-white hover:text-orange-400 font-semibold text-sm truncate transition">{player.player_name}</span>
                         {flag(player.country) && <span className="text-sm">{flag(player.country)}</span>}
                         {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
                         <AgeBadge age_group={player.age_group} />
@@ -353,7 +372,7 @@ function LeaderboardTab() {
                         <p className="text-gray-700 text-[10px]">{fmt(player.last_played)}</p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -506,14 +525,15 @@ function GroupRankList({ ag, label, icon, headerColor, borderColor }: {
             const rank = pos + 1;
             const isMe = currentUserId && Number(currentUserId) === row.id;
             return (
-              <div key={row.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-white/3 transition ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
+              <Link key={row.id} href={`/players/${encodeURIComponent(row.player_name)}`}
+                className={`flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition cursor-pointer ${isMe ? "bg-orange-500/5 border-l-2 border-l-orange-500" : ""}`}>
                 <div className="w-7 flex-shrink-0 flex justify-center">
                   {rank === 1 ? <span>🥇</span> : rank === 2 ? <span>🥈</span> : rank === 3 ? <span>🥉</span> : <span className="text-gray-600 text-xs font-bold">#{rank}</span>}
                 </div>
                 <Avatar name={row.player_name} size="sm" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <p className="text-white font-semibold text-sm truncate">{row.player_name}</p>
+                    <span className="text-white hover:text-orange-400 font-semibold text-sm truncate transition">{row.player_name}</span>
                     {flag(row.country) && <span className="text-sm">{flag(row.country)}</span>}
                     {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
                   </div>
@@ -531,7 +551,7 @@ function GroupRankList({ ag, label, icon, headerColor, borderColor }: {
                   <p className="text-white font-black text-sm">{row.total_points.toLocaleString()}</p>
                   <p className="text-gray-700 text-[10px]">pts</p>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

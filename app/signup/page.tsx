@@ -34,6 +34,9 @@ export default function SignupPage() {
   const [otpError, setOtpError]         = useState("");
   const [otpLoading, setOtpLoading]     = useState(false);
   const [otpSuccess, setOtpSuccess]     = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendLoading, setResendLoading]   = useState(false);
+  const [resendMsg, setResendMsg]           = useState("");
 
   const age      = form.birthdate.length === 10 ? getAge(form.birthdate) : null;
   const ageGroup = age !== null && age >= 6 ? getAgeGroup(age) : null;
@@ -78,6 +81,24 @@ export default function SignupPage() {
       return;
     }
     router.push("/");
+  };
+
+  const handleResend = async () => {
+    setResendLoading(true); setResendMsg(""); setOtpError("");
+    const res = await fetch("/api/resend-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: pendingEmail }),
+    });
+    const data = await res.json();
+    setResendLoading(false);
+    if (!res.ok) { setResendMsg(data.error || "Failed to resend."); return; }
+    setResendMsg("New code sent! Check your inbox.");
+    setOtp("");
+    setResendCooldown(60);
+    const interval = setInterval(() => {
+      setResendCooldown(c => { if (c <= 1) { clearInterval(interval); return 0; } return c - 1; });
+    }, 1000);
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -136,6 +157,18 @@ export default function SignupPage() {
                   className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 rounded-xl font-semibold shadow-xl hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed">
                   {otpLoading ? "Verifying..." : "Verify & Create Account"}
                 </button>
+
+                {/* Resend */}
+                <div className="text-center">
+                  {resendMsg && (
+                    <p className={`text-xs mb-2 ${resendMsg.includes("sent") ? "text-green-400" : "text-red-400"}`}>{resendMsg}</p>
+                  )}
+                  <button type="button" onClick={handleResend}
+                    disabled={resendCooldown > 0 || resendLoading}
+                    className="text-sm text-orange-400 hover:text-orange-300 transition disabled:opacity-40 disabled:cursor-not-allowed font-semibold">
+                    {resendLoading ? "Sending..." : resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend code"}
+                  </button>
+                </div>
               </form>
 
               <p className="mt-6 text-sm text-gray-500">

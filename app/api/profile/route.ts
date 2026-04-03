@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import pool from "@/lib/db";
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const userId = (session.user as any).id;
+  const { avatar } = await req.json();
+
+  if (!avatar) return NextResponse.json({ error: "No image provided" }, { status: 400 });
+
+  // Validate it's a base64 image and limit to ~2MB
+  if (!avatar.startsWith("data:image/")) return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
+  if (avatar.length > 2_800_000) return NextResponse.json({ error: "Image too large. Max 2MB." }, { status: 400 });
+
+  // Add avatar_url column if it doesn't exist yet
+  await (pool as any).query(
+    "ALTER TABLE players ADD COLUMN IF NOT EXISTS avatar_url MEDIUMTEXT NULL"
+  ).catch(() => {});
+
+  await (pool as any).query(
+    "UPDATE players SET avatar_url = ? WHERE id = ?",
+    [avatar, userId]
+  );
+
+  return NextResponse.json({ ok: true, avatar });
+}
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ avatar: null });
+
+  const userId = (session.user as any).id;
+
+  const [rows] = await (pool as any).query(
+    "SELECT avatar_url FROM players WHERE id = ? LIMIT 1",
+    [userId]
+  ).catch(() => [[{ avatar_url: null }]]);
+
+  return NextResponse.json({ avatar: (rows as any[])[0]?.avatar_url ?? null });
+}

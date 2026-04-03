@@ -4,6 +4,55 @@ import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
+import nodemailer from "nodemailer";
+
+async function notifyBeatenPlayers(game: string, newScore: number, beaterName: string) {
+  try {
+    // Find all players whose best score on this game was just beaten, excluding the scorer
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT p.email, p.player_name, MAX(l.score) as best
+       FROM leaderboard l
+       JOIN players p ON l.user_id = p.id
+       WHERE l.game = ? AND p.player_name != ? AND p.email IS NOT NULL
+       GROUP BY p.id, p.email, p.player_name
+       HAVING best < ?`,
+      [game, beaterName, newScore]
+    );
+    if (!(rows as RowDataPacket[]).length) return;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+    });
+
+    for (const row of rows as RowDataPacket[]) {
+      await transporter.sendMail({
+        from: `"Search & Play" <${process.env.EMAIL_USER}>`,
+        to: row.email,
+        subject: `🏆 Your ${game} score was beaten!`,
+        html: `
+          <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;background:#0d0d14;color:#e2e8f0;border-radius:16px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#f97316,#fb923c);padding:24px;text-align:center;">
+              <h1 style="margin:0;color:#fff;font-size:24px;">Search &amp; Play</h1>
+            </div>
+            <div style="padding:32px;text-align:center;">
+              <p style="font-size:32px;margin:0 0 16px;">🏆</p>
+              <p style="font-size:16px;margin-bottom:8px;">Hi <strong>${row.player_name}</strong>,</p>
+              <p style="color:#94a3b8;margin-bottom:24px;">
+                <strong style="color:#f97316;">${beaterName}</strong> just beat your best score in <strong>${game}</strong>!
+              </p>
+              <div style="background:#1e1e2e;border:2px solid #f97316;border-radius:12px;padding:20px;margin-bottom:24px;">
+                <p style="margin:0 0 8px;color:#64748b;font-size:13px;">Their score</p>
+                <p style="margin:0;font-size:36px;font-weight:900;color:#f97316;">${newScore.toLocaleString()}</p>
+                <p style="margin:8px 0 0;color:#64748b;font-size:13px;">Your best: ${row.best.toLocaleString()}</p>
+              </div>
+              <a href="${process.env.NEXTAUTH_URL}/games" style="display:inline-block;background:linear-gradient(90deg,#f97316,#fb923c);color:#fff;font-weight:700;padding:12px 32px;border-radius:12px;text-decoration:none;">Take it back! 🎮</a>
+            </div>
+          </div>`,
+      }).catch(() => {});
+    }
+  } catch { /* silent — don't break score saving */ }
+}
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -38,6 +87,9 @@ export async function POST(req: NextRequest) {
     "INSERT INTO leaderboard (user_id, player_name, game, score) VALUES (?, ?, ?, ?)",
     [userId, playerName, gameLabel, score]
   ).catch(() => {});
+
+  // Notify players whose score was beaten (fire and forget)
+  if (score > 0) notifyBeatenPlayers(gameLabel, score, playerName);
 
   // Log to activity
   const result = won === true ? "Won" : won === false ? "Lost" : "Played";

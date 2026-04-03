@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import pool from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import Link from "next/link";
+import AvatarUpload from "@/components/AvatarUpload";
 
 const GAME_EMOJI: Record<string, string> = {
   // Kids
@@ -114,12 +115,7 @@ export default async function ProfilePage() {
 
         <div className="relative px-6 md:px-10 pt-10 pb-8 flex flex-col sm:flex-row items-start sm:items-end gap-6">
           {/* Avatar */}
-          <div className="relative shrink-0">
-            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-4xl md:text-5xl font-black text-white shadow-2xl shadow-orange-500/30 border-4 border-white/10">
-              {firstInitial}{lastName ? lastName[0].toUpperCase() : ""}
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-950" />
-          </div>
+          <AvatarUpload initials={`${firstInitial}${lastName ? lastName[0].toUpperCase() : ""}`} />
 
           {/* Info */}
           <div className="flex-1 min-w-0">

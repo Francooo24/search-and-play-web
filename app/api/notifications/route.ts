@@ -1,0 +1,17 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import pool from "@/lib/db";
+
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ notifications: [] });
+
+  const playerName = (session.user as any).name ?? "";
+  const [rows] = await (pool as any).query(
+    "SELECT id, activity, created_at FROM activity_logs WHERE player_name = ? ORDER BY created_at DESC LIMIT 20",
+    [playerName]
+  ).catch(() => [[]] as any);
+
+  return NextResponse.json({ notifications: rows });
+}

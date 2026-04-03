@@ -142,6 +142,7 @@ export default function HomeClient() {
   const router = useRouter();
   const { data: session } = useSession();
   const playerName = (session?.user as any)?.name ?? (session?.user as any)?.player_name ?? null;
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [wordOfDay, setWordOfDay] = useState<any>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -153,6 +154,7 @@ export default function HomeClient() {
     : [];
 
   useEffect(() => {
+    setMounted(true);
     inputRef.current?.focus();
     fetch("/api/word-of-day").then(r => r.json()).then(data => { if (data) setWordOfDay(data); });
     const stored = localStorage.getItem("recent_searches");
@@ -185,19 +187,24 @@ export default function HomeClient() {
       <div className="w-full max-w-xl mb-6 md:mb-8">
         <form action="/search" method="GET" className="flex mb-4" onSubmit={e => { e.preventDefault(); handleSearch(query); }}>
           <div className="relative flex-grow">
-            <input
-              ref={inputRef}
-              name="word"
-              type="text"
-              value={query}
-              onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-              placeholder="Enter a word..."
-              className="w-full px-6 py-5 text-lg md:text-xl rounded-l-2xl focus:outline-none bg-white/5 border border-white/12 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/25 transition"
-              autoComplete="off"
-            />
-            {showSuggestions && suggestions.length > 0 && (
+            {mounted && (
+              <input
+                ref={inputRef}
+                name="word"
+                type="text"
+                value={query}
+                onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                placeholder="Enter a word..."
+                className="w-full px-6 py-5 text-lg md:text-xl rounded-l-2xl focus:outline-none bg-white/5 border border-white/12 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/25 transition"
+                autoComplete="off"
+              />
+            )}
+            {!mounted && (
+              <div className="w-full px-6 py-5 text-lg md:text-xl rounded-l-2xl bg-white/5 border border-white/12" />
+            )}
+            {mounted && showSuggestions && suggestions.length > 0 && (
               <ul className="absolute left-0 right-0 top-full mt-1 bg-[#1a1a2e] border border-white/10 rounded-xl overflow-hidden z-50 shadow-xl">
                 {suggestions.map(s => (
                   <li key={s}>
