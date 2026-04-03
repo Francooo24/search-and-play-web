@@ -105,10 +105,21 @@ function LeaderboardTab() {
   const [hasMore, setHasMore]       = useState(false);
   const [offset, setOffset]         = useState(0);
   const [error, setError]           = useState("");
-  const [myRank, setMyRank] = useState<{ rank: number; total: number; score: number; best: number; best_game: string | null; streak: number } | null>(null);
+  const [myRank, setMyRank] = useState<{ rank: number; total: number; score: number; best: number; best_game: string | null; streak: number; tier: { name: string; icon: string }; nextTier: { name: string; min: number } | null; tierProgress: number } | null>(null);
   const [search, setSearch]         = useState("");
   const [copied, setCopied]         = useState(false);
   const [avatars, setAvatars]       = useState<Record<string, string>>({});
+  const [displayRank, setDisplayRank] = useState(0);
+  const [displayScore, setDisplayScore] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiItems = Array.from({ length: 40 }, (_, i) => ({
+    left: ((i * 37 + 13) % 100),
+    top: ((i * 17) % 20),
+    delay: ((i * 0.13) % 2).toFixed(2),
+    duration: (1.5 + (i * 0.07) % 2).toFixed(2),
+    size: 12 + (i * 7) % 16,
+    emoji: ["🎉","🏆","⭐","🥇","✨","🎊"][i % 6],
+  }));
 
   const handleShare = () => {
     if (!myRank) return;
@@ -127,7 +138,28 @@ function LeaderboardTab() {
   useEffect(() => {
     fetch("/api/leaderboard/my-rank", { cache: "no-store" })
       .then(r => r.json())
-      .then(d => { if (d.rank) setMyRank(d); })
+      .then(d => {
+        if (d.rank) {
+          setMyRank(d);
+          // Animate rank count up
+          let start = 0;
+          const rankEnd = d.rank;
+          const scoreEnd = d.score;
+          const duration = 800;
+          const startTime = performance.now();
+          const animate = (now: number) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            setDisplayRank(Math.round(ease * rankEnd));
+            setDisplayScore(Math.round(ease * scoreEnd));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+          // Confetti if rank 1
+          if (d.rank === 1) setShowConfetti(true);
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -176,6 +208,23 @@ function LeaderboardTab() {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-5">
       {myRank && (
+        <>
+        {/* Confetti for #1 */}
+        {showConfetti && (
+          <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+            {confettiItems.map((c, i) => (
+              <div key={i} className="absolute animate-bounce" style={{
+                left: `${c.left}%`,
+                top: `-${c.top}px`,
+                animationDelay: `${c.delay}s`,
+                animationDuration: `${c.duration}s`,
+                fontSize: `${c.size}px`,
+              }}>
+                {c.emoji}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Rank card */}
           <div className="relative overflow-hidden rounded-2xl border border-orange-500/30 bg-[#0f0f18] px-6 py-5">
@@ -185,23 +234,47 @@ function LeaderboardTab() {
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex flex-col items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
                   <span className="text-white text-[10px] font-bold uppercase tracking-wider opacity-80">RANK</span>
-                  <span className="text-white text-2xl font-black leading-none">#{myRank.rank}</span>
+                  <span className="text-white text-2xl font-black leading-none">#{displayRank}</span>
                 </div>
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-orange-400 mb-0.5">Your Position</p>
-                  <p className="text-white font-black text-lg leading-tight">You are ranked #{myRank.rank}</p>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-orange-400">Your Position</p>
+                    {myRank.rank === 1 && <span className="text-[10px] bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 px-1.5 py-0.5 rounded-full font-black">🥇 #1</span>}
+                  </div>
+                  <p className="text-white font-black text-lg leading-tight">Ranked #{displayRank}</p>
                   <p className="text-gray-500 text-xs mt-0.5">out of <span className="text-gray-300 font-semibold">{myRank.total}</span> players</p>
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span className="text-sm">{myRank.tier?.icon}</span>
+                    <span className="text-xs font-black text-orange-300">{myRank.tier?.name}</span>
+                  </div>
                 </div>
               </div>
               <div className="text-right flex-shrink-0">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-0.5">Total Score</p>
-                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{myRank.score.toLocaleString()}</p>
+                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{displayScore.toLocaleString()}</p>
                 <p className="text-gray-600 text-xs">points</p>
-                <button onClick={handleShare}
-                  className="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-400 hover:text-orange-300 transition ml-auto">
+                <button onClick={handleShare} className="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-400 hover:text-orange-300 transition ml-auto">
                   {copied ? "✓ Copied!" : "↗ Share"}
                 </button>
               </div>
+            </div>
+            {/* Progress bar to next tier */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-gray-600">{myRank.tier?.name}</span>
+                <span className="text-[10px] text-gray-600">{myRank.nextTier ? myRank.nextTier.name : "MAX ⭐"}</span>
+              </div>
+              <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000"
+                  style={{ width: `${myRank.tierProgress}%` }} />
+              </div>
+              {myRank.nextTier && (
+                <p className="text-[10px] text-gray-600 mt-1">
+                  {myRank.nextTier.min - myRank.score > 0
+                    ? `${(myRank.nextTier.min - myRank.score).toLocaleString()} pts to ${myRank.nextTier.name}`
+                    : "Ready to rank up! 🚀"}
+                </p>
+              )}
             </div>
           </div>
           {/* Personal best card */}
@@ -249,6 +322,7 @@ function LeaderboardTab() {
             </div>
           </div>
         </div>
+        </>
       )}
       <div className="flex bg-[#0f0f18] border border-white/8 rounded-2xl p-1 gap-1">
         {PERIODS.map(p => (

@@ -58,7 +58,22 @@ export async function GET() {
     );
     const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
 
-    return NextResponse.json({ rank, total: totalPlayers, score: userTotal, best: userBest, best_game: bestGame, streak });
+    // Rank tier
+    const TIERS = [
+      { name: "Novice",      min: 0,     max: 99,    icon: "🌱" },
+      { name: "Explorer",    min: 100,   max: 499,   icon: "🗺️" },
+      { name: "Adventurer",  min: 500,   max: 1499,  icon: "⚔️" },
+      { name: "Champion",    min: 1500,  max: 4999,  icon: "🏆" },
+      { name: "Master",      min: 5000,  max: 14999, icon: "👑" },
+      { name: "Grandmaster", min: 15000, max: 49999, icon: "💎" },
+      { name: "Legend",      min: 50000, max: 0,     icon: "🌟" },
+    ];
+    const tier     = [...TIERS].reverse().find(t => userTotal >= t.min) ?? TIERS[0];
+    const nextTier = TIERS[TIERS.indexOf(tier) + 1] ?? null;
+    const tierProgress = tier.max === 0 ? 100
+      : Math.min(100, Math.round(((userTotal - tier.min) / (tier.max - tier.min + 1)) * 100));
+
+    return NextResponse.json({ rank, total: totalPlayers, score: userTotal, best: userBest, best_game: bestGame, streak, tier, nextTier, tierProgress });
   } catch {
     return NextResponse.json({ rank: null });
   }
