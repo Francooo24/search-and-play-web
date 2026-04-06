@@ -112,7 +112,7 @@ export default function SignupPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: pendingEmail, otp }),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({ error: "Server error. Please try again." }));
     setOtpLoading(false);
     if (!res.ok) { setOtpError(data.error || "Invalid OTP."); return; }
     setOtpSuccess(true);
