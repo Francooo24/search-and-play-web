@@ -168,7 +168,7 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center text-center px-4 sm:px-6 md:px-8 relative z-10 pt-12">
+    <div className="flex-grow flex flex-col items-center text-center px-4 sm:px-6 md:px-8 relative z-10 pt-12" suppressHydrationWarning>
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
         Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">Greek</span> word
       </h1>

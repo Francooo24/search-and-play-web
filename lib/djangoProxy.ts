@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 
 const DJANGO_URL = process.env.DJANGO_URL ?? "https://search-and-play-backend.onrender.com";
-const IS_DEV = process.env.NODE_ENV !== "production";
-const ALLOWED_HOSTS = ["https://search-and-play-backend.onrender.com", "http://localhost:3000", "127.0.0.1"];
+const ALLOWED_HOSTS = ["search-and-play-backend.onrender.com", "search-and-play-web.vercel.app"];
 
 function isTrustedUrl(urlStr: string): boolean {
   try {
     const { hostname, protocol } = new URL(urlStr);
-    const isLocalhost = ALLOWED_HOSTS.some(h => hostname === h || hostname.endsWith("." + h));
-    // In production, only allow HTTPS. In development, allow HTTP for localhost only.
-    if (IS_DEV && isLocalhost) return protocol === "http:" || protocol === "https:";
-    return protocol === "https:";
+    const isTrusted = ALLOWED_HOSTS.some(h => hostname === h || hostname.endsWith("." + h));
+    return isTrusted && protocol === "https:";
   } catch {
     return false;
   }
