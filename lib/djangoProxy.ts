@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
 
 const DJANGO_URL = process.env.DJANGO_URL ?? "https://search-and-play-backend.onrender.com";
-const ALLOWED_HOSTS = [
-  "search-and-play-backend.onrender.com",
-  "search-and-play-web.vercel.app",
-  process.env.VERCEL_URL,
-  process.env.NEXT_PUBLIC_VERCEL_URL,
-].filter((h): h is string => Boolean(h));
 
 function isTrustedUrl(urlStr: string): boolean {
   try {
-    const { hostname, protocol } = new URL(urlStr);
-    const isTrusted = ALLOWED_HOSTS.some(h => hostname === h || hostname.endsWith("." + h));
-    return isTrusted && protocol === "https:";
+    const { protocol } = new URL(urlStr);
+    return protocol === "https:";
   } catch {
     return false;
   }
