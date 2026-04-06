@@ -62,7 +62,8 @@ function Spinner() {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-orange-500 animate-spin" />
-      <p className="text-gray-600 text-xs uppercase tracking-widest">Loading</p>
+      <p className="text-gray-500 text-xs">Loading leaderboard...</p>
+      <p className="text-gray-700 text-[10px]">First load may take up to 30s while the server wakes up</p>
     </div>
   );
 }
@@ -165,7 +166,7 @@ function LeaderboardTab() {
 
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchData = useCallback(async (off = 0) => {
+  const fetchData = useCallback(async (off = 0, attempt = 0) => {
     off === 0 ? setLoading(true) : setLoadingMore(true);
     setError("");
     try {
@@ -173,7 +174,15 @@ function LeaderboardTab() {
       if (gameFilter) p.append("game", gameFilter);
       const res  = await fetch(`/api/leaderboard?${p}`, { cache: "no-store" });
       const data = await res.json();
-      if (data.error) { setError(data.error); return; }
+      if (data.error) {
+        // Auto-retry up to 3 times with 5s delay (Render cold start)
+        if (attempt < 3) {
+          setTimeout(() => fetchData(off, attempt + 1), 5000);
+          return;
+        }
+        setError(data.error);
+        return;
+      }
       const newPlayers = data.players ?? [];
       setPlayers(prev => off === 0 ? newPlayers : [...prev, ...newPlayers]);
       setGameTypes(data.game_types ?? []);
@@ -380,10 +389,10 @@ function LeaderboardTab() {
         <div className="bg-orange-500/8 border border-orange-500/20 rounded-2xl p-6 text-center">
           <p className="text-4xl mb-3">⏳</p>
           <p className="text-orange-400 text-sm font-semibold mb-2">Backend is waking up...</p>
-          <p className="text-gray-500 text-xs mb-4">The server was sleeping. Please wait a moment and try again.</p>
-          <button onClick={() => { setError(""); fetchData(0); }}
+          <p className="text-gray-500 text-xs mb-4">Retrying automatically. This takes up to 30 seconds on first load.</p>
+          <button onClick={() => { setError(""); fetchData(0, 0); }}
             className="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold rounded-xl transition">
-            Retry
+            Retry Now
           </button>
         </div>
       ) : players.length === 0 ? <Empty /> : (() => {
