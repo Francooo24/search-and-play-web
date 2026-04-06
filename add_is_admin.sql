@@ -1,0 +1,2 @@
+-- Run this once in your PostgreSQL database on Render
+ALTER TABLE players ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;

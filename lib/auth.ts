@@ -71,43 +71,61 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const ip = (req as any)?.headers?.["x-forwarded-for"] ?? "unknown";
-        if (rateLimit(`login:${ip}`, 10, 600_000))
-          throw new Error("Too many login attempts. Please wait 10 minutes.");
-        const email = credentials.email.trim().toLowerCase().slice(0, 254);
-        const password = credentials.password.slice(0, 128);
+        try {
+          const ip = (req as any)?.headers?.["x-forwarded-for"] ?? "unknown";
+          if (rateLimit(`login:${ip}`, 10, 600_000))
+            throw new Error("Too many login attempts. Please wait 10 minutes.");
+          const email = credentials.email.trim().toLowerCase().slice(0, 254);
+          const password = credentials.password.slice(0, 128);
 
-        const { rows } = await pool.query(
-          "SELECT * FROM players WHERE email = $1 LIMIT 1",
-          [email]
-        );
+          const { rows } = await pool.query(
+            "SELECT id, player_name, email, password, status, birthdate, show_kids, show_teen, show_adult, country FROM players WHERE email = $1 LIMIT 1",
+            [email]
+          );
 
-        const player = rows[0];
-        if (!player) return null;
-        if (player.status === "banned") throw new Error("Your account has been banned.");
+          const player = rows[0];
+          if (!player) return null;
+          if (player.status === "banned") throw new Error("Your account has been banned.");
 
-        const valid = await bcrypt.compare(password, player.password);
-        if (!valid) return null;
+          const valid = await bcrypt.compare(password, player.password);
+          if (!valid) return null;
 
-        // Log login activity (sanitize player_name to prevent log injection)
-        const safeName = player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100);
-        await pool.query(
-          "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
-          [safeName, "Logged in"]
-        ).catch(() => {}); // never block login if logging fails
+          // Check if is_admin column exists
+          let is_admin = false;
+          try {
+            const { rows: adminRows } = await pool.query(
+              "SELECT is_admin FROM players WHERE id = $1 LIMIT 1",
+              [player.id]
+            );
+            is_admin = adminRows[0]?.is_admin === true || adminRows[0]?.is_admin === 1;
+          } catch {
+            is_admin = false;
+          }
 
-        const age = parseAge(player.birthdate);
+          // Log login activity
+          const safeName = player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100);
+          await pool.query(
+            "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
+            [safeName, "Logged in"]
+          ).catch(() => {});
 
-        return {
-          id:          String(player.id),
-          name:        player.player_name,
-          email:       player.email,
-          is_admin:    player.is_admin === true || player.is_admin === 1,
-          age:         age,
-          show_kids:   player.show_kids  === 1 || player.show_kids  === true,
-          show_teen:   player.show_teen  === 1 || player.show_teen  === true,
-          show_adult:  player.show_adult === 1 || player.show_adult === true,
-        };
+          const age = parseAge(player.birthdate);
+
+          return {
+            id:          String(player.id),
+            name:        player.player_name,
+            email:       player.email,
+            is_admin,
+            age,
+            show_kids:   player.show_kids  === 1 || player.show_kids  === true,
+            show_teen:   player.show_teen  === 1 || player.show_teen  === true,
+            show_adult:  player.show_adult === 1 || player.show_adult === true,
+          };
+        } catch (err: any) {
+          // Re-throw user-facing errors, swallow internal ones
+          if (err.message?.includes("Too many") || err.message?.includes("banned")) throw err;
+          return null;
+        }
       },
     }),
   ],
