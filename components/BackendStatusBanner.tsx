@@ -6,42 +6,49 @@ export default function BackendStatusBanner() {
   const { data: session } = useSession();
   const [offline, setOffline] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+
+  async function check() {
+    try {
+      const res = await fetch("/api/backend-status");
+      const data = await res.json();
+      setOffline(!data.online);
+    } catch {
+      setOffline(true);
+    }
+  }
 
   useEffect(() => {
     if (!session?.user) return;
-
-    async function check() {
-      try {
-        const res = await fetch("/api/backend-status");
-        const data = await res.json();
-        setOffline(!data.online);
-      } catch {
-        setOffline(true);
-      }
-    }
-
     check();
-    // Re-check every 30 seconds
-    const interval = setInterval(check, 30000);
+    const interval = setInterval(check, 60000);
     return () => clearInterval(interval);
   }, [session]);
+
+  const handleRetry = async () => {
+    setRetrying(true);
+    await check();
+    setRetrying(false);
+  };
 
   if (!offline || dismissed || !session?.user) return null;
 
   return (
-    <div className="w-full bg-red-500/15 border-b border-red-500/30 px-4 py-2.5 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2 text-sm text-red-300">
-        <span className="text-base">⚠️</span>
-        <span>
-          <b>Backend offline</b> — Scores won&apos;t be saved. Start Django:{" "}
-          <code className="bg-red-500/20 px-1.5 py-0.5 rounded text-xs font-mono">
-            cd backend &amp;&amp; venv\Scripts\activate &amp;&amp; python manage.py runserver 8000
-          </code>
-        </span>
+    <div className="w-full bg-orange-500/10 border-b border-orange-500/20 px-4 py-2.5 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2 text-sm text-orange-300">
+        <span className="text-base">⏳</span>
+        <span>Game server is starting up — scores may not save for a moment.</span>
+        <button
+          onClick={handleRetry}
+          disabled={retrying}
+          className="text-xs underline hover:text-orange-200 transition disabled:opacity-50"
+        >
+          {retrying ? "Checking..." : "Retry"}
+        </button>
       </div>
       <button
         onClick={() => setDismissed(true)}
-        className="text-red-400 hover:text-red-200 transition text-lg flex-shrink-0"
+        className="text-orange-400 hover:text-orange-200 transition text-lg flex-shrink-0"
         aria-label="Dismiss"
       >
         ✕

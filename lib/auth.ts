@@ -92,9 +92,9 @@ export const authOptions: NextAuthOptions = {
         // Log login activity (sanitize player_name to prevent log injection)
         const safeName = player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100);
         await pool.query(
-          "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
+          "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
           [safeName, "Logged in"]
-        );
+        ).catch(() => {}); // never block login if logging fails
 
         const age = parseAge(player.birthdate);
 
