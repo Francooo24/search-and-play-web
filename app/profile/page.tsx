@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 import Link from "next/link";
 import AvatarUpload from "@/components/AvatarUpload";
 
@@ -58,29 +57,17 @@ export default async function ProfilePage() {
   const ageLabel   = ageGroup === "kids" ? "🧒 Kids" : ageGroup === "teen" ? "🧑 Teen" : ageGroup === "adult" ? "🔞 Adult" : null;
   const ageBadge   = ageGroup === "kids" ? "bg-blue-500/15 border-blue-500/30 text-blue-300" : ageGroup === "teen" ? "bg-green-500/15 border-green-500/30 text-green-300" : "bg-orange-500/15 border-orange-500/30 text-orange-300";
 
-  const [[overallRows], [statsRows], [recentRows], [achRows]] = await Promise.all([
-    pool.query<RowDataPacket[]>(
-      "SELECT COUNT(*) as total_games, MAX(score) as highest_score, SUM(score) as total_points FROM leaderboard WHERE user_id = ?",
-      [userId]
-    ),
-    pool.query<RowDataPacket[]>(
-      "SELECT game, COUNT(*) as games_played, MAX(score) as best_score, SUM(score) as total_score FROM leaderboard WHERE user_id = ? GROUP BY game ORDER BY total_score DESC",
-      [userId]
-    ),
-    pool.query<RowDataPacket[]>(
-      "SELECT game, score, created_at FROM leaderboard WHERE user_id = ? ORDER BY created_at DESC LIMIT 10",
-      [userId]
-    ),
-    pool.query<RowDataPacket[]>(
-      "SELECT a.icon, a.name, a.description, ua.earned_at FROM achievements a JOIN user_achievements ua ON a.id = ua.achievement_id WHERE ua.user_id = ? ORDER BY ua.earned_at DESC LIMIT 6",
-      [userId]
-    ).catch(() => [[]]),
+  const [overallRes, statsRes, recentRes, achRes] = await Promise.all([
+    pool.query("SELECT COUNT(*) as total_games, MAX(score) as highest_score, SUM(score) as total_points FROM leaderboard WHERE user_id = $1", [userId]),
+    pool.query("SELECT game, COUNT(*) as games_played, MAX(score) as best_score, SUM(score) as total_score FROM leaderboard WHERE user_id = $1 GROUP BY game ORDER BY total_score DESC", [userId]),
+    pool.query("SELECT game, score, created_at FROM leaderboard WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10", [userId]),
+    pool.query("SELECT a.icon, a.name, a.description, ua.earned_at FROM achievements a JOIN user_achievements ua ON a.id = ua.achievement_id WHERE ua.user_id = $1 ORDER BY ua.earned_at DESC LIMIT 6", [userId]).catch(() => ({ rows: [] })),
   ]);
 
-  const overall      = overallRows[0] ?? {};
-  const stats        = statsRows as RowDataPacket[];
-  const recent       = recentRows as RowDataPacket[];
-  const achievements = achRows as RowDataPacket[];
+  const overall      = overallRes.rows[0] ?? {};
+  const stats        = statsRes.rows;
+  const recent       = recentRes.rows;
+  const achievements = achRes.rows;
 
   const nameParts = playerName.trim().split(/\s+/);
   const firstInitial = (nameParts[0]?.[0] ?? "").toUpperCase();

@@ -7,7 +7,6 @@ import LogSearch from "@/components/LogSearch";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 import SaveWordButton from "@/components/SaveWordButton";
 
 export const dynamic = "force-dynamic";
@@ -137,11 +136,11 @@ export default async function SearchPage({
   let isSaved = false;
   if (session) {
     const userId = (session.user as any).id;
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT id FROM favorite_words WHERE user_id = ? AND word = ? LIMIT 1",
+    const { rows } = await pool.query(
+      "SELECT id FROM favorite_words WHERE user_id = $1 AND word = $2 LIMIT 1",
       [userId, word]
     );
-    isSaved = (rows as RowDataPacket[]).length > 0;
+    isSaved = rows.length > 0;
   }
 
   const greekMatches: GreekWord[] = searchGreekWords(word);

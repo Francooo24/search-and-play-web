@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 import Link from "next/link";
 import FavoritesClient from "./FavoritesClient";
 
@@ -50,19 +49,13 @@ export default async function FavoritesPage() {
   const userId = (session.user as any).id;
   const playerName = (session.user as any).name ?? "";
 
-  const [[wordRows], [gameRows]] = await Promise.all([
-    pool.query<RowDataPacket[]>(
-      "SELECT word, created_at FROM favorite_words WHERE user_id = ? ORDER BY created_at DESC",
-      [userId]
-    ),
-    pool.query<RowDataPacket[]>(
-      "SELECT game, created_at FROM favorite_games WHERE user_id = ? ORDER BY created_at DESC",
-      [userId]
-    ),
+  const [wordRes, gameRes] = await Promise.all([
+    pool.query("SELECT word, created_at FROM favorite_words WHERE user_id = $1 ORDER BY created_at DESC", [userId]),
+    pool.query("SELECT game, created_at FROM favorite_games WHERE user_id = $1 ORDER BY created_at DESC", [userId]),
   ]);
 
-  const favWords = wordRows as RowDataPacket[];
-  const favGames = gameRows as RowDataPacket[];
+  const favWords = wordRes.rows;
+  const favGames = gameRes.rows;
 
   return (
     <div className="flex-grow w-full max-w-5xl mx-auto px-4 md:px-8 pb-16">
