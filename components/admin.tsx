@@ -268,7 +268,7 @@ export default function Admin() {
   const fmtDateTime = (d: string) =>
     new Date(d).toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
-  if (status === "loading" || (status === "authenticated" && !stats)) {
+  if (status === "loading" || (status === "authenticated" && !stats) || !stats) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="w-14 h-14 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin" />
