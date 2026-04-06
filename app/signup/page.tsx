@@ -69,7 +69,7 @@ export default function SignupPage() {
         show_adult:       form.show_adult,
       }),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({ error: "Server error. Please try again." }));
     setLoading(false);
     if (!res.ok) {
       setError(data.error || "An error occurred.");

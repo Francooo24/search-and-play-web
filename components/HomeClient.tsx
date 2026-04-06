@@ -148,12 +148,13 @@ function TopPlayers() {
 export default function HomeClient() {
   const router = useRouter();
   const { data: session } = useSession();
-  const playerName = (session?.user as any)?.name ?? (session?.user as any)?.player_name ?? null;
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [wordOfDay, setWordOfDay] = useState<any>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetch("/api/word-of-day").then(r => r.json()).then(data => { if (data) setWordOfDay(data); });
     const stored = localStorage.getItem("recent_searches");
     if (stored) setRecentSearches(JSON.parse(stored));
@@ -168,7 +169,7 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center text-center px-4 sm:px-6 md:px-8 relative z-10 pt-12" suppressHydrationWarning>
+    <div className="flex-grow flex flex-col items-center text-center px-4 relative z-10 pt-12" suppressHydrationWarning>
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
         Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">Greek</span> word
       </h1>
@@ -185,7 +186,7 @@ export default function HomeClient() {
             <a key={w} href={`/search?word=${w}`} className="text-sm bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 transition border border-white/10">{w}</a>
           ))}
         </div>
-        {recentSearches.length > 0 && (
+        {mounted && recentSearches.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap justify-center mt-4">
             <span className="text-xs text-gray-500 font-semibold uppercase tracking-widest">Recent:</span>
             {recentSearches.map(w => (

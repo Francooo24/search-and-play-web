@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["nodemailer", "pg", "pg-pool"],
-  },
+  serverExternalPackages: ["nodemailer", "pg", "pg-pool"],
   images: {
     remotePatterns: [
       { hostname: "hips.hearstapps.com" },
@@ -24,11 +22,8 @@ const nextConfig = {
       { hostname: "flagcdn.com" },
     ],
   },
-  // Compress responses
   compress: true,
-  // Disable x-powered-by header
   poweredByHeader: false,
-  // Production source maps (set to false to reduce bundle size)
   productionBrowserSourceMaps: false,
 };
 
