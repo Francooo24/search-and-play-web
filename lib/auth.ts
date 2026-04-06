@@ -5,30 +5,23 @@ import pool from "@/lib/db";
 import { rateLimit } from "@/lib/rateLimit";
 import jwt from "jsonwebtoken";
 
-function getAge(birthdate: string): number {
-  const birth = new Date(birthdate);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-  return age;
-}
-
 function parseAge(birthdate: any): number | null {
   if (!birthdate) return null;
   try {
-    // Handle Date object from MySQL or string
     const str = birthdate instanceof Date
       ? birthdate.toISOString().slice(0, 10)
       : String(birthdate).slice(0, 10);
-    const age = getAge(str);
+    const birth = new Date(str);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
     return isNaN(age) ? null : age;
   } catch {
     return null;
   }
 }
 
-// Verify a Django token was signed with the current secret
 function isValidDjangoToken(token: string): boolean {
   try {
     const secret = process.env.DJANGO_SECRET_KEY ?? process.env.SECRET_KEY ?? "django-insecure-change-me-in-production";
@@ -39,23 +32,18 @@ function isValidDjangoToken(token: string): boolean {
   }
 }
 
-// Mint a Django SimpleJWT-compatible token pair directly using the Django SECRET_KEY.
-// SimpleJWT uses HS256 with the Django SECRET_KEY as the signing secret.
 function mintDjangoTokens(playerId: number): { access: string; refresh: string; accessExpiry: number } {
   const secret = process.env.DJANGO_SECRET_KEY ?? process.env.SECRET_KEY ?? "django-insecure-change-me-in-production";
   const now = Math.floor(Date.now() / 1000);
-  const accessExp  = now + 25 * 60;       // 25 minutes — matches SIMPLE_JWT settings
-  const refreshExp = now + 24 * 60 * 60;  // 1 day
-
+  const accessExp  = now + 25 * 60;
+  const refreshExp = now + 24 * 60 * 60;
   const access = jwt.sign(
-    { token_type: "access",  exp: accessExp,  iat: now, jti: crypto.randomUUID(), user_id: playerId },
-    secret,
-    { algorithm: "HS256" }
+    { token_type: "access", exp: accessExp, iat: now, jti: crypto.randomUUID(), user_id: playerId },
+    secret, { algorithm: "HS256" }
   );
   const refresh = jwt.sign(
     { token_type: "refresh", exp: refreshExp, iat: now, jti: crypto.randomUUID(), user_id: playerId },
-    secret,
-    { algorithm: "HS256" }
+    secret, { algorithm: "HS256" }
   );
   return { access, refresh, accessExpiry: accessExp * 1000 };
 }
@@ -69,60 +57,79 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) {
+          console.log("[auth] missing credentials");
+          return null;
+        }
 
         try {
           const ip = (req as any)?.headers?.["x-forwarded-for"] ?? "unknown";
           if (rateLimit(`login:${ip}`, 10, 600_000))
             throw new Error("Too many login attempts. Please wait 10 minutes.");
-          const email = credentials.email.trim().toLowerCase().slice(0, 254);
+
+          const email    = credentials.email.trim().toLowerCase().slice(0, 254);
           const password = credentials.password.slice(0, 128);
 
+          // Test DB connection first
+          await pool.query("SELECT 1").catch((e: any) => {
+            console.log("[auth] DB connection failed:", e.message);
+            throw new Error("Database connection failed.");
+          });
+
           const { rows } = await pool.query(
-            "SELECT id, player_name, email, password, status, birthdate, show_kids, show_teen, show_adult, country FROM players WHERE email = $1 LIMIT 1",
+            `SELECT id, player_name, email, password, status, birthdate,
+                    show_kids, show_teen, show_adult, country
+             FROM players WHERE email = $1 LIMIT 1`,
             [email]
           );
 
+          console.log("[auth] query done, rows found:", rows.length);
+
           const player = rows[0];
-          if (!player) return null;
-          if (player.status === "banned") throw new Error("Your account has been banned.");
+          if (!player) {
+            console.log("[auth] no player found for:", email);
+            return null;
+          }
+
+          if (player.status === "banned")
+            throw new Error("Your account has been banned.");
 
           const valid = await bcrypt.compare(password, player.password);
+          console.log("[auth] password valid:", valid);
           if (!valid) return null;
 
-          // Check if is_admin column exists
+          // is_admin — try separately, default false if column missing
           let is_admin = false;
           try {
-            const { rows: adminRows } = await pool.query(
+            const { rows: ar } = await pool.query(
               "SELECT is_admin FROM players WHERE id = $1 LIMIT 1",
               [player.id]
             );
-            is_admin = adminRows[0]?.is_admin === true || adminRows[0]?.is_admin === 1;
+            is_admin = ar[0]?.is_admin === true || ar[0]?.is_admin === 1;
           } catch {
-            is_admin = false;
+            console.log("[auth] is_admin column missing, defaulting to false");
           }
 
-          // Log login activity
-          const safeName = player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100);
-          await pool.query(
+          // Log activity — never block login
+          pool.query(
             "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
-            [safeName, "Logged in"]
+            [player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100), "Logged in"]
           ).catch(() => {});
 
-          const age = parseAge(player.birthdate);
+          console.log("[auth] login success for:", email, "is_admin:", is_admin);
 
           return {
-            id:          String(player.id),
-            name:        player.player_name,
-            email:       player.email,
+            id:         String(player.id),
+            name:       player.player_name,
+            email:      player.email,
             is_admin,
-            age,
-            show_kids:   player.show_kids  === 1 || player.show_kids  === true,
-            show_teen:   player.show_teen  === 1 || player.show_teen  === true,
-            show_adult:  player.show_adult === 1 || player.show_adult === true,
+            age:        parseAge(player.birthdate),
+            show_kids:  player.show_kids  === true || player.show_kids  === 1,
+            show_teen:  player.show_teen  === true || player.show_teen  === 1,
+            show_adult: player.show_adult === true || player.show_adult === 1,
           };
         } catch (err: any) {
-          // Re-throw user-facing errors, swallow internal ones
+          console.log("[auth] authorize threw:", err.message);
           if (err.message?.includes("Too many") || err.message?.includes("banned")) throw err;
           return null;
         }
@@ -138,14 +145,11 @@ export const authOptions: NextAuthOptions = {
         token.show_kids  = (user as any).show_kids;
         token.show_teen  = (user as any).show_teen;
         token.show_adult = (user as any).show_adult;
-        // Mint Django JWT directly — no HTTP call needed
         const { access, refresh, accessExpiry } = mintDjangoTokens(Number(user.id));
         token.djangoAccess       = access;
         token.djangoRefresh      = refresh;
         token.djangoAccessExpiry = accessExpiry;
       }
-
-      // Refresh when access token is within 30s of expiry OR secret changed
       const expiry = token.djangoAccessExpiry as number | undefined;
       const needsRefresh = !token.djangoAccess
         || (expiry && Date.now() > expiry - 30_000)
@@ -156,7 +160,6 @@ export const authOptions: NextAuthOptions = {
         token.djangoRefresh      = refresh;
         token.djangoAccessExpiry = accessExpiry;
       }
-
       return token;
     },
     async session({ session, token }) {
@@ -172,11 +175,9 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  pages: {
-    signIn: "/login",
-  },
+  pages:   { signIn: "/login" },
   session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret:  process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
