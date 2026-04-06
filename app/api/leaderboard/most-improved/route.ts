@@ -43,6 +43,7 @@ export async function GET() {
       `));
     }
 
+    const today = new Date();
     const players = rows.map(r => {
       const diff = Number(r.this_week) - Number(r.last_week);
       let age_group = null;
