@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
 
     await pool.query(
       `INSERT INTO players
-        (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+        (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country, status, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active', NOW())`,
       [
         pending.player_name, pending.email, pending.password,
         pending.birthdate, pending.show_kids, pending.show_teen,
