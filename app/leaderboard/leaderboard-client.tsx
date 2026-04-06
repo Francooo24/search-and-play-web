@@ -377,8 +377,14 @@ function LeaderboardTab() {
       </div>
 
       {loading ? <Spinner /> : error ? (
-        <div className="bg-red-500/8 border border-red-500/20 rounded-2xl p-6 text-center">
-          <p className="text-red-400 text-sm font-semibold">⚠️ {error}</p>
+        <div className="bg-orange-500/8 border border-orange-500/20 rounded-2xl p-6 text-center">
+          <p className="text-4xl mb-3">⏳</p>
+          <p className="text-orange-400 text-sm font-semibold mb-2">Backend is waking up...</p>
+          <p className="text-gray-500 text-xs mb-4">The server was sleeping. Please wait a moment and try again.</p>
+          <button onClick={() => { setError(""); fetchData(0); }}
+            className="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold rounded-xl transition">
+            Retry
+          </button>
         </div>
       ) : players.length === 0 ? <Empty /> : (() => {
         const filtered = search
