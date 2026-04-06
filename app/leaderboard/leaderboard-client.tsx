@@ -828,6 +828,8 @@ export default function LeaderboardClient() {
         <div suppressHydrationWarning className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5">
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
           <span suppressHydrationWarning>Hall of Fame</span>
+
+
         </div>
         <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
           Leader<span className="text-orange-400">board</span>
