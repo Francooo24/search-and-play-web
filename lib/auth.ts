@@ -102,7 +102,7 @@ export const authOptions: NextAuthOptions = {
           id:          String(player.id),
           name:        player.player_name,
           email:       player.email,
-          is_admin:    player.is_admin === 1 || player.is_admin === true || Number(player.is_admin) === 1,
+          is_admin:    player.is_admin === true || player.is_admin === 1,
           age:         age,
           show_kids:   player.show_kids  === 1 || player.show_kids  === true,
           show_teen:   player.show_teen  === 1 || player.show_teen  === true,

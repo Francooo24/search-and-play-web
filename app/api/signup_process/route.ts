@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import { transporter, FROM, otpEmailHtml } from "@/lib/mailer";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
-
-function getTransporter() {
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-  });
-}
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") ?? "unknown";
@@ -22,9 +15,9 @@ export async function POST(req: NextRequest) {
   const password: string    = body.password ?? "";
   const confirm: string     = body.confirm_password ?? "";
   const birthdate: string   = (body.birthdate ?? "").trim();
-  const show_kids: number   = body.show_kids  ? 1 : 0;
-  const show_teen: number   = body.show_teen  ? 1 : 0;
-  const show_adult: number  = body.show_adult ? 1 : 0;
+  const show_kids: boolean  = !!body.show_kids;
+  const show_teen: boolean  = !!body.show_teen;
+  const show_adult: boolean = !!body.show_adult;
   const country: string     = (body.country ?? "").trim().toUpperCase().slice(0, 2);
 
   const errors: string[] = [];
@@ -72,25 +65,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "An error occurred. Please try again later." }, { status: 500 });
 
   try {
-    await getTransporter().sendMail({
-      from: `"Search & Play" <${process.env.EMAIL_USER}>`,
+    await transporter.sendMail({
+      from: FROM,
       to: email,
       subject: "Your Search & Play Verification Code",
-      html: `
-        <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;background:#0d0d14;color:#e2e8f0;border-radius:16px;overflow:hidden;">
-          <div style="background:linear-gradient(90deg,#f97316,#fb923c);padding:24px;text-align:center;">
-            <h1 style="margin:0;color:#fff;font-size:24px;">Search &amp; Play</h1>
-          </div>
-          <div style="padding:32px;text-align:center;">
-            <p style="font-size:16px;margin-bottom:8px;">Hi <strong>${player_name}</strong>,</p>
-            <p style="color:#94a3b8;margin-bottom:24px;">Enter this OTP code to verify your account:</p>
-            <div style="background:#1e1e2e;border:2px solid #f97316;border-radius:12px;padding:24px;display:inline-block;margin-bottom:24px;">
-              <span style="font-size:40px;font-weight:700;letter-spacing:12px;color:#f97316;">${otp}</span>
-            </div>
-            <p style="color:#64748b;font-size:13px;">This code expires in <strong>10 minutes</strong>.</p>
-            <p style="color:#64748b;font-size:13px;">If you did not sign up, ignore this email.</p>
-          </div>
-        </div>`,
+      html: otpEmailHtml(player_name, otp, "Enter this OTP code to verify your account:"),
     });
   } catch {
     await pool.query("DELETE FROM pending_verifications WHERE email = $1", [email]);
