@@ -3,7 +3,6 @@ import pool from "@/lib/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 function getTransporter() {
@@ -51,25 +50,25 @@ export async function POST(req: NextRequest) {
   }
   if (errors.length) return NextResponse.json({ error: errors.join(". ") }, { status: 400 });
 
-  const [existing] = await pool.query<RowDataPacket[]>(
-    "SELECT id FROM players WHERE email = ? LIMIT 1", [email]
+  const { rows: existing } = await pool.query(
+    "SELECT id FROM players WHERE email = $1 LIMIT 1", [email]
   );
-  if ((existing as RowDataPacket[]).length > 0)
+  if (existing.length > 0)
     return NextResponse.json({ error: "This email is already registered." }, { status: 409 });
 
-  await pool.query("DELETE FROM pending_verifications WHERE email = ?", [email]);
+  await pool.query("DELETE FROM pending_verifications WHERE email = $1", [email]);
 
   const otp        = String(Math.floor(100000 + Math.random() * 900000));
-  const otp_expires = new Date(Date.now() + 10 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ");
+  const otp_expires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
   const token      = crypto.randomBytes(32).toString("hex");
-  const expires    = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ");
+  const expires    = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const hashed     = await bcrypt.hash(password, 10);
 
-  const [result] = await pool.query<ResultSetHeader>(
-    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country, token, expires, otp, otp_expires) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  const { rows: inserted } = await pool.query(
+    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, country, token, expires, otp, otp_expires) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
     [player_name, email, hashed, birthdate, show_kids, show_teen, show_adult, country || null, token, expires, otp, otp_expires]
   );
-  if (!result.insertId)
+  if (!inserted[0]?.id)
     return NextResponse.json({ error: "An error occurred. Please try again later." }, { status: 500 });
 
   try {
@@ -94,7 +93,7 @@ export async function POST(req: NextRequest) {
         </div>`,
     });
   } catch {
-    await pool.query("DELETE FROM pending_verifications WHERE email = ?", [email]);
+    await pool.query("DELETE FROM pending_verifications WHERE email = $1", [email]);
     return NextResponse.json({ error: "Failed to send verification email. Please check your email address." }, { status: 500 });
   }
 

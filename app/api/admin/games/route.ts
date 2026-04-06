@@ -3,7 +3,6 @@ import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { isValidSlug } from "@/lib/validate";
-import { RowDataPacket } from "mysql2";
 
 // GET — return all game enabled/disabled states
 export async function GET(req: NextRequest) {
@@ -11,8 +10,8 @@ export async function GET(req: NextRequest) {
   if (!(session?.user as any)?.is_admin)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await pool.query(`CREATE TABLE IF NOT EXISTS game_settings (slug VARCHAR(64) PRIMARY KEY, enabled TINYINT(1) NOT NULL DEFAULT 1)`);
-  const [rows] = await pool.query<RowDataPacket[]>("SELECT slug, enabled FROM game_settings");
+  await pool.query(`CREATE TABLE IF NOT EXISTS game_settings (slug VARCHAR(64) PRIMARY KEY, enabled BOOLEAN NOT NULL DEFAULT TRUE)`);
+  const { rows } = await pool.query("SELECT slug, enabled FROM game_settings");
   const map: Record<string, boolean> = {};
   for (const r of rows) map[r.slug] = !!r.enabled;
   return NextResponse.json({ settings: map });
@@ -28,10 +27,10 @@ export async function POST(req: NextRequest) {
   if (!isValidSlug(slug))
     return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
 
-  await pool.query(`CREATE TABLE IF NOT EXISTS game_settings (slug VARCHAR(64) PRIMARY KEY, enabled TINYINT(1) NOT NULL DEFAULT 1)`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS game_settings (slug VARCHAR(64) PRIMARY KEY, enabled BOOLEAN NOT NULL DEFAULT TRUE)`);
   await pool.query(
-    "INSERT INTO game_settings (slug, enabled) VALUES (?, ?) ON DUPLICATE KEY UPDATE enabled = ?",
-    [slug, enabled ? 1 : 0, enabled ? 1 : 0]
+    "INSERT INTO game_settings (slug, enabled) VALUES ($1, $2) ON CONFLICT (slug) DO UPDATE SET enabled = $2",
+    [slug, enabled]
   );
   return NextResponse.json({ ok: true });
 }

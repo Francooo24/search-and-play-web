@@ -2,30 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import nodemailer from "nodemailer";
 
 async function notifyBeatenPlayers(game: string, newScore: number, beaterName: string) {
   try {
-    // Find all players whose best score on this game was just beaten, excluding the scorer
-    const [rows] = await pool.query<RowDataPacket[]>(
+    const { rows } = await pool.query(
       `SELECT p.email, p.player_name, MAX(l.score) as best
        FROM leaderboard l
        JOIN players p ON l.user_id = p.id
-       WHERE l.game = ? AND p.player_name != ? AND p.email IS NOT NULL
+       WHERE l.game = $1 AND p.player_name != $2 AND p.email IS NOT NULL
        GROUP BY p.id, p.email, p.player_name
-       HAVING best < ?`,
+       HAVING MAX(l.score) < $3`,
       [game, beaterName, newScore]
     );
-    if (!(rows as RowDataPacket[]).length) return;
+    if (!rows.length) return;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
     });
 
-    for (const row of rows as RowDataPacket[]) {
+    for (const row of rows) {
       await transporter.sendMail({
         from: `"Search & Play" <${process.env.EMAIL_USER}>`,
         to: row.email,
@@ -59,11 +57,11 @@ export async function GET(req: NextRequest) {
   if (!session?.user) return NextResponse.json({ bestScore: 0 });
   const userId = (session.user as any).id;
   const game = req.nextUrl.searchParams.get("game") ?? "";
-  const [rows] = await pool.query<RowDataPacket[]>(
-    "SELECT MAX(score) as best FROM leaderboard WHERE user_id = ? AND game = ?",
+  const { rows: scoreRows } = await pool.query(
+    "SELECT MAX(score) as best FROM leaderboard WHERE user_id = $1 AND game = $2",
     [userId, game]
-  ).catch(() => [[{ best: 0 }]]);
-  return NextResponse.json({ bestScore: (rows as any)[0]?.best ?? 0 });
+  ).catch(() => ({ rows: [{ best: 0 }] }));
+  return NextResponse.json({ bestScore: scoreRows[0]?.best ?? 0 });
 }
 
 export async function POST(req: NextRequest) {
@@ -83,18 +81,16 @@ export async function POST(req: NextRequest) {
   const gameLabel = difficulty ? `${game} (${difficulty})` : game;
 
   // Save to leaderboard
-  await pool.query<ResultSetHeader>(
-    "INSERT INTO leaderboard (user_id, player_name, game, score) VALUES (?, ?, ?, ?)",
+  await pool.query(
+    "INSERT INTO leaderboard (user_id, player_name, game, score) VALUES ($1, $2, $3, $4)",
     [userId, playerName, gameLabel, score]
   ).catch(() => {});
 
-  // Notify players whose score was beaten (fire and forget)
   if (score > 0) notifyBeatenPlayers(gameLabel, score, playerName);
 
-  // Log to activity
   const result = won === true ? "Won" : won === false ? "Lost" : "Played";
   await pool.query(
-    "INSERT INTO activity_logs (player_name, activity) VALUES (?, ?)",
+    "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
     [playerName, `${result} "${gameLabel}" with score ${score}`]
   ).catch(() => {});
 

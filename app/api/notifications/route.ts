@@ -12,14 +12,14 @@ export async function GET(req: NextRequest) {
   const playerName = (session.user as any).name ?? "";
   const since = req.nextUrl.searchParams.get("since");
 
-  const [rows] = await (pool as any).query(
-    "SELECT id, activity, created_at FROM activity_logs WHERE player_name = ? ORDER BY created_at DESC LIMIT 20",
+  const { rows } = await pool.query(
+    "SELECT id, activity, created_at FROM activity_logs WHERE player_name = $1 ORDER BY created_at DESC LIMIT 20",
     [playerName]
-  ).catch(() => [[]] as any);
+  ).catch(() => ({ rows: [] }));
 
   let unread = 0;
   if (since) {
-    unread = (rows as any[]).filter((r: any) => new Date(r.created_at) > new Date(since)).length;
+    unread = rows.filter((r: any) => new Date(r.created_at) > new Date(since)).length;
   }
 
   return NextResponse.json({ notifications: rows, unread }, {

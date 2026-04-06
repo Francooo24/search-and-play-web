@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import nodemailer from "nodemailer";
-import { RowDataPacket } from "mysql2";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
@@ -15,11 +14,11 @@ export async function POST(req: NextRequest) {
     if (!email) return NextResponse.json({ error: "Email is required." }, { status: 400 });
 
     // Check if player exists
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT id, player_name FROM players WHERE email = ? LIMIT 1",
+    const { rows } = await pool.query(
+      "SELECT id, player_name FROM players WHERE email = $1 LIMIT 1",
       [email]
     );
-    const player = (rows as RowDataPacket[])[0];
+    const player = rows[0];
 
     // Always return success to prevent email enumeration
     if (!player) return NextResponse.json({ ok: true });
@@ -28,9 +27,9 @@ export async function POST(req: NextRequest) {
     const otp = String(Math.floor(100000 + Math.random() * 900000));
 
     // Store OTP - use MySQL NOW() + 10 minutes to avoid timezone issues
-    await pool.query("DELETE FROM password_resets WHERE email = ?", [email]);
+    await pool.query("DELETE FROM password_resets WHERE email = $1", [email]);
     await pool.query(
-      "INSERT INTO password_resets (email, otp, expires) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))",
+      "INSERT INTO password_resets (email, otp, expires) VALUES ($1, $2, NOW() + INTERVAL '10 minutes')",
       [email, otp]
     );
 

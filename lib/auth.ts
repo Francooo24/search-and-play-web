@@ -2,7 +2,6 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 import { rateLimit } from "@/lib/rateLimit";
 import jwt from "jsonwebtoken";
 
@@ -78,8 +77,8 @@ export const authOptions: NextAuthOptions = {
         const email = credentials.email.trim().toLowerCase().slice(0, 254);
         const password = credentials.password.slice(0, 128);
 
-        const [rows] = await pool.query<RowDataPacket[]>(
-          "SELECT * FROM players WHERE email = ? LIMIT 1",
+        const { rows } = await pool.query(
+          "SELECT * FROM players WHERE email = $1 LIMIT 1",
           [email]
         );
 
@@ -93,7 +92,7 @@ export const authOptions: NextAuthOptions = {
         // Log login activity (sanitize player_name to prevent log injection)
         const safeName = player.player_name.replace(/[\r\n\t]/g, " ").slice(0, 100);
         await pool.query(
-          "INSERT INTO activity_logs (player_name, activity) VALUES (?, ?)",
+          "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
           [safeName, "Logged in"]
         );
 

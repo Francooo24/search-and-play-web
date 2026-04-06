@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 });
 
   await pool.query(
-    "UPDATE players SET player_name = ?, email = ? WHERE id = ?",
+    "UPDATE players SET player_name = $1, email = $2 WHERE id = $3",
     [sanitize(player_name), email.trim().toLowerCase(), Number(player_id)]
   );
 

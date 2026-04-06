@@ -1,23 +1,25 @@
-import mysql from "mysql2/promise";
+import { Pool } from "pg";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var _mysqlPool: mysql.Pool | undefined;
+let _pool: Pool | null = null;
+
+function getPool(): Pool {
+  if (_pool) return _pool;
+
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set");
+  }
+
+  _pool = new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+    max: 8,
+    idleTimeoutMillis: 60000,
+  });
+
+  return _pool;
 }
 
-const pool = global._mysqlPool ?? mysql.createPool({
-  host:               process.env.DB_HOST     || "localhost",
-  user:               process.env.DB_USER     || "root",
-  password:           process.env.DB_PASSWORD || "",
-  database:           process.env.DB_NAME     || "games_dictionary",
-  waitForConnections: true,
-  connectionLimit:    8,
-  queueLimit:         0,
-  enableKeepAlive:    true,
-  keepAliveInitialDelay: 0,
-  idleTimeout:        60000,
-});
-
-if (process.env.NODE_ENV !== "production") global._mysqlPool = pool;
-
-export default pool;
+export default {
+  query: (text: string, params?: any[]) => getPool().query(text, params),
+};

@@ -6,13 +6,13 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(names) || names.length === 0)
     return NextResponse.json({ avatars: {} });
 
-  const safe = names.slice(0, 50); // max 50 at once
-  const placeholders = safe.map(() => "?").join(",");
+  const safe = names.slice(0, 50);
+  const placeholders = safe.map((_: any, i: number) => `$${i + 1}`).join(",");
 
-  const [rows] = await (pool as any).query(
+  const { rows } = await pool.query(
     `SELECT player_name, avatar_url FROM players WHERE player_name IN (${placeholders}) AND avatar_url IS NOT NULL`,
     safe
-  ).catch(() => [[]]);
+  ).catch(() => ({ rows: [] }));
 
   const avatars: Record<string, string> = {};
   for (const row of rows as any[]) {

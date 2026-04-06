@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +9,8 @@ export async function GET() {
   const session = await getServerSession(authOptions);
 
   // Always return total players count (public)
-  const [totalRows] = await pool.query<RowDataPacket[]>(
-    "SELECT COUNT(DISTINCT l.user_id) AS total FROM leaderboard l JOIN players p ON l.user_id = p.id WHERE p.is_admin = 0"
+  const { rows: totalRows } = await pool.query(
+    "SELECT COUNT(DISTINCT l.user_id) AS total FROM leaderboard l JOIN players p ON l.user_id = p.id WHERE p.is_admin = false"
   );
   const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
 
@@ -21,24 +20,24 @@ export async function GET() {
 
   try {
     // Get user's total score and best single score
-    const [userRows] = await pool.query<RowDataPacket[]>(
-      "SELECT COALESCE(SUM(score), 0) AS total, COALESCE(MAX(score), 0) AS best, (SELECT game FROM leaderboard WHERE user_id = ? ORDER BY score DESC LIMIT 1) AS best_game FROM leaderboard WHERE user_id = ?",
+    const { rows: userRows } = await pool.query(
+      "SELECT COALESCE(SUM(score), 0) AS total, COALESCE(MAX(score), 0) AS best, (SELECT game FROM leaderboard WHERE user_id = $1 ORDER BY score DESC LIMIT 1) AS best_game FROM leaderboard WHERE user_id = $2",
       [userId, userId]
     );
-    const userTotal = Number((userRows as any)[0]?.total ?? 0);
-    const userBest  = Number((userRows as any)[0]?.best ?? 0);
-    const bestGame  = (userRows as any)[0]?.best_game ?? null;
+    const userTotal = Number(userRows[0]?.total ?? 0);
+    const userBest  = Number(userRows[0]?.best ?? 0);
+    const bestGame  = userRows[0]?.best_game ?? null;
     if (userTotal === 0) return NextResponse.json({ rank: null, total: 0, best: 0, best_game: null, streak: 0 });
 
     // Compute win streak — consecutive distinct days played up to today
-    const [dateRows] = await pool.query<RowDataPacket[]>(
-      "SELECT DISTINCT DATE(created_at) AS day FROM leaderboard WHERE user_id = ? ORDER BY day DESC",
+    const { rows: dateRows } = await pool.query(
+      "SELECT DISTINCT DATE(created_at) AS day FROM leaderboard WHERE user_id = $1 ORDER BY day DESC",
       [userId]
     );
     let streak = 0;
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    for (let i = 0; i < (dateRows as RowDataPacket[]).length; i++) {
-      const day = new Date((dateRows as RowDataPacket[])[i].day);
+    for (let i = 0; i < dateRows.length; i++) {
+      const day = new Date(dateRows[i].day);
       day.setHours(0, 0, 0, 0);
       const expected = new Date(today); expected.setDate(today.getDate() - i);
       if (day.getTime() === expected.getTime()) streak++;
@@ -46,18 +45,17 @@ export async function GET() {
     }
 
     // Count how many non-admin players have a higher total score
-    const [rankRows] = await pool.query<RowDataPacket[]>(
+    const { rows: rankRows } = await pool.query(
       `SELECT COUNT(DISTINCT l.user_id) + 1 AS rank
        FROM leaderboard l
        JOIN players p ON l.user_id = p.id
-       WHERE l.user_id != ? AND p.is_admin = 0
+       WHERE l.user_id != $1 AND p.is_admin = false
        GROUP BY l.user_id
-       HAVING SUM(l.score) > ?`,
+       HAVING SUM(l.score) > $2`,
       [userId, userTotal]
     );
 
-    // rankRows length = number of players ahead of user
-    const rank = (rankRows as RowDataPacket[]).length + 1;
+    const rank = rankRows.length + 1;
 
     // Total ranked non-admin players — already computed above
 

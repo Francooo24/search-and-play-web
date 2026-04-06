@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   if (!activity) return NextResponse.json({ ok: false });
 
   await pool.query(
-    "INSERT INTO activity_logs (player_name, activity) VALUES (?, ?)",
+    "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
     [playerName, activity]
   ).catch(() => {});
 

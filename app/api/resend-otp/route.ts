@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 import nodemailer from "nodemailer";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
@@ -11,19 +10,19 @@ export async function POST(req: NextRequest) {
   const { email } = await req.json();
   if (!email) return NextResponse.json({ error: "Email is required." }, { status: 400 });
 
-  const [rows] = await pool.query<RowDataPacket[]>(
-    "SELECT * FROM pending_verifications WHERE email = ? LIMIT 1",
+  const { rows } = await pool.query(
+    "SELECT * FROM pending_verifications WHERE email = $1 LIMIT 1",
     [email.trim().toLowerCase()]
   );
-  const pending = (rows as RowDataPacket[])[0];
+  const pending = rows[0];
   if (!pending) return NextResponse.json({ error: "No pending verification found. Please sign up again." }, { status: 404 });
 
   const otp = String(Math.floor(100000 + Math.random() * 900000));
   const otp_expires = new Date(Date.now() + 10 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ");
 
   await pool.query(
-    "UPDATE pending_verifications SET otp = ?, otp_expires = ? WHERE email = ?",
-    [otp, otp_expires, email.trim().toLowerCase()]
+    "UPDATE pending_verifications SET otp = $1, otp_expires = $2 WHERE email = $3",
+    [otp, new Date(Date.now() + 10 * 60 * 1000).toISOString(), email.trim().toLowerCase()]
   );
 
   try {

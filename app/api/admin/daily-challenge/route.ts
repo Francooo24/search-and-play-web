@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
 
 function adminGuard(session: any) {
   if (!(session?.user as any)?.is_admin)
@@ -16,7 +15,7 @@ export async function GET() {
   const guard = adminGuard(session);
   if (guard) return guard;
 
-  const [rows] = await pool.query<RowDataPacket[]>(
+  const { rows } = await pool.query(
     "SELECT * FROM daily_challenges ORDER BY challenge_date DESC"
   );
   return NextResponse.json({ challenges: rows });
@@ -34,17 +33,16 @@ export async function POST(req: NextRequest) {
   if (!challenge_date || !game || !title)
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 
-  // Add age_group column if not exists
-  await (pool as any).query(
+  await pool.query(
     "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS age_group VARCHAR(10) NULL DEFAULT NULL"
   ).catch(() => {});
 
-  const [result] = await pool.query<ResultSetHeader>(
+  const { rows: inserted } = await pool.query(
     `INSERT INTO daily_challenges (challenge_date, game, title, description, target_type, target_value, bonus_points, age_group)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
     [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50, age_group ?? null]
   );
-  return NextResponse.json({ ok: true, id: result.insertId });
+  return NextResponse.json({ ok: true, id: inserted[0].id });
 }
 
 // PUT — update an existing challenge
@@ -59,8 +57,8 @@ export async function PUT(req: NextRequest) {
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
   await pool.query(
-    `UPDATE daily_challenges SET challenge_date=?, game=?, title=?, description=?, target_type=?, target_value=?, bonus_points=?, age_group=?
-     WHERE id=?`,
+    `UPDATE daily_challenges SET challenge_date=$1, game=$2, title=$3, description=$4, target_type=$5, target_value=$6, bonus_points=$7, age_group=$8
+     WHERE id=$9`,
     [challenge_date, game, title, description ?? "", target_type ?? "win", target_value ?? 1, bonus_points ?? 50, age_group ?? null, id]
   );
   return NextResponse.json({ ok: true });
@@ -75,6 +73,6 @@ export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-  await pool.query("DELETE FROM daily_challenges WHERE id = ?", [id]);
+  await pool.query("DELETE FROM daily_challenges WHERE id = $1", [id]);
   return NextResponse.json({ ok: true });
 }

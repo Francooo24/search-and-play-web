@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-const DJANGO_URL = process.env.DJANGO_URL ?? "http://localhost:8000";
+const DJANGO_URL = process.env.DJANGO_URL ?? "https://search-and-play-backend.onrender.com";
 const IS_DEV = process.env.NODE_ENV !== "production";
-const ALLOWED_HOSTS = ["localhost", "127.0.0.1"];
+const ALLOWED_HOSTS = ["https://search-and-play-backend.onrender.com", "http://localhost:3000", "127.0.0.1"];
 
 function isTrustedUrl(urlStr: string): boolean {
   try {

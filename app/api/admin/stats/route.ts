@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
 import { NextResponse } from "next/server";
-import { RowDataPacket } from "mysql2";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -18,11 +17,11 @@ export async function GET() {
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split("T")[0];
       labels.push(d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }));
-      const [rows] = await pool.query<RowDataPacket[]>(
-        "SELECT COUNT(*) AS total FROM players WHERE DATE(created_at) = ?",
+      const { rows } = await pool.query(
+        "SELECT COUNT(*) AS total FROM players WHERE DATE(created_at) = $1",
         [dateStr]
       );
-      dataPoints.push((rows as any)[0].total);
+      dataPoints.push(Number(rows[0].total));
     }
 
     const totalNew = dataPoints.reduce((a, b) => a + b, 0);
@@ -30,17 +29,15 @@ export async function GET() {
     const peak     = Math.max(...dataPoints);
     const bestDay  = labels[dataPoints.indexOf(peak)] ?? "N/A";
 
-    // Notifications
-    const [notifications] = await pool.query<RowDataPacket[]>(
+    const { rows: notifications } = await pool.query(
       "SELECT message, created_at FROM notifications ORDER BY created_at DESC LIMIT 50"
-    ).catch(() => [[]]);
+    ).catch(() => ({ rows: [] }));
 
-    // Activity logs
-    const [activityLogs] = await pool.query<RowDataPacket[]>(
+    const { rows: activityLogs } = await pool.query(
       `SELECT activity, created_at, player_name
        FROM activity_logs
        ORDER BY created_at DESC LIMIT 100`
-    ).catch(() => [[]]);
+    ).catch(() => ({ rows: [] }));
 
     return NextResponse.json({ dataPoints, labels, totalNew, avg, peak, bestDay, notifications, activityLogs });
   } catch (err) {

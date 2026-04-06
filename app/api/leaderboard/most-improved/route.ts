@@ -1,33 +1,32 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Try last 14 days first
-    let [rows] = await pool.query<RowDataPacket[]>(`
+    let rows: any[];
+    ({ rows } = await pool.query(`
       SELECT
         p.player_name,
         p.birthdate,
         p.country,
-        COALESCE(SUM(CASE WHEN l.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN l.score ELSE 0 END), 0) AS this_week,
-        COALESCE(SUM(CASE WHEN l.created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)
-                          AND l.created_at <  DATE_SUB(NOW(), INTERVAL 7 DAY)  THEN l.score ELSE 0 END), 0) AS last_week
+        COALESCE(SUM(CASE WHEN l.created_at >= NOW() - INTERVAL '7 days' THEN l.score ELSE 0 END), 0) AS this_week,
+        COALESCE(SUM(CASE WHEN l.created_at >= NOW() - INTERVAL '14 days'
+                          AND l.created_at <  NOW() - INTERVAL '7 days'  THEN l.score ELSE 0 END), 0) AS last_week
       FROM players p
       JOIN leaderboard l ON p.id = l.user_id
-      WHERE l.created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)
-        AND p.is_admin = 0
+      WHERE l.created_at >= NOW() - INTERVAL '14 days'
+        AND p.is_admin = false
       GROUP BY p.id, p.player_name, p.birthdate, p.country
-      HAVING this_week > 0
-      ORDER BY (this_week - last_week) DESC
+      HAVING COALESCE(SUM(CASE WHEN l.created_at >= NOW() - INTERVAL '7 days' THEN l.score ELSE 0 END), 0) > 0
+      ORDER BY (SUM(CASE WHEN l.created_at >= NOW() - INTERVAL '7 days' THEN l.score ELSE 0 END) -
+                SUM(CASE WHEN l.created_at >= NOW() - INTERVAL '14 days' AND l.created_at < NOW() - INTERVAL '7 days' THEN l.score ELSE 0 END)) DESC
       LIMIT 10
-    `);
+    `));
 
-    // Fallback: if no recent data, show all-time top players with total as "this_week"
-    if ((rows as RowDataPacket[]).length === 0) {
-      [rows] = await pool.query<RowDataPacket[]>(`
+    if (rows.length === 0) {
+      ({ rows } = await pool.query(`
         SELECT
           p.player_name,
           p.birthdate,
@@ -36,16 +35,15 @@ export async function GET() {
           0 AS last_week
         FROM players p
         JOIN leaderboard l ON p.id = l.user_id
-        WHERE p.is_admin = 0
+        WHERE p.is_admin = false
         GROUP BY p.id, p.player_name, p.birthdate, p.country
-        HAVING this_week > 0
+        HAVING COALESCE(SUM(l.score), 0) > 0
         ORDER BY this_week DESC
         LIMIT 10
-      `);
+      `));
     }
 
-    const today = new Date();
-    const players = (rows as RowDataPacket[]).map(r => {
+    const players = rows.map(r => {
       const diff = Number(r.this_week) - Number(r.last_week);
       let age_group = null;
       if (r.birthdate) {

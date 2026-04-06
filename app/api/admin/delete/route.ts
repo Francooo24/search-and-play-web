@@ -13,13 +13,12 @@ export async function POST(req: NextRequest) {
   if (!isValidId(player_id))
     return NextResponse.json({ error: "Invalid player_id" }, { status: 400 });
 
-  // Soft delete — set deleted_at and status instead of removing the row
-  await (pool as any).query(
-    "ALTER TABLE players ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL DEFAULT NULL"
+  await pool.query(
+    "ALTER TABLE players ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ NULL DEFAULT NULL"
   ).catch(() => {});
 
   await pool.query(
-    "UPDATE players SET deleted_at = NOW(), status = 'deleted' WHERE id = ? AND is_admin = 0",
+    "UPDATE players SET deleted_at = NOW(), status = 'deleted' WHERE id = $1 AND is_admin = false",
     [Number(player_id)]
   );
   return NextResponse.json({ success: true });

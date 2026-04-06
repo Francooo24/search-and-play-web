@@ -13,6 +13,6 @@ export async function POST(req: NextRequest) {
   if (!isValidId(player_id))
     return NextResponse.json({ error: "Invalid player_id" }, { status: 400 });
 
-  await pool.query("UPDATE players SET status = 'banned' WHERE id = ?", [Number(player_id)]);
+  await pool.query("UPDATE players SET status = 'banned' WHERE id = $1", [Number(player_id)]);
   return NextResponse.json({ success: true });
 }

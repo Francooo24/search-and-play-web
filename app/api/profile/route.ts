@@ -16,13 +16,12 @@ export async function POST(req: NextRequest) {
   if (!avatar.startsWith("data:image/")) return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
   if (avatar.length > 2_800_000) return NextResponse.json({ error: "Image too large. Max 2MB." }, { status: 400 });
 
-  // Add avatar_url column if it doesn't exist yet
-  await (pool as any).query(
-    "ALTER TABLE players ADD COLUMN IF NOT EXISTS avatar_url MEDIUMTEXT NULL"
+  await pool.query(
+    "ALTER TABLE players ADD COLUMN IF NOT EXISTS avatar_url TEXT"
   ).catch(() => {});
 
-  await (pool as any).query(
-    "UPDATE players SET avatar_url = ? WHERE id = ?",
+  await pool.query(
+    "UPDATE players SET avatar_url = $1 WHERE id = $2",
     [avatar, userId]
   );
 
@@ -35,10 +34,10 @@ export async function GET() {
 
   const userId = (session.user as any).id;
 
-  const [rows] = await (pool as any).query(
-    "SELECT avatar_url FROM players WHERE id = ? LIMIT 1",
+  const { rows } = await pool.query(
+    "SELECT avatar_url FROM players WHERE id = $1 LIMIT 1",
     [userId]
-  ).catch(() => [[{ avatar_url: null }]]);
+  ).catch(() => ({ rows: [{ avatar_url: null }] }));
 
-  return NextResponse.json({ avatar: (rows as any[])[0]?.avatar_url ?? null });
+  return NextResponse.json({ avatar: rows[0]?.avatar_url ?? null });
 }

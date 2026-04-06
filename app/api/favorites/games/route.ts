@@ -3,15 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { djangoProxy, djangoInternalHeaders } from "@/lib/djangoProxy";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json([]);
   const userId = (session.user as any).id;
   try {
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT game FROM favorite_games WHERE user_id = ?", [userId]
+    const { rows } = await pool.query(
+      "SELECT game FROM favorite_games WHERE user_id = $1", [userId]
     );
     return NextResponse.json(rows);
   } catch { return NextResponse.json([]); }

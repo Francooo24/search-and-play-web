@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { RowDataPacket, ResultSetHeader } from "mysql2";
+
 import crypto from "crypto";
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
@@ -49,43 +49,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: errors.join(". ") }, { status: 400 });
 
   // Check existing player
-  const [existing] = await pool.query<RowDataPacket[]>(
-    "SELECT id FROM players WHERE email = ? LIMIT 1", [email]
+  const { rows: existing } = await pool.query(
+    "SELECT id FROM players WHERE email = $1 LIMIT 1", [email]
   );
-  if ((existing as RowDataPacket[]).length > 0)
+  if (existing.length > 0)
     return NextResponse.json({ error: "This email is already registered. Please use a different email or sign in." }, { status: 409 });
 
-  // Ensure pending_verifications table exists
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS pending_verifications (
-      id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-      player_name VARCHAR(100) NOT NULL,
-      email VARCHAR(255) NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      birthdate DATE NULL,
-      show_kids TINYINT(1) DEFAULT 0,
-      show_teen TINYINT(1) DEFAULT 0,
-      show_adult TINYINT(1) DEFAULT 0,
-      token VARCHAR(64) NOT NULL UNIQUE,
-      expires DATETIME NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
   // Remove previous pending entry for this email
-  await pool.query("DELETE FROM pending_verifications WHERE email = ?", [email]);
+  await pool.query("DELETE FROM pending_verifications WHERE email = $1", [email]);
 
   const token   = crypto.randomBytes(32).toString("hex");
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString().slice(0, 19).replace("T", " ");
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const hashed  = await bcrypt.hash(password, 10);
 
-  const [result] = await pool.query<ResultSetHeader>(
-    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, token, expires) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  const { rows: inserted } = await pool.query(
+    "INSERT INTO pending_verifications (player_name, email, password, birthdate, show_kids, show_teen, show_adult, token, expires) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
     [player_name, email, hashed, birthdate, show_kids, show_teen, show_adult, token, expires]
   );
 
-  if (!result.insertId)
+  if (!inserted[0]?.id)
     return NextResponse.json({ error: "An error occurred. Please try again later." }, { status: 500 });
 
   const host       = req.headers.get("host") ?? "localhost";

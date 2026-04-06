@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { djangoProxy, djangoInternalHeaders } from "@/lib/djangoProxy";
 import pool from "@/lib/db";
-import { RowDataPacket } from "mysql2";
 
 export async function GET() {
   const results: Record<string, { ok: boolean; detail: string }> = {};
@@ -24,7 +23,7 @@ export async function GET() {
 
   // 2. Django reachable
   try {
-    const res = await fetch(`${process.env.DJANGO_URL ?? "http://localhost:8000"}/api/leaderboard/`, {
+    const res = await fetch(`${process.env.DJANGO_URL ?? "https://search-and-play-backend.onrender.com"}/api/leaderboard/`, {
       signal: AbortSignal.timeout(3000),
     });
     results["2_django"] = { ok: true, detail: `Django responded with ${res.status}` };
@@ -32,18 +31,17 @@ export async function GET() {
     results["2_django"] = { ok: false, detail: `Django unreachable — make sure backend is running: ${e.message}` };
   }
 
-  // 3. MySQL connection
   try {
-    await pool.query<RowDataPacket[]>("SELECT 1");
-    results["3_mysql"] = { ok: true, detail: "MySQL connected" };
+    await pool.query("SELECT 1");
+    results["3_mysql"] = { ok: true, detail: "PostgreSQL connected" };
   } catch (e: any) {
-    results["3_mysql"] = { ok: false, detail: `MySQL error: ${e.message}` };
+    results["3_mysql"] = { ok: false, detail: `PostgreSQL error: ${e.message}` };
   }
 
   // 4. Leaderboard table data
   try {
-    const [rows] = await pool.query<RowDataPacket[]>("SELECT COUNT(*) as total FROM leaderboard");
-    const total = (rows as any)[0]?.total ?? 0;
+    const { rows } = await pool.query("SELECT COUNT(*) as total FROM leaderboard");
+    const total = rows[0]?.total ?? 0;
     results["4_leaderboard_table"] = { ok: true, detail: `${total} total scores in leaderboard table` };
   } catch (e: any) {
     results["4_leaderboard_table"] = { ok: false, detail: `Error: ${e.message}` };
@@ -53,11 +51,11 @@ export async function GET() {
   if (session?.user) {
     const userId = (session.user as any).id;
     try {
-      const [rows] = await pool.query<RowDataPacket[]>(
-        "SELECT COUNT(*) as total, COALESCE(SUM(score),0) as points, COALESCE(MAX(score),0) as best FROM leaderboard WHERE user_id = ?",
+      const { rows } = await pool.query(
+        "SELECT COUNT(*) as total, COALESCE(SUM(score),0) as points, COALESCE(MAX(score),0) as best FROM leaderboard WHERE user_id = $1",
         [userId]
       );
-      const r = (rows as any)[0];
+      const r = rows[0];
       results["5_user_scores"] = {
         ok: true,
         detail: `Games played: ${r.total} | Total pts: ${r.points} | Best score: ${r.best}`,
@@ -82,7 +80,7 @@ export async function GET() {
       if (data.success) {
         // Immediately delete the test score so it doesn't pollute the leaderboard
         await pool.query(
-          "DELETE FROM leaderboard WHERE user_id = ? AND game = 'Diagnostic Test' ORDER BY created_at DESC LIMIT 1",
+          "DELETE FROM leaderboard WHERE user_id = $1 AND game = 'Diagnostic Test' ORDER BY created_at DESC LIMIT 1",
           [playerId]
         ).catch(() => {});
         results["6_score_submit"] = { ok: true, detail: "Score submission works \u2713 (test entry auto-removed)" };
