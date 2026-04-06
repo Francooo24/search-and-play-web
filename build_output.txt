@@ -1,0 +1,47 @@
+  ▲ Next.js 14.2.30
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js', but to 'c:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js', but to 'c:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\Louise Carmel\Music\Capstone\web\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/96) ...
+   Generating static pages (24/96) 
+   Generating static pages (48/96) 
+   Generating static pages (72/96) 
+ ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/login". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+    at a (c:\Users\Louise Carmel\Music\Capstone\web\.next\server\chunks\9308.js:1:32063)
+    at c (c:\Users\Louise Carmel\Music\Capstone\web\.next\server\chunks\9308.js:1:43046)
+    at l (c:\Users\Louise Carmel\Music\Capstone\web\.next\server\app\login\page.js:1:2068)
+    at nj (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46252)
+    at nM (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47572)
+    at nN (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nI (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47011)
+    at nM (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47718)
+    at nM (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:61547)
+    at nN (c:\Users\Louise Carmel\Music\Capstone\web\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+
+Error occurred prerendering page "/login". Read more: https://nextjs.org/docs/messages/prerender-error
+
+ ✓ Generating static pages (96/96)
+
+> Export encountered errors on following paths:
+	/login/page: /login
