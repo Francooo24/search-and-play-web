@@ -1,12 +1,9 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { searchGreekWords, GreekWord } from "@/lib/greekWords";
-import AudioButton from "@/components/AudioButton";
-import LogSearch from "@/components/LogSearch";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
-import SaveWordButton from "@/components/SaveWordButton";
+import LogSearch from "@/components/LogSearch";
+import SearchClient from "./SearchClient";
 
 export const dynamic = "force-dynamic";
 
@@ -31,64 +28,6 @@ async function translateToGreek(text: string): Promise<string> {
   return "";
 }
 
-async function fetchGreekWordOverview(word: string): Promise<string> {
-  try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are a Greek language expert. When given any English word, respond in exactly this format (use the word "faith" as an example of the style):
-
-The primary Greek word for [word] is [Greek word] ([transliteration]), which denotes [meaning]. [2-3 sentences explaining the word's meaning, usage, and significance in ancient Greek or modern Greek context.]
-
-Key Aspects of "[Greek transliteration]" ([Word]) in Greek:
-Definition: [Full definition of the Greek word]
-Active Meaning: [How the word is actively used in Greek texts or culture]
-Related Words:
-[Related word 1] ([transliteration]): [part of speech], meaning "[meaning1]", "[meaning2]".
-[Related word 2] ([transliteration]): [part of speech], meaning "[meaning1]", "[meaning2]".
-Contextual Usage: [How the word appears in Greek mythology, history, or the New Testament]
-Root: [Etymology and Proto-Indo-European or Greek root of the word]
-
-Always include Greek characters. Always include transliteration in parentheses. Be detailed and educational.`
-          },
-          {
-            role: "user",
-            content: `Give a detailed Greek language overview for the English word: "${word}"`
-          }
-        ],
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(15000),
-    });
-    const data = await res.json();
-    return data?.choices?.[0]?.message?.content ?? "";
-  } catch {
-    return "";
-  }
-}
-
-function formatOverview(text: string) {
-  if (!text) return null;
-  const html = text
-    .replace(/\*\*(.+?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>')
-    .replace(/\*(.+?)\*/g, '<em class="text-amber-300">$1</em>')
-    .replace(/\n/g, "<br/>");
-  return (
-    <div
-      className="text-sm text-gray-300 leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
-}
-
 export default async function SearchPage({
   searchParams,
 }: {
@@ -109,116 +48,26 @@ export default async function SearchPage({
     isSaved = rows.length > 0;
   }
 
-  const greekMatches: GreekWord[] = searchGreekWords(word);
-
-  // Fetch all data in parallel
-  const [data, greekWord, greekOverview] = await Promise.all([
+  const [definition, greekWord] = await Promise.all([
     fetchDefinition(word),
     translateToGreek(word),
-    fetchGreekWordOverview(word),
   ]);
 
-  const phonetic = data?.[0]?.phonetic ?? "";
-  const origin   = data?.[0]?.origin ?? "";
+  const phonetic = definition?.[0]?.phonetic ?? "";
+  const origin   = definition?.[0]?.origin ?? "";
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-8 md:py-12 relative z-10">
+    <>
       <LogSearch word={word} />
-
-      {/* Search bar */}
-      <form action="/search" method="GET" className="flex w-full max-w-lg mb-8">
-        <input name="word" defaultValue={word} placeholder="Search another word..."
-          className="flex-grow px-4 py-3 text-base rounded-l-lg focus:outline-none bg-white/5 border border-white/10 text-white focus:border-orange-500 transition" />
-        <button type="submit" className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 text-base font-medium rounded-r-lg hover:from-orange-600 hover:to-amber-600 transition">Search</button>
-      </form>
-
-      {/* Word header */}
-      <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-1 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
-        {word}
-      </h1>
-      {greekWord && (
-        <p className="text-amber-400 font-bold text-2xl mb-2 text-center">{greekWord}</p>
-      )}
-      {session && (
-        <div className="flex justify-center mb-6">
-          <SaveWordButton word={word} initialSaved={isSaved} />
-        </div>
-      )}
-
-      {/* Pronunciation */}
-      <div className="w-full max-w-3xl mb-6">
-        <div className="glass-card border-l-4 border-l-orange-500 rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-3">🔊 Pronunciation</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-xl p-4 flex flex-col justify-between">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">English</p>
-              <p className="text-amber-300 font-bold text-lg mb-1">{word}</p>
-              {phonetic && <p className="text-amber-300 font-mono text-sm mb-1">{phonetic}</p>}
-              <AudioButton text={word} lang="en" label="Listen in English" />
-            </div>
-            <div className="bg-white/5 rounded-xl p-4 flex flex-col justify-between">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Greek (Ελληνικά)</p>
-              <p className="text-amber-400 font-bold text-lg mb-1">{greekWord || "—"}</p>
-              <AudioButton text={greekWord || word} lang="el" label="Listen in Greek" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Greek Overview — AI generated */}
-      <div className="w-full max-w-3xl mb-6">
-        <h2 className="text-lg font-semibold text-orange-400 mb-3">🏛️ Greek Overview</h2>
-        <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5">
-          {greekOverview ? (
-            formatOverview(greekOverview)
-          ) : (
-            <div className="space-y-2">
-              {greekMatches.length > 0 ? greekMatches.map((w, i) => (
-                <div key={i}>
-                  <div className="text-2xl font-bold text-amber-400">{w.greek}</div>
-                  <div className="text-sm italic text-orange-300">{w.transliteration}</div>
-                  <div className="text-gray-200 text-sm">{w.english}</div>
-                  <span className="inline-block mt-1 text-xs bg-white/10 text-gray-400 px-3 py-1 rounded-full">{w.category}</span>
-                </div>
-              )) : (
-                <p className="text-gray-400 text-sm">Greek: <span className="text-amber-400 font-semibold">{greekWord || word}</span></p>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* English Definition */}
-      {data ? (
-        <div className="w-full max-w-3xl mb-6">
-          <h2 className="text-lg font-semibold text-orange-400 mb-3">📖 English Definition</h2>
-          {data[0]?.meanings?.map((meaning: any, mi: number) => (
-            <div key={mi} className="glass-card border-l-4 border-l-orange-500 rounded-2xl p-5 mb-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-orange-300 bg-orange-500/15 px-3 py-1 rounded-full">{meaning.partOfSpeech}</span>
-              <ul className="mt-3 space-y-2">
-                {meaning.definitions.slice(0, 3).map((def: any, di: number) => (
-                  <li key={di} className="text-gray-200 text-sm">
-                    <span className="text-gray-500 mr-2">{di + 1}.</span>{def.definition}
-                    {def.example && <p className="text-gray-500 text-xs mt-1 italic">&ldquo;{def.example}&rdquo;</p>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {origin && (
-            <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5 mb-4">
-              <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Etymology / Origin</p>
-              <p className="text-amber-300 text-sm">{origin}</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="glass-card border-l-4 border-l-white/20 rounded-2xl p-5 w-full max-w-3xl mb-6">
-          <p className="text-gray-400 text-sm">No English definition found for &ldquo;{word}&rdquo;.</p>
-        </div>
-      )}
-
-      <Link href="/" className="text-orange-400 hover:text-orange-300 transition text-sm mt-2 mb-6">← Back to Home</Link>
-    </div>
+      <SearchClient
+        word={word}
+        greekWord={greekWord}
+        definition={definition}
+        phonetic={phonetic}
+        origin={origin}
+        isSaved={isSaved}
+        isLoggedIn={!!session}
+      />
+    </>
   );
 }
