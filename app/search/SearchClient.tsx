@@ -58,14 +58,20 @@ export default function SearchClient({ word, greekWord, definition, phonetic, or
 }) {
   const [overview, setOverview] = useState("");
   const [overviewLoading, setOverviewLoading] = useState(true);
+  const [overviewError, setOverviewError] = useState("");
   const [saved, setSaved] = useState(isSaved);
 
   useEffect(() => {
     setOverviewLoading(true);
+    setOverviewError("");
     fetch(`/api/greek-overview?word=${encodeURIComponent(word)}`)
       .then(r => r.json())
-      .then(d => { setOverview(d.overview ?? ""); setOverviewLoading(false); })
-      .catch(() => setOverviewLoading(false));
+      .then(d => {
+        setOverview(d.overview ?? "");
+        if (d.error) setOverviewError(d.error);
+        setOverviewLoading(false);
+      })
+      .catch(e => { setOverviewError(e.message); setOverviewLoading(false); });
   }, [word]);
 
   const toggleSave = async () => {
@@ -137,6 +143,8 @@ export default function SearchClient({ word, greekWord, definition, phonetic, or
             </div>
           ) : overview ? (
             formatOverview(overview)
+          ) : overviewError ? (
+            <p className="text-red-400 text-xs">Error: {overviewError}</p>
           ) : (
             <p className="text-gray-400 text-sm">Greek: <span className="text-amber-400 font-semibold">{greekWord || word}</span></p>
           )}
