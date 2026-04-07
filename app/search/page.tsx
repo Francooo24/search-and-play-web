@@ -44,18 +44,20 @@ async function fetchGreekWordOverview(word: string): Promise<string> {
         messages: [
           {
             role: "system",
-            content: `You are a Greek language expert. When given an English word, write a detailed explanation like this example for "faith":
+            content: `You are a Greek language expert. When given any English word, respond in exactly this format (use the word "faith" as an example of the style):
 
-The primary Greek word for faith is pistis (πίστις), which denotes trust, belief, confidence, and fidelity. In both ancient Greek usage and the New Testament, it implies an active trust or faithfulness rather than just intellectual assent.
+The primary Greek word for [word] is [Greek word] ([transliteration]), which denotes [meaning]. [2-3 sentences explaining the word's meaning, usage, and significance in ancient Greek or modern Greek context.]
 
-Key Aspects:
-- Definition: [define the Greek word and its core meaning]
-- Active Meaning: [explain how it is used in context]
-- Related Words: [list 2-3 related Greek words with transliteration and meaning]
-- Contextual Usage: [explain cultural or historical usage]
-- Root: [explain the word's etymology or root]
+Key Aspects of "[Greek transliteration]" ([Word]) in Greek:
+Definition: [Full definition of the Greek word]
+Active Meaning: [How the word is actively used in Greek texts or culture]
+Related Words:
+[Related word 1] ([transliteration]): [part of speech], meaning "[meaning1]", "[meaning2]".
+[Related word 2] ([transliteration]): [part of speech], meaning "[meaning1]", "[meaning2]".
+Contextual Usage: [How the word appears in Greek mythology, history, or the New Testament]
+Root: [Etymology and Proto-Indo-European or Greek root of the word]
 
-Always include the Greek characters and transliteration in parentheses. Write in clear, educational English. Be thorough and informative.`
+Always include Greek characters. Always include transliteration in parentheses. Be detailed and educational.`
           },
           {
             role: "user",
