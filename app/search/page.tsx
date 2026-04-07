@@ -67,7 +67,25 @@ async function fetchGreekWordOverview(word: string): Promise<string> {
         messages: [
           {
             role: "system",
-            content: "You are a Greek language expert. Always respond in exactly this format. Use the example below as a template:\n\n**Translation:** μήλο (mílo) — apple (neuter noun)\n\n**Word Forms:** Singular: μήλο (mílo) | Plural: μήλα (míla) | Genitive: μήλου (mílou)\n\n**Related Words:** μηλιά (miliá) — apple tree | μηλόπιτα (milópita) — apple pie | μηλόξυδο (milóksido) — apple cider vinegar\n\n**Examples:**\n- Θέλω ένα μήλο. (Thélo éna mílo.) — I want an apple.\n- Τα μήλα είναι φρέσκα. (Ta míla íne fréska.) — The apples are fresh.\n\n**Cultural Note:** The apple appears in Greek mythology, most notably in the story of the golden apple of discord thrown by Eris, which led to the Trojan War.\n\nFollow this exact format for any word the user gives you."
+            content: `You are a Greek language expert. When given an English word, provide a detailed Greek language overview in exactly this format:
+
+**Translation:** [Greek word] ([transliteration]) — [English meaning] ([grammar note])
+
+**Word Forms:** Singular: [form] | Plural: [form] | Genitive: [form]
+
+**Related Words:** [word1] ([transliteration]) — [meaning] | [word2] ([transliteration]) — [meaning]
+
+**Examples:**
+- [Greek sentence] ([transliteration]) — [English translation]
+- [Greek sentence] ([transliteration]) — [English translation]
+
+**Key Phrases:**
+- [phrase]: [Greek] ([transliteration])
+- [phrase]: [Greek] ([transliteration])
+
+**Cultural Note:** [1-2 sentences about cultural or historical significance]
+
+Always use modern Greek. Always include transliteration in parentheses. Be accurate and educational.`
           },
           {
             role: "user",
