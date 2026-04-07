@@ -143,43 +143,11 @@ export default function SearchClient({ word, greekWord, definition, phonetic, or
             </div>
           ) : overview ? (
             formatOverview(overview)
-          ) : overviewError ? (
-            <p className="text-red-400 text-xs">Error: {overviewError}</p>
           ) : (
             <p className="text-gray-400 text-sm">Greek: <span className="text-amber-400 font-semibold">{greekWord || word}</span></p>
           )}
         </div>
       </div>
-
-      {/* English Definition */}
-      {definition ? (
-        <div className="w-full max-w-3xl mb-6">
-          <h2 className="text-lg font-semibold text-orange-400 mb-3">📖 English Definition</h2>
-          {definition[0]?.meanings?.map((meaning: any, mi: number) => (
-            <div key={mi} className="glass-card border-l-4 border-l-orange-500 rounded-2xl p-5 mb-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-orange-300 bg-orange-500/15 px-3 py-1 rounded-full">{meaning.partOfSpeech}</span>
-              <ul className="mt-3 space-y-2">
-                {meaning.definitions.slice(0, 3).map((def: any, di: number) => (
-                  <li key={di} className="text-gray-200 text-sm">
-                    <span className="text-gray-500 mr-2">{di + 1}.</span>{def.definition}
-                    {def.example && <p className="text-gray-500 text-xs mt-1 italic">&ldquo;{def.example}&rdquo;</p>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {origin && (
-            <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5 mb-4">
-              <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Etymology / Origin</p>
-              <p className="text-amber-300 text-sm">{origin}</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="glass-card border-l-4 border-l-white/20 rounded-2xl p-5 w-full max-w-3xl mb-6">
-          <p className="text-gray-400 text-sm">No English definition found for &ldquo;{word}&rdquo;.</p>
-        </div>
-      )}
 
       <Link href="/" className="text-orange-400 hover:text-orange-300 transition text-sm mt-2 mb-6">← Back to Home</Link>
     </div>
