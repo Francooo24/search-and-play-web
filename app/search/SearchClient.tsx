@@ -6,15 +6,44 @@ import AudioButton from "@/components/AudioButton";
 
 function formatOverview(text: string) {
   if (!text) return null;
-  const html = text
-    .replace(/\*\*(.+?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>')
-    .replace(/\*(.+?)\*/g, '<em class="text-amber-300">$1</em>')
-    .replace(/\n/g, "<br/>");
+
+  const lines = text.split("\n");
   return (
-    <div
-      className="text-sm text-gray-300 leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className="space-y-2">
+      {lines.map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-2" />;
+
+        // Section headers like "Key Aspects of..."
+        if (line.match(/^Key Aspects/i)) return (
+          <p key={i} className="text-orange-400 font-bold text-sm mt-4 mb-1">{line}</p>
+        );
+
+        // Labels like "Definition:", "Active Meaning:", "Root:", "Contextual Usage:"
+        if (line.match(/^(Definition|Active Meaning|Related Words|Contextual Usage|Root):/i)) {
+          const colon = line.indexOf(":");
+          const label = line.slice(0, colon);
+          const content = line.slice(colon + 1).trim();
+          return (
+            <div key={i} className="text-sm">
+              <span className="text-amber-400 font-semibold">{label}: </span>
+              <span className="text-gray-300">{content}</span>
+            </div>
+          );
+        }
+
+        // Related word lines (indented or starting with Greek)
+        if (line.startsWith("-") || line.match(/^[A-ZΆΈΉΊΌΎΏ]/)) return (
+          <p key={i} className="text-gray-300 text-sm pl-4">• {line.replace(/^-\s*/, "")}</p>
+        );
+
+        // First paragraph (opening sentence)
+        if (i === 0 || (i < 3 && line.length > 40)) return (
+          <p key={i} className="text-gray-200 text-sm leading-relaxed">{line}</p>
+        );
+
+        return <p key={i} className="text-gray-300 text-sm leading-relaxed">{line}</p>;
+      })}
+    </div>
   );
 }
 
@@ -96,7 +125,7 @@ export default function SearchClient({ word, greekWord, definition, phonetic, or
       {/* Greek Overview */}
       <div className="w-full max-w-3xl mb-6">
         <h2 className="text-lg font-semibold text-orange-400 mb-3">🏛️ Greek Overview</h2>
-        <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5 min-h-[120px]">
+        <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5 min-h-[120px]" style={{ fontFamily: "'Noto Sans', 'Segoe UI', Arial Unicode MS, sans-serif" }}>
           {overviewLoading ? (
             <div className="space-y-3 animate-pulse">
               <div className="h-4 bg-white/10 rounded w-full" />
