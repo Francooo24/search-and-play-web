@@ -774,6 +774,7 @@ export default function Admin() {
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Date</label>
                 <input type="date" value={dcForm.challenge_date} onChange={e => setDcForm(f => ({ ...f, challenge_date: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition" />
+                <p className="text-gray-600 text-xs mt-1">The date this challenge will be active for players.</p>
               </div>
               <div>
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Game</label>
@@ -788,35 +789,41 @@ export default function Admin() {
                     </optgroup>
                   ))}
                 </select>
+                <p className="text-gray-600 text-xs mt-1">The game players must play to complete the challenge.</p>
               </div>
               <div>
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Target Type</label>
                 <select value={dcForm.target_type} onChange={e => setDcForm(f => ({ ...f, target_type: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition">
-                  <option value="win">win</option>
-                  <option value="score">score</option>
-                  <option value="play">play</option>
+                  <option value="win">🏆 win — Player must win the game</option>
+                  <option value="play">🎮 play — Player just needs to play</option>
+                  <option value="score">⭐ score — Player must reach a score</option>
                 </select>
+                <p className="text-gray-600 text-xs mt-1">How the challenge is measured.</p>
               </div>
               <div className="col-span-2">
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Title</label>
-                <input type="text" placeholder="Challenge title" value={dcForm.title} onChange={e => setDcForm(f => ({ ...f, title: e.target.value }))}
+                <input type="text" placeholder="e.g. Win 3 Hangman games today!" value={dcForm.title} onChange={e => setDcForm(f => ({ ...f, title: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition" />
+                <p className="text-gray-600 text-xs mt-1">The challenge name shown to players on the home page.</p>
               </div>
               <div className="col-span-2">
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Description</label>
-                <textarea rows={2} placeholder="Brief description" value={dcForm.description} onChange={e => setDcForm(f => ({ ...f, description: e.target.value }))}
+                <textarea rows={2} placeholder="e.g. Play Hangman and win 3 times to earn bonus points!" value={dcForm.description} onChange={e => setDcForm(f => ({ ...f, description: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition resize-none" />
+                <p className="text-gray-600 text-xs mt-1">A brief explanation of what the player needs to do.</p>
               </div>
               <div>
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Target Value</label>
                 <input type="number" min={1} value={dcForm.target_value} onChange={e => setDcForm(f => ({ ...f, target_value: Number(e.target.value) }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition" />
+                <p className="text-gray-600 text-xs mt-1">How many times (e.g. win 3 times = 3).</p>
               </div>
               <div>
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Bonus Points</label>
                 <input type="number" min={0} value={dcForm.bonus_points} onChange={e => setDcForm(f => ({ ...f, bonus_points: Number(e.target.value) }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition" />
+                <p className="text-gray-600 text-xs mt-1">Extra points awarded when the player completes the challenge.</p>
               </div>
             </div>
             <div className="flex gap-3">
