@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   // Save to leaderboard
   await pool.query(
-    "INSERT INTO leaderboard (user_id, player_name, game, score) VALUES ($1, $2, $3, $4)",
+    "INSERT INTO leaderboard (user_id, player_name, game, score, created_at) VALUES ($1, $2, $3, $4, NOW())",
     [userId, playerName, gameLabel, score]
   ).catch(() => {});
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
   const result = won === true ? "Won" : won === false ? "Lost" : "Played";
   await pool.query(
-    "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
+    "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
     [playerName, `${result} "${gameLabel}" with score ${score}`]
   ).catch(() => {});
 
