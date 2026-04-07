@@ -24,6 +24,16 @@ async function fetchDefinition(word: string) {
 }
 
 async function translateToGreek(text: string): Promise<string> {
+  // Try Google Translate first (fast, free)
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=el&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(3000) });
+    const data = await res.json();
+    const translated: string = data?.[0]?.[0]?.[0] ?? "";
+    if (translated.trim()) return translated.trim().split(/\s+/)[0];
+  } catch { /* fall through to OpenRouter */ }
+
+  // Fallback: OpenRouter AI
   try {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -34,14 +44,8 @@ async function translateToGreek(text: string): Promise<string> {
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
         messages: [
-          {
-            role: "system",
-            content: "You are a Greek translator. Respond with ONLY the Greek word translation, nothing else. No explanation, no punctuation, just the single Greek word."
-          },
-          {
-            role: "user",
-            content: `Translate this English word to Greek: ${text}`
-          }
+          { role: "system", content: "You are a Greek translator. Respond with ONLY the Greek word, nothing else." },
+          { role: "user", content: `Translate to Greek: ${text}` }
         ],
       }),
       cache: "no-store",
@@ -205,6 +209,9 @@ export default async function SearchPage({
         {greekWord || word}
       </h1>
       <p className="text-orange-300 font-medium text-lg mb-2 text-center">{word}</p>
+      {greekWord && greekWord !== word && (
+        <p className="text-gray-400 text-sm mb-2 text-center">Greek: <span className="text-amber-400 font-semibold">{greekWord}</span></p>
+      )}
       {session && (
         <div className="flex justify-center mb-6">
           <SaveWordButton word={word} initialSaved={isSaved} />
