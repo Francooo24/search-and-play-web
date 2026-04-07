@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import pool from "@/lib/db";
@@ -11,23 +11,19 @@ export async function GET() {
   const today = new Date().toISOString().split("T")[0];
 
   try {
-    // Get today's challenge
     const { rows: challengeRows } = await pool.query(
       "SELECT * FROM daily_challenges WHERE challenge_date = $1 LIMIT 1",
       [today]
     );
     const challenge = challengeRows[0] ?? null;
-
     if (!challenge) return NextResponse.json({ challenge: null, streak: 0, history: [] });
 
-    // Check if completed
     const { rows: completedRows } = await pool.query(
-      "SELECT id FROM daily_challenge_completions WHERE user_id = $1 AND challenge_id = $2 LIMIT 1",
+      "SELECT id FROM daily_challenge_completions WHERE player_id = $1 AND challenge_id = $2 LIMIT 1",
       [playerId, challenge.id]
     );
     const completed = completedRows.length > 0;
 
-    // Progress
     const { rows: progressRows } = await pool.query(
       "SELECT COUNT(*) as count FROM leaderboard WHERE user_id = $1 AND game = $2 AND DATE(created_at) = $3",
       [playerId, challenge.game, today]
@@ -35,13 +31,12 @@ export async function GET() {
     const progress = Number(progressRows[0]?.count ?? 0);
     const can_claim = !completed && progress >= challenge.target_value;
 
-    // Streak
     let streak = 0;
     const { rows: dateRows } = await pool.query(
       `SELECT DISTINCT dc.challenge_date
        FROM daily_challenge_completions dcc
        JOIN daily_challenges dc ON dcc.challenge_id = dc.id
-       WHERE dcc.user_id = $1
+       WHERE dcc.player_id = $1
        ORDER BY dc.challenge_date DESC`,
       [playerId]
     );
@@ -53,12 +48,11 @@ export async function GET() {
       else break;
     }
 
-    // History
     const { rows: historyRows } = await pool.query(
       `SELECT dc.challenge_date, dc.game, dc.title, dc.bonus_points, dcc.completed_at
        FROM daily_challenge_completions dcc
        JOIN daily_challenges dc ON dcc.challenge_id = dc.id
-       WHERE dcc.user_id = $1
+       WHERE dcc.player_id = $1
        ORDER BY dcc.completed_at DESC LIMIT 7`,
       [playerId]
     );
@@ -98,7 +92,7 @@ export async function POST() {
     if (!challenge) return NextResponse.json({ error: "No challenge today" }, { status: 404 });
 
     const { rows: existing } = await pool.query(
-      "SELECT id FROM daily_challenge_completions WHERE user_id = $1 AND challenge_id = $2 LIMIT 1",
+      "SELECT id FROM daily_challenge_completions WHERE player_id = $1 AND challenge_id = $2 LIMIT 1",
       [playerId, challenge.id]
     );
     if (existing.length > 0) return NextResponse.json({ error: "Already claimed" }, { status: 400 });
@@ -112,7 +106,7 @@ export async function POST() {
       return NextResponse.json({ error: "Challenge not completed yet" }, { status: 400 });
 
     await pool.query(
-      "INSERT INTO daily_challenge_completions (user_id, challenge_id, completed_at) VALUES ($1, $2, NOW())",
+      "INSERT INTO daily_challenge_completions (player_id, challenge_id, completed_at) VALUES ($1, $2, NOW())",
       [playerId, challenge.id]
     );
     await pool.query(
