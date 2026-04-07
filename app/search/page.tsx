@@ -107,40 +107,47 @@ Always use modern Greek. Always include transliteration in parentheses. Be accur
 }
 
 function formatOverview(text: string) {
-  return text
-    .split(/\n\n/)
-    .map((section, i) => (
-      <div key={i} className="border-t border-white/10 pt-3 text-sm text-gray-300 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: section.replace(/\*\*(.+?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>').replace(/\n/g, "<br/>") }}
-      />
-    ));
+  if (!text) return null;
+  // Replace **bold** with styled spans
+  const html = text
+    .replace(/\*\*(.+?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>')
+    .replace(/\*(.+?)\*/g, '<em class="text-amber-300">$1</em>')
+    .replace(/\n/g, "<br/>");
+  return (
+    <div
+      className="text-sm text-gray-300 leading-relaxed mt-3"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 async function GreekOverview({ word, greekWord, greekMatches }: { word: string; greekWord: string; greekMatches: GreekWord[] }) {
   const greekOverview = await fetchGreekWordOverview(word);
   return (
     <div className="w-full max-w-3xl mb-6">
-      <h2 className="text-lg font-semibold text-orange-400 mb-3">🏛️ Greek Word</h2>
-      {greekMatches.length > 0 ? (
-        <div className="flex flex-col gap-4">
-          {greekMatches.map((w, i) => (
-            <div key={i} className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5">
-              <div className="text-2xl font-bold text-amber-400">{w.greek}</div>
-              <div className="text-sm italic text-orange-300 mb-2">{w.transliteration}</div>
-              <div className="text-gray-200">{w.english}</div>
-              <span className="inline-block mt-3 text-xs bg-white/10 text-gray-400 px-3 py-1 rounded-full">{w.category}</span>
-              {greekOverview && <div className="mt-3 space-y-3">{formatOverview(greekOverview)}</div>}
-            </div>
-          ))}
+      <h2 className="text-lg font-semibold text-orange-400 mb-3">🏛️ Greek Overview</h2>
+
+      {/* Local dictionary matches */}
+      {greekMatches.length > 0 && greekMatches.map((w, i) => (
+        <div key={i} className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5 mb-4">
+          <div className="text-2xl font-bold text-amber-400">{w.greek}</div>
+          <div className="text-sm italic text-orange-300 mb-1">{w.transliteration}</div>
+          <div className="text-gray-200 text-sm">{w.english}</div>
+          <span className="inline-block mt-2 text-xs bg-white/10 text-gray-400 px-3 py-1 rounded-full">{w.category}</span>
+        </div>
+      ))}
+
+      {/* AI Overview — always show if available */}
+      {greekOverview ? (
+        <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5">
+          {!greekMatches.length && greekWord && (
+            <div className="text-2xl font-bold text-amber-400 mb-1">{greekWord}</div>
+          )}
+          {formatOverview(greekOverview)}
         </div>
       ) : (
-        <div className="glass-card border-l-4 border-l-amber-500 rounded-2xl p-5">
-          <div className="text-2xl font-bold text-amber-400">{greekWord || word}</div>
-          <div className="text-sm italic text-orange-300 mb-2">{word}</div>
-          {greekOverview
-            ? <div className="mt-3 space-y-3">{formatOverview(greekOverview)}</div>
-            : <div className="text-gray-400 text-sm mt-1">Greek translation: {greekWord || "—"}</div>
-          }
+        <div className="glass-card border-l-4 border-l-white/20 rounded-2xl p-5">
+          <p className="text-gray-400 text-sm">Greek translation: <span className="text-amber-400 font-semibold">{greekWord || word}</span></p>
         </div>
       )}
     </div>
