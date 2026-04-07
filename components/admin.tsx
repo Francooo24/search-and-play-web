@@ -803,13 +803,34 @@ export default function Admin() {
               </div>
               <div className="col-span-2">
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Title</label>
-                <input type="text" placeholder="e.g. Win 3 Hangman games today!" value={dcForm.title} onChange={e => setDcForm(f => ({ ...f, title: e.target.value }))}
+                <select value={dcForm.title} onChange={e => setDcForm(f => ({ ...f, title: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition mb-2">
+                  <option value="">— Select a title or type below —</option>
+                  {dcForm.game && [
+                    `Win ${dcForm.target_value} ${dcForm.game} game${dcForm.target_value > 1 ? 's' : ''} today!`,
+                    `Play ${dcForm.game} and earn bonus points!`,
+                    `Complete ${dcForm.target_value} ${dcForm.game} challenge${dcForm.target_value > 1 ? 's' : ''}!`,
+                    `${dcForm.game} Daily Challenge`,
+                    `Master ${dcForm.game} today!`,
+                  ].map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <input type="text" placeholder="Or type a custom title..." value={dcForm.title} onChange={e => setDcForm(f => ({ ...f, title: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition" />
                 <p className="text-gray-600 text-xs mt-1">The challenge name shown to players on the home page.</p>
               </div>
               <div className="col-span-2">
                 <label className="text-gray-400 text-xs font-medium mb-1.5 block uppercase tracking-wider">Description</label>
-                <textarea rows={2} placeholder="e.g. Play Hangman and win 3 times to earn bonus points!" value={dcForm.description} onChange={e => setDcForm(f => ({ ...f, description: e.target.value }))}
+                <select value={dcForm.description} onChange={e => setDcForm(f => ({ ...f, description: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition mb-2">
+                  <option value="">— Select a description or type below —</option>
+                  {dcForm.game && [
+                    `Play ${dcForm.game} and ${dcForm.target_type} ${dcForm.target_value} time${dcForm.target_value > 1 ? 's' : ''} to earn ${dcForm.bonus_points} bonus points!`,
+                    `Complete the ${dcForm.game} challenge ${dcForm.target_value} time${dcForm.target_value > 1 ? 's' : ''} today and get rewarded!`,
+                    `Show your skills in ${dcForm.game}! ${dcForm.target_type === 'win' ? 'Win' : dcForm.target_type === 'play' ? 'Play' : 'Score'} ${dcForm.target_value} time${dcForm.target_value > 1 ? 's' : ''} to claim your bonus.`,
+                    `Today's challenge: ${dcForm.target_type} ${dcForm.target_value} game${dcForm.target_value > 1 ? 's' : ''} of ${dcForm.game} for ${dcForm.bonus_points} pts!`,
+                  ].map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <textarea rows={2} placeholder="Or type a custom description..." value={dcForm.description} onChange={e => setDcForm(f => ({ ...f, description: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-orange-500 transition resize-none" />
                 <p className="text-gray-600 text-xs mt-1">A brief explanation of what the player needs to do.</p>
               </div>
