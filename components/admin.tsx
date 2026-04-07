@@ -765,7 +765,7 @@ export default function Admin() {
       {/* ── Daily Challenge Form Modal ── */}
       {showDcForm && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setShowDcForm(false)}>
-          <div className="bg-gray-950 border border-orange-500/40 rounded-3xl p-8 max-w-lg w-full shadow-2xl" style={{ boxShadow: "0 0 60px rgba(249,115,22,0.15)" }} onClick={e => e.stopPropagation()}>
+          <div className="bg-gray-950 border border-orange-500/40 rounded-3xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" style={{ boxShadow: "0 0 60px rgba(249,115,22,0.15)" }} onClick={e => e.stopPropagation()}>
             <div className="w-14 h-14 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-2xl mx-auto mb-5">📅</div>
             <h2 className="text-xl font-bold text-white text-center mb-1">{dcEditing ? "Edit Challenge" : "New Daily Challenge"}</h2>
             <p className="text-gray-500 text-sm text-center mb-6">{dcEditing ? "Update the scheduled challenge" : "Schedule a challenge for a specific date"}</p>
