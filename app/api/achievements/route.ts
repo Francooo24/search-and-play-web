@@ -13,7 +13,7 @@ export async function GET() {
       `SELECT a.id, a.name, a.description, a.icon, a.condition_type, a.condition_value,
               a.game_specific, ua.earned_at
        FROM achievements a
-       JOIN user_achievements ua ON a.id = ua.achievement_id
+       JOIN player_achievements ua ON a.id = ua.achievement_id
        WHERE ua.user_id = $1
        ORDER BY ua.earned_at DESC`,
       [userId]

@@ -39,7 +39,7 @@ export async function POST() {
     const { rows: allAchievements } = await pool.query(
       `SELECT a.* FROM achievements a
        WHERE a.id NOT IN (
-         SELECT achievement_id FROM user_achievements WHERE user_id = $1
+         SELECT achievement_id FROM player_achievements WHERE user_id = $1
        )`,
       [userId]
     );
@@ -78,7 +78,7 @@ export async function POST() {
 
       if (earned) {
         await pool.query(
-          "INSERT INTO user_achievements (user_id, achievement_id, earned_at) VALUES ($1, $2, NOW()) ON CONFLICT DO NOTHING",
+          "INSERT INTO player_achievements (user_id, achievement_id, earned_at) VALUES ($1, $2, NOW()) ON CONFLICT DO NOTHING",
           [userId, a.id]
         );
         newAchievements.push({ name: a.name, icon: a.icon, description: a.description });
