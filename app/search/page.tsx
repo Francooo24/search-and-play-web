@@ -25,10 +25,29 @@ async function fetchDefinition(word: string) {
 
 async function translateToGreek(text: string): Promise<string> {
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=el&dt=t&q=${encodeURIComponent(text)}`;
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: "You are a Greek translator. Respond with ONLY the Greek word translation, nothing else. No explanation, no punctuation, just the single Greek word."
+          },
+          {
+            role: "user",
+            content: `Translate this English word to Greek: ${text}`
+          }
+        ],
+      }),
+      cache: "no-store",
+    });
     const data = await res.json();
-    const translated: string = data?.[0]?.[0]?.[0] ?? "";
+    const translated = data?.choices?.[0]?.message?.content ?? "";
     return translated.trim().split(/\s+/)[0] ?? "";
   } catch {
     return "";

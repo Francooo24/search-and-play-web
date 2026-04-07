@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   if (!word) return NextResponse.json({ ok: false });
 
   await pool.query(
-    "INSERT INTO activity_logs (player_name, activity) VALUES ($1, $2)",
+    "INSERT INTO activity_logs (player_name, activity, created_at) VALUES ($1, $2, NOW())",
     [playerName, `Searched for "${word}"`]
   ).catch(() => {});
 
