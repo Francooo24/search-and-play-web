@@ -165,7 +165,7 @@ export default function HomeClient() {
       <section className="w-full flex flex-col items-center text-center px-6 pt-16 pb-44 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-10 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-none mb-10 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
           <span className="relative inline-block mt-2">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
@@ -203,7 +203,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-28">
+      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-28 -mt-16">
         <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {STATS.map(s => (
             <div key={s.label}>

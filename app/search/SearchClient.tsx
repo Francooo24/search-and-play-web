@@ -15,12 +15,18 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    // Unsplash Source — free, no API key needed
-    const url = `https://source.unsplash.com/400x300/?${encodeURIComponent(word)}`;
-    const img = new Image();
-    img.onload = () => setImgSrc(url);
-    img.onerror = () => setImgSrc(null);
-    img.src = url;
+    // Wikimedia Commons image search — free, no API key needed
+    const controller = new AbortController();
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`, {
+      signal: controller.signal,
+    })
+      .then(r => r.json())
+      .then(d => {
+        const url = d?.thumbnail?.source || d?.originalimage?.source || null;
+        setImgSrc(url);
+      })
+      .catch(() => setImgSrc(null));
+    return () => controller.abort();
   }, [word]);
 
   const toggleSave = async () => {
@@ -40,7 +46,7 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
     <div className="flex flex-col items-center px-4 sm:px-6 py-8 md:py-12 relative z-10">
 
       {/* Search bar */}
-      <form action="/search" method="GET" className="flex w-full max-w-lg mb-8">
+      <form action="/search" method="GET" className="flex w-full max-w-3xl mb-8">
         <input name="word" defaultValue={word} placeholder="Search another word..."
           className="flex-grow px-4 py-3 text-base rounded-l-lg focus:outline-none bg-white/5 border border-white/10 text-white focus:border-orange-500 transition" />
         <button type="submit" className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 text-base font-medium rounded-r-lg hover:from-orange-600 hover:to-amber-600 transition">Search</button>
