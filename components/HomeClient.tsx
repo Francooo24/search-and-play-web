@@ -69,31 +69,31 @@ function DailyChallengeBanner() {
   const authed = status === "authenticated";
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border px-5 py-4 flex items-center gap-4 w-full
+    <div className={`relative overflow-hidden rounded-2xl border px-8 py-7 flex items-center gap-6 w-full
       ${completed ? "border-green-500/30 bg-green-500/5" : "border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent"}`}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(249,115,22,0.08),transparent_60%)] pointer-events-none" />
-      <div className="text-3xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
+      <div className="text-5xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
       <div className="flex-1 min-w-0 relative">
-        <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-0.5">Daily Challenge</p>
+        <p className="text-sm font-black uppercase tracking-widest text-orange-400 mb-1">Daily Challenge</p>
         {!authed ? (
-          <p className="text-white font-bold text-sm">Sign in to see today&apos;s challenge</p>
+          <p className="text-white font-bold text-xl">Sign in to see today&apos;s challenge</p>
         ) : !challenge ? (
-          <p className="text-white font-bold text-sm">No challenge available today</p>
+          <p className="text-white font-bold text-xl">No challenge available today</p>
         ) : completed ? (
-          <p className="text-white font-bold text-sm">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
+          <p className="text-white font-bold text-xl">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
         ) : (
           <>
-            <p className="text-white font-bold text-sm truncate">{challenge.title}</p>
-            <p className="text-gray-500 text-xs">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
+            <p className="text-white font-bold text-xl truncate">{challenge.title}</p>
+            <p className="text-gray-500 text-base mt-1">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
           </>
         )}
       </div>
       {!authed ? (
-        <Link href="/login" className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition">Sign In</Link>
+        <Link href="/login" className="flex-shrink-0 text-base font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-7 py-3 rounded-xl transition">Sign In</Link>
       ) : completed ? (
-        <Link href="/daily-challenge" className="flex-shrink-0 text-xs font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-4 py-2 rounded-xl transition">View</Link>
+        <Link href="/daily-challenge" className="flex-shrink-0 text-base font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-7 py-3 rounded-xl transition">View</Link>
       ) : challenge ? (
-        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition whitespace-nowrap">Play Now →</Link>
+        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-base font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-7 py-3 rounded-xl transition whitespace-nowrap">Play Now →</Link>
       ) : null}
     </div>
   );
@@ -120,17 +120,17 @@ function TopPlayers() {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {players.map((p, i) => (
-        <div key={i} className="flex items-center gap-3 bg-white/3 hover:bg-white/5 border border-white/8 rounded-2xl px-4 py-3 transition">
-          <span className="text-xl w-7 text-center flex-shrink-0">{medals[i]}</span>
-          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-sm flex-shrink-0`}>
+        <div key={i} className="flex items-center gap-5 bg-white/3 hover:bg-white/5 border border-white/8 rounded-2xl px-6 py-5 transition">
+          <span className="text-3xl w-9 text-center flex-shrink-0">{medals[i]}</span>
+          <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-lg flex-shrink-0`}>
             {p.player_name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm truncate">{p.player_name} {flag(p.country)}</p>
+            <p className="text-white font-semibold text-base truncate">{p.player_name} {flag(p.country)}</p>
           </div>
-          <p className="text-orange-400 font-black text-sm flex-shrink-0">{p.total_score.toLocaleString()} pts</p>
+          <p className="text-orange-400 font-black text-base flex-shrink-0">{p.total_score.toLocaleString()} pts</p>
         </div>
       ))}
     </div>
@@ -170,7 +170,7 @@ export default function HomeClient() {
           English Dictionary &amp; Word Games
         </div>
 
-        <h1 className="text-7xl sm:text-8xl md:text-9xl font-black text-white tracking-tight leading-none mb-10 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-8xl sm:text-9xl md:text-[10rem] font-black text-white tracking-tight leading-none mb-10 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
           <span className="relative inline-block mt-2">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
@@ -280,23 +280,23 @@ export default function HomeClient() {
             <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
             <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Category</h2>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 mb-5">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-5 mb-6">
             {CATEGORIES.map((cat, i) => (
               <button key={cat.label} onClick={() => setActiveCategory(activeCategory === i ? null : i)}
-                className={`rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
+                className={`rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
                   ${activeCategory === i
                     ? "border-orange-500/50 bg-orange-500/10 shadow-lg shadow-orange-500/10"
                     : "border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5"}`}>
-                <div className="text-3xl mb-2">{cat.emoji}</div>
+                <div className="text-4xl mb-3">{cat.emoji}</div>
                 <div className="text-sm font-bold text-gray-300">{cat.label}</div>
               </button>
             ))}
           </div>
           {activeCategory !== null && (
-            <div className="flex flex-wrap gap-3 justify-center p-5 rounded-2xl border border-white/8 bg-white/2">
+            <div className="flex flex-wrap gap-3 justify-center p-6 rounded-2xl border border-white/8 bg-white/2">
               {CATEGORIES[activeCategory].words.map(w => (
                 <Link key={w} href={`/search?word=${w}`}
-                  className="text-sm bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-4 py-1.5 rounded-full transition">
+                  className="text-base bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-6 py-2 rounded-full transition">
                   {w}
                 </Link>
               ))}
@@ -306,20 +306,20 @@ export default function HomeClient() {
 
         {/* ── CTA ── */}
         {!session?.user && (
-          <section className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent p-8 sm:p-10 text-center">
+          <section className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent p-12 sm:p-16 text-center">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08),transparent_70%)] pointer-events-none" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-2">Get Started</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-sm font-black uppercase tracking-widest text-orange-400 mb-4">Get Started</p>
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
               Ready to Play &amp; Learn?
             </h2>
-            <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+            <p className="text-gray-400 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
               Create a free account to save words, track your scores, and compete on the leaderboard.
             </p>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black px-8 py-3 rounded-2xl transition shadow-lg shadow-orange-500/20">
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-lg px-10 py-4 rounded-2xl transition shadow-lg shadow-orange-500/20">
                 Create Free Account
               </Link>
-              <Link href="/login" className="border border-white/15 hover:border-white/30 text-gray-300 hover:text-white font-bold px-8 py-3 rounded-2xl transition">
+              <Link href="/login" className="border border-white/15 hover:border-white/30 text-gray-300 hover:text-white font-bold text-lg px-10 py-4 rounded-2xl transition">
                 Sign In
               </Link>
             </div>
