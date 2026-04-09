@@ -7,13 +7,14 @@ import dynamic from "next/dynamic";
 
 const SearchBox = dynamic(() => import("@/components/SearchBox"), { ssr: false });
 
-const POPULAR = ["apple", "peace", "love", "happy", "world"];
+const POPULAR = ["serendipity", "ephemeral", "resilience", "wanderlust", "eloquent"];
 
 const FEATURED_GAMES = [
-  { slug: "wordle",      name: "WordGuess",     icon: "📝", desc: "Guess the 5-letter word in 6 tries!",        color: "from-green-500/20 to-teal-500/10",   border: "border-green-500/30",  badge: "Teen"  },
-  { slug: "wordblitz",   name: "Word Blitz",    icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-500/20 to-amber-500/10", border: "border-orange-500/30", badge: "Adult" },
-  { slug: "memory",      name: "Memory Game",   icon: "🧠", desc: "Flip cards and find all matching pairs!",      color: "from-blue-500/20 to-cyan-500/10",    border: "border-blue-500/30",   badge: "Kids"  },
+  { slug: "wordle",    name: "WordGuess",   icon: "📝", desc: "Guess the 5-letter word in 6 tries!",         color: "from-emerald-500 to-teal-600",   badge: "Teen"  },
+  { slug: "wordblitz", name: "Word Blitz",  icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-500 to-amber-600",    badge: "Adult" },
+  { slug: "memory",    name: "Memory Game", icon: "🧠", desc: "Flip cards and find all matching pairs!",       color: "from-blue-500 to-indigo-600",    badge: "Kids"  },
 ];
+
 const CATEGORIES = [
   { emoji: "🌿", label: "Nature",   words: ["ocean","forest","mountain","river","storm"] },
   { emoji: "❤️", label: "Emotions", words: ["love","joy","grief","hope","fear"] },
@@ -21,6 +22,13 @@ const CATEGORIES = [
   { emoji: "🔬", label: "Science",  words: ["atom","energy","gravity","cell","light"] },
   { emoji: "🎨", label: "Arts",     words: ["music","poetry","drama","color","dance"] },
   { emoji: "🧠", label: "Mind",     words: ["logic","wisdom","memory","dream","soul"] },
+];
+
+const STATS = [
+  { value: "50+",    label: "Word Games"      },
+  { value: "10K+",   label: "Words Available" },
+  { value: "3",      label: "Age Groups"      },
+  { value: "Free",   label: "Always"          },
 ];
 
 function DailyChallengeBanner() {
@@ -33,10 +41,7 @@ function DailyChallengeBanner() {
     if (status !== "authenticated") return;
     fetch("/api/daily-challenge")
       .then(r => r.json())
-      .then(d => {
-        setChallenge(d.challenge ?? null);
-        setCompleted(d.completed ?? false);
-      })
+      .then(d => { setChallenge(d.challenge ?? null); setCompleted(d.completed ?? false); })
       .catch(() => {});
   }, [status]);
 
@@ -63,44 +68,35 @@ function DailyChallengeBanner() {
   };
 
   if (status === "loading") return null;
-
   const authed = status === "authenticated";
 
   return (
-    <div className="w-full max-w-xl mb-10">
-      <div className={`relative overflow-hidden rounded-2xl border px-5 py-4 flex items-center gap-4
-        ${ completed ? "border-green-500/30 bg-green-500/5" : "border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent" }`}>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(249,115,22,0.08),transparent_60%)] pointer-events-none" />
-        <div className="text-3xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
-        <div className="flex-1 min-w-0 relative">
-          <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-0.5">Daily Challenge</p>
-          {!authed ? (
-            <p className="text-white font-bold text-sm">Sign in to see today&apos;s challenge</p>
-          ) : !challenge ? (
-            <p className="text-white font-bold text-sm">No challenge available today</p>
-          ) : completed ? (
-            <p className="text-white font-bold text-sm">Challenge complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
-          ) : (
-            <>
-              <p className="text-white font-bold text-sm truncate">{challenge.title}</p>
-              <p className="text-gray-500 text-xs">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
-            </>
-          )}
-        </div>
+    <div className={`relative overflow-hidden rounded-2xl border px-5 py-4 flex items-center gap-4 w-full
+      ${completed ? "border-green-500/30 bg-green-500/5" : "border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent"}`}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(249,115,22,0.08),transparent_60%)] pointer-events-none" />
+      <div className="text-3xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
+      <div className="flex-1 min-w-0 relative">
+        <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-0.5">Daily Challenge</p>
         {!authed ? (
-          <Link href="/login" className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition">
-            Sign In
-          </Link>
+          <p className="text-white font-bold text-sm">Sign in to see today&apos;s challenge</p>
+        ) : !challenge ? (
+          <p className="text-white font-bold text-sm">No challenge available today</p>
         ) : completed ? (
-          <Link href="/daily-challenge" className="flex-shrink-0 text-xs font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-4 py-2 rounded-xl transition">
-            View
-          </Link>
-        ) : challenge ? (
-          <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition whitespace-nowrap">
-            Play Now →
-          </Link>
-        ) : null}
+          <p className="text-white font-bold text-sm">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
+        ) : (
+          <>
+            <p className="text-white font-bold text-sm truncate">{challenge.title}</p>
+            <p className="text-gray-500 text-xs">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
+          </>
+        )}
       </div>
+      {!authed ? (
+        <Link href="/login" className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition">Sign In</Link>
+      ) : completed ? (
+        <Link href="/daily-challenge" className="flex-shrink-0 text-xs font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-4 py-2 rounded-xl transition">View</Link>
+      ) : challenge ? (
+        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl transition whitespace-nowrap">Play Now →</Link>
+      ) : null}
     </div>
   );
 }
@@ -126,17 +122,15 @@ function TopPlayers() {
   }
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden">
+    <div className="space-y-2">
       {players.map((p, i) => (
-        <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i < players.length - 1 ? "border-b border-white/5" : ""}`}>
-          <span className="text-lg w-6 text-center flex-shrink-0">{medals[i]}</span>
-          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-xs flex-shrink-0`}>
+        <div key={i} className="flex items-center gap-3 bg-white/3 hover:bg-white/5 border border-white/8 rounded-2xl px-4 py-3 transition">
+          <span className="text-xl w-7 text-center flex-shrink-0">{medals[i]}</span>
+          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-sm flex-shrink-0`}>
             {p.player_name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm truncate">
-              {p.player_name} {flag(p.country)}
-            </p>
+            <p className="text-white font-semibold text-sm truncate">{p.player_name} {flag(p.country)}</p>
           </div>
           <p className="text-orange-400 font-black text-sm flex-shrink-0">{p.total_score.toLocaleString()} pts</p>
         </div>
@@ -169,26 +163,53 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center text-center px-4 relative z-10 pt-12" suppressHydrationWarning>
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-        Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">English</span> word
-      </h1>
-      <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 md:mb-12 max-w-3xl">
-        Definitions, examples, and save words to study later.
-      </p>
+    <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
-      {/* Search */}
-      <div className="w-full max-w-xl mb-6 md:mb-8">
-        <SearchBox onSearch={handleSearch} />
-        <p className="text-sm text-gray-400 mb-3">Popular right now:</p>
-        <div className="flex gap-3 flex-wrap justify-center">
+      {/* ── HERO ── */}
+      <section className="w-full flex flex-col items-center text-center px-4 pt-16 pb-20 relative overflow-hidden">
+        {/* Background glow blobs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+          English Dictionary & Word Games
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-5 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Discover the Power<br />
+          of <span className="relative inline-block">
+            <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Every Word</span>
+            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
+          </span>
+        </h1>
+
+        <p className="text-gray-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
+          Instant definitions, pronunciations, and examples — plus 50+ word games for all ages.
+        </p>
+
+        {/* Search */}
+        <div className="w-full max-w-2xl mb-6">
+          <SearchBox onSearch={handleSearch} />
+        </div>
+
+        {/* Popular words */}
+        <div className="flex items-center gap-2 flex-wrap justify-center mb-4">
+          <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Try:</span>
           {POPULAR.map(w => (
-            <a key={w} href={`/search?word=${w}`} className="text-sm bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 transition border border-white/10">{w}</a>
+            <button key={w} onClick={() => handleSearch(w)}
+              className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1.5 rounded-full transition">
+              {w}
+            </button>
           ))}
         </div>
+
+        {/* Recent searches */}
         {mounted && recentSearches.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap justify-center mt-4">
-            <span className="text-xs text-gray-500 font-semibold uppercase tracking-widest">Recent:</span>
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent:</span>
             {recentSearches.map(w => (
               <button key={w} onClick={() => handleSearch(w)}
                 className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
@@ -199,111 +220,148 @@ export default function HomeClient() {
               </button>
             ))}
             <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
-              className="text-[10px] text-gray-600 hover:text-gray-400 transition ml-1">clear</button>
+              className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Word of the Day */}
-      {wordOfDay && (
-        <div className="glass-card border-l-4 border-l-orange-500 rounded-2xl px-6 py-5 mb-10 max-w-xl w-full text-left">
-          <p className="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-2">✦ Word of the Day</p>
-          <div className="flex items-center justify-between mb-1">
-            <div>
-              <p className="text-2xl font-bold text-white cursor-pointer" onClick={() => handleSearch(wordOfDay.word)}>{wordOfDay.word}</p>
+      {/* ── STATS BAR ── */}
+      <section className="w-full border-y border-white/5 bg-white/2 py-6 mb-16">
+        <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          {STATS.map(s => (
+            <div key={s.label}>
+              <p className="text-3xl font-black text-white mb-0.5">{s.value}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="w-full max-w-5xl mx-auto px-4 space-y-16 pb-20">
+
+        {/* ── WORD OF THE DAY + DAILY CHALLENGE ── */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Word of the Day */}
+          {wordOfDay && (
+            <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/8 to-amber-500/3 p-6 cursor-pointer group"
+              onClick={() => handleSearch(wordOfDay.word)}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-3 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" /> Word of the Day
+              </p>
+              <p className="text-3xl font-black text-white mb-1 group-hover:text-orange-300 transition" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {wordOfDay.word}
+              </p>
               {wordOfDay.english_word && (
-                <p className="text-sm text-orange-300 font-medium mt-0.5">{wordOfDay.english_word}</p>
+                <p className="text-sm text-orange-300 font-medium mb-2">{wordOfDay.english_word}</p>
               )}
+              <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">{wordOfDay.definition}</p>
+              <p className="text-orange-400 text-xs font-bold mt-3 opacity-0 group-hover:opacity-100 transition">Look it up →</p>
             </div>
-            <button
-              onClick={() => {
-                const audio = new Audio(`/api/tts?text=${encodeURIComponent(wordOfDay.word)}&lang=el&v=${Date.now()}`);
-                audio.play();
-              }}
-              title="Listen to Greek pronunciation"
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-orange-500/15 hover:bg-orange-500/30 border border-orange-500/25 text-orange-400 transition hover:scale-110"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M12 6a7 7 0 010 12M9 9v6m-3-3h.01" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            </button>
+          )}
+
+          {/* Daily Challenge */}
+          <div className="rounded-3xl">
+            <DailyChallengeBanner />
           </div>
-          <p className="text-gray-400 text-sm line-clamp-2 cursor-pointer" onClick={() => handleSearch(wordOfDay.word)}>{wordOfDay.definition}</p>
-        </div>
-      )}
+        </section>
 
-      {/* Daily Challenge Banner */}
-      <DailyChallengeBanner />
-
-      {/* Top Players */}
-      <div className="w-full max-w-xl mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-400">Top players:</p>
-          <Link href="/leaderboard" className="text-xs text-orange-400 hover:text-orange-300 transition font-semibold">View all →</Link>
-        </div>
-        <TopPlayers />
-      </div>
-
-      {/* Featured Games */}
-      <div className="w-full max-w-xl mb-10">
-        <p className="text-sm text-gray-400 mb-4">Featured games:</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {FEATURED_GAMES.map(g => (
-            <div key={g.slug} className={`glass-card rounded-2xl p-4 flex flex-col gap-2 bg-gradient-to-br ${g.color} border ${g.border} hover:-translate-y-1 transition`}>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl">{g.icon}</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-gray-400">{g.badge}</span>
-              </div>
-              <p className="text-white font-black text-sm">{g.name}</p>
-              <p className="text-gray-400 text-xs flex-1">{g.desc}</p>
-              <Link href={`/games/${g.slug}`} className="mt-1 w-full text-center text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-3 py-2 rounded-xl transition">
-                Play Now →
-              </Link>
+        {/* ── FEATURED GAMES ── */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Featured</p>
+              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Quick Links */}
-      <div className="w-full max-w-xl mb-10">
-        <p className="text-sm text-gray-400 mb-4">Explore:</p>
-        <div className="grid grid-cols-3 gap-3">
-          <Link href="/games" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
-            <span className="text-3xl">🎮</span>
-            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Games</span>
-            <span className="text-[10px] text-gray-600 text-center">Play word games</span>
-          </Link>
-          <Link href="/leaderboard" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
-            <span className="text-3xl">🏆</span>
-            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Leaderboard</span>
-            <span className="text-[10px] text-gray-600 text-center">Top players</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Categories */}
-      <div className="w-full max-w-xl mb-10 md:mb-14">
-        <p className="text-sm text-gray-400 mb-4">Browse by category:</p>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
-          {CATEGORIES.map((cat, i) => (
-            <button
-              key={cat.label}
-              onClick={() => setActiveCategory(activeCategory === i ? null : i)}
-              className={`glass-card rounded-xl p-3 text-center cursor-pointer transition hover:-translate-y-1 ${activeCategory === i ? "border-orange-500 bg-orange-500/8" : ""}`}
-            >
-              <div className="text-2xl mb-1">{cat.emoji}</div>
-              <div className="text-xs font-medium text-gray-300">{cat.label}</div>
-            </button>
-          ))}
-        </div>
-        {activeCategory !== null && (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {CATEGORIES[activeCategory].words.map(w => (
-              <Link key={w} href={`/search?word=${w}`} className="text-sm bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-4 py-1.5 rounded-full transition">{w}</Link>
+            <Link href="/games" className="text-xs font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+              All Games →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {FEATURED_GAMES.map(g => (
+              <Link key={g.slug} href={`/games/${g.slug}`}
+                className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
+                <div className={`h-32 bg-gradient-to-br ${g.color} flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300`}>
+                  {g.icon}
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-white font-black text-sm">{g.name}</p>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/8 text-gray-400 border border-white/10">{g.badge}</span>
+                  </div>
+                  <p className="text-gray-500 text-xs leading-relaxed">{g.desc}</p>
+                </div>
+              </Link>
             ))}
           </div>
+        </section>
+
+        {/* ── TOP PLAYERS ── */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Rankings</p>
+              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Top Players</h2>
+            </div>
+            <Link href="/leaderboard" className="text-xs font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+              Full Board →
+            </Link>
+          </div>
+          <TopPlayers />
+        </section>
+
+        {/* ── BROWSE CATEGORIES ── */}
+        <section>
+          <div className="mb-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Explore</p>
+            <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Category</h2>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
+            {CATEGORIES.map((cat, i) => (
+              <button key={cat.label} onClick={() => setActiveCategory(activeCategory === i ? null : i)}
+                className={`rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
+                  ${activeCategory === i
+                    ? "border-orange-500/50 bg-orange-500/10 shadow-lg shadow-orange-500/10"
+                    : "border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5"}`}>
+                <div className="text-2xl mb-1.5">{cat.emoji}</div>
+                <div className="text-xs font-bold text-gray-300">{cat.label}</div>
+              </button>
+            ))}
+          </div>
+          {activeCategory !== null && (
+            <div className="flex flex-wrap gap-2 justify-center p-4 rounded-2xl border border-white/8 bg-white/2">
+              {CATEGORIES[activeCategory].words.map(w => (
+                <Link key={w} href={`/search?word=${w}`}
+                  className="text-sm bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-4 py-1.5 rounded-full transition">
+                  {w}
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* ── CTA ── */}
+        {!session?.user && (
+          <section className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent p-8 sm:p-12 text-center">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08),transparent_70%)] pointer-events-none" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-3">Get Started</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Ready to Play & Learn?
+            </h2>
+            <p className="text-gray-400 text-sm mb-8 max-w-md mx-auto">
+              Create a free account to save words, track your scores, and compete on the leaderboard.
+            </p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black px-8 py-3 rounded-2xl transition shadow-lg shadow-orange-500/20">
+                Create Free Account
+              </Link>
+              <Link href="/login" className="border border-white/15 hover:border-white/30 text-gray-300 hover:text-white font-bold px-8 py-3 rounded-2xl transition">
+                Sign In
+              </Link>
+            </div>
+          </section>
         )}
+
       </div>
     </div>
   );
