@@ -56,19 +56,29 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
         {/* Word image */}
         {imgSrc && (
-          <div className="w-full rounded-2xl overflow-hidden border border-white/10 h-56 sm:h-72">
+          <div className="relative w-full rounded-3xl overflow-hidden border border-white/10 h-64 sm:h-80 group shadow-2xl shadow-black/40">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgSrc} alt={word} className="w-full h-full object-cover" />
+            <img src={imgSrc} alt={word} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            {/* Word label on image */}
+            <div className="absolute bottom-0 left-0 right-0 px-6 py-5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">📖 Word Image</p>
+              <h2 className="text-3xl font-black text-white capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>{word}</h2>
+              {phonetic && <p className="text-amber-300 font-mono text-sm mt-0.5">{phonetic}</p>}
+            </div>
           </div>
         )}
 
-        {/* Word header */}
+        {/* Word header — only show phonetic/save if image already shows the word */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-              {word}
-            </h1>
-            {phonetic && <p className="text-amber-300 font-mono text-lg mt-1">{phonetic}</p>}
+            {!imgSrc && (
+              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {word}
+              </h1>
+            )}
+            {!imgSrc && phonetic && <p className="text-amber-300 font-mono text-lg mt-1">{phonetic}</p>}
           </div>
           <div className="flex items-center gap-3">
             <AudioButton text={word} lang="en" label="Listen" />
