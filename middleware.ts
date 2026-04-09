@@ -14,6 +14,11 @@ const PROTECTED = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Always allow public files
+  if (pathname.startsWith("/manifest") || pathname.startsWith("/icons") || pathname.startsWith("/sw") || pathname === "/favicon.ico") {
+    return NextResponse.next();
+  }
+
   const isProtected = PROTECTED.some(p => pathname === p || pathname.startsWith(p + "/"));
   if (!isProtected) return NextResponse.next();
 

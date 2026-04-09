@@ -1,7 +1,7 @@
 {
   "name": "Search & Play",
   "short_name": "S&P",
-  "description": "Greek dictionary and word games platform",
+  "description": "English dictionary and word games platform",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -13,7 +13,7 @@
   ],
   "shortcuts": [
     { "name": "Play Games", "url": "/games", "description": "Browse all games" },
-    { "name": "Dictionary", "url": "/", "description": "Search Greek words" },
+    { "name": "Dictionary", "url": "/", "description": "Search English words" },
     { "name": "Leaderboard", "url": "/leaderboard", "description": "View rankings" }
   ],
   "categories": ["education", "games"]
