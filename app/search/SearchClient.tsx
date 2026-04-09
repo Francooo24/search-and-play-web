@@ -1,7 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AudioButton from "@/components/AudioButton";
+
+async function translate(word: string, lang: string): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|${lang}`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    const data = await res.json();
+    return data?.responseData?.translatedText ?? "";
+  } catch { return ""; }
+}
 
 export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn }: {
   word: string;
@@ -11,8 +23,12 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
   isSaved: boolean;
   isLoggedIn: boolean;
 }) {
+  const router = useRouter();
   const [saved, setSaved] = useState(isSaved);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [tagalog, setTagalog] = useState("");
+  const [bisaya, setBisaya] = useState("");
+  const [loadingTrans, setLoadingTrans] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -21,6 +37,18 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
       .then(d => setImgSrc(d.url ?? null))
       .catch(() => setImgSrc(null));
     return () => controller.abort();
+  }, [word]);
+
+  useEffect(() => {
+    setLoadingTrans(true);
+    Promise.all([
+      translate(word, "tl"), // Tagalog
+      translate(word, "ceb"), // Bisaya/Cebuano
+    ]).then(([tl, ceb]) => {
+      setTagalog(tl);
+      setBisaya(ceb);
+      setLoadingTrans(false);
+    });
   }, [word]);
 
   const toggleSave = async () => {
@@ -62,7 +90,7 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
           </div>
         )}
 
-        {/* Word header — only show phonetic/save if image already shows the word */}
+        {/* Word header */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             {!imgSrc && (
@@ -79,6 +107,47 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition ${saved ? "bg-orange-500/20 border-orange-500/40 text-orange-400" : "bg-white/5 border-white/10 text-gray-400 hover:border-orange-500/30 hover:text-orange-400"}`}>
                 {saved ? "★ Saved" : "☆ Save"}
               </button>
+            )}
+          </div>
+        </div>
+
+        {/* Tagalog & Bisaya translations */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Tagalog */}
+          <div className="glass-card rounded-2xl p-5 border border-blue-500/20 bg-blue-500/5">
+            <p className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3">🇵🇭 Tagalog</p>
+            {loadingTrans ? (
+              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
+            ) : tagalog ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-white font-black text-2xl">{tagalog}</p>
+                <button
+                  onClick={() => router.push(`/search?word=${encodeURIComponent(tagalog)}`)}
+                  className="text-xs bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 hover:text-blue-200 px-3 py-1.5 rounded-full transition font-bold">
+                  Search this →
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-600 text-sm">No translation found</p>
+            )}
+          </div>
+
+          {/* Bisaya */}
+          <div className="glass-card rounded-2xl p-5 border border-emerald-500/20 bg-emerald-500/5">
+            <p className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-3">🌴 Bisaya</p>
+            {loadingTrans ? (
+              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
+            ) : bisaya ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-white font-black text-2xl">{bisaya}</p>
+                <button
+                  onClick={() => router.push(`/search?word=${encodeURIComponent(bisaya)}`)}
+                  className="text-xs bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 px-3 py-1.5 rounded-full transition font-bold">
+                  Search this →
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-600 text-sm">No translation found</p>
             )}
           </div>
         </div>
