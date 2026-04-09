@@ -171,7 +171,7 @@ export default function HomeClient() {
   return (
     <div className="flex-grow flex flex-col items-center text-center px-4 relative z-10 pt-12" suppressHydrationWarning>
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-        Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">Greek</span> word
+        Look up any <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">English</span> word
       </h1>
       <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 md:mb-12 max-w-3xl">
         Definitions, examples, and save words to study later.
@@ -278,11 +278,6 @@ export default function HomeClient() {
             <span className="text-3xl">🏆</span>
             <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Leaderboard</span>
             <span className="text-[10px] text-gray-600 text-center">Top players</span>
-          </Link>
-          <Link href="/culture" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 hover:-translate-y-1 hover:border-orange-500/40 transition group">
-            <span className="text-3xl">🏛️</span>
-            <span className="text-sm font-bold text-gray-300 group-hover:text-orange-400 transition">Culture</span>
-            <span className="text-[10px] text-gray-600 text-center">Greek culture</span>
           </Link>
         </div>
       </div>

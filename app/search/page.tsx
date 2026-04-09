@@ -17,17 +17,6 @@ async function fetchDefinition(word: string) {
   } catch { return null; }
 }
 
-async function translateToGreek(text: string): Promise<string> {
-  try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=el&dt=t&q=${encodeURIComponent(text)}`;
-    const res = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(4000) });
-    const data = await res.json();
-    const translated: string = data?.[0]?.[0]?.[0] ?? "";
-    if (translated.trim()) return translated.trim();
-  } catch { /* fallthrough */ }
-  return "";
-}
-
 export default async function SearchPage({
   searchParams,
 }: {
@@ -48,11 +37,7 @@ export default async function SearchPage({
     isSaved = rows.length > 0;
   }
 
-  const [definition, greekWord] = await Promise.all([
-    fetchDefinition(word),
-    translateToGreek(word),
-  ]);
-
+  const definition = await fetchDefinition(word);
   const phonetic = definition?.[0]?.phonetic ?? "";
   const origin   = definition?.[0]?.origin ?? "";
 
@@ -61,7 +46,6 @@ export default async function SearchPage({
       <LogSearch word={word} />
       <SearchClient
         word={word}
-        greekWord={greekWord}
         definition={definition}
         phonetic={phonetic}
         origin={origin}
