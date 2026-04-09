@@ -61,6 +61,8 @@ function WordleGame() {
 
   const maxRows = difficulty ? DIFF_CONFIG[difficulty].maxRows : 6;
 
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 1500); };
+
   function startGame(d: Difficulty, si = setIdx) {
     setDifficulty(d);
     const words = WORD_SETS[si].words;
@@ -72,8 +74,6 @@ function WordleGame() {
 
   if (!mounted) return null;
   if (!difficulty) return <DifficultySelect title="WordGuess" icon="📝" subtitle="Guess the 5-letter word!" descriptions={{ Easy: DIFF_CONFIG.Easy.desc, Medium: DIFF_CONFIG.Medium.desc, Hard: DIFF_CONFIG.Hard.desc }} onSelect={startGame} />;
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 1500); };
 
   const addLetter = useCallback((l: string) => {
     if (gameOver || currentCol >= WORD_LEN) return;
