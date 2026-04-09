@@ -147,16 +147,16 @@ function GameCard({ game, isFav }: { game: Game; isFav: boolean }) {
         </div>
 
         {/* Card body */}
-        <div className="p-4 flex flex-col">
+        <div className="p-4 flex flex-col bg-[#0a0a12]">
           <h3 className="text-white font-black text-sm sm:text-base mb-1 leading-tight group-hover:text-orange-400 transition-colors duration-200">
             {game.name}
           </h3>
-          <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">{game.desc}</p>
+          <p className="text-white/70 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">{game.desc}</p>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${accent.pill}`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/20 text-white/80 bg-white/10">
               {game.group}
             </span>
-            <span aria-hidden="true" className="text-orange-500 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200">
+            <span aria-hidden="true" className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200">
               Play →
             </span>
           </div>
