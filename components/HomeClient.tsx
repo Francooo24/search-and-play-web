@@ -143,13 +143,11 @@ export default function HomeClient() {
   const router = useRouter();
   const { data: session } = useSession();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
-  const [wordOfDay, setWordOfDay] = useState<any>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    fetch("/api/word-of-day").then(r => r.json()).then(data => { if (data) setWordOfDay(data); });
     const stored = localStorage.getItem("recent_searches");
     if (stored) setRecentSearches(JSON.parse(stored));
   }, []);
@@ -241,27 +239,8 @@ export default function HomeClient() {
 
         {/* ── WORD OF THE DAY + DAILY CHALLENGE ── */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Word of the Day */}
-          {wordOfDay && (
-            <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/8 to-amber-500/3 p-6 cursor-pointer group"
-              onClick={() => handleSearch(wordOfDay.word)}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-3 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" /> Word of the Day
-              </p>
-              <p className="text-3xl font-black text-white mb-1 group-hover:text-orange-300 transition" style={{ fontFamily: "'Playfair Display', serif" }}>
-                {wordOfDay.word}
-              </p>
-              {wordOfDay.english_word && (
-                <p className="text-sm text-orange-300 font-medium mb-2">{wordOfDay.english_word}</p>
-              )}
-              <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">{wordOfDay.definition}</p>
-              <p className="text-orange-400 text-xs font-bold mt-3 opacity-0 group-hover:opacity-100 transition">Look it up →</p>
-            </div>
-          )}
-
-          {/* Daily Challenge */}
-          <div className="rounded-3xl">
+            {/* Daily Challenge */}
+          <div className="rounded-3xl col-span-full">
             <DailyChallengeBanner />
           </div>
         </section>
