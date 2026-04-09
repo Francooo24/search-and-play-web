@@ -177,15 +177,15 @@ export default function HomeClient() {
 
         {/* Headline */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-5 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Discover the Power<br />
-          of <span className="relative inline-block">
-            <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Every Word</span>
+          Search. Learn.<br />
+          <span className="relative inline-block">
+            <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
           </span>
         </h1>
 
         <p className="text-gray-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
-          Instant definitions, pronunciations, and examples — plus 50+ word games for all ages.
+          Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
         {/* Search */}
