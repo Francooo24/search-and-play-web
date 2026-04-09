@@ -839,32 +839,35 @@ export default function LeaderboardClient() {
     <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen">
 
       {/* ── Hero Header ── */}
-      <div suppressHydrationWarning className="text-center mb-10 w-full max-w-2xl">
-        <div suppressHydrationWarning className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-1.5 rounded-full mb-5">
+      <div suppressHydrationWarning className="text-center mb-12 w-full max-w-3xl relative">
+        {/* Background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+
+        <div suppressHydrationWarning className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-black uppercase tracking-widest px-5 py-2 rounded-full mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
           <span suppressHydrationWarning>Hall of Fame</span>
-
-
         </div>
-        <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Leader<span className="text-orange-400">board</span>
+
+        <h1 className="text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Leader<span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">board</span>
         </h1>
-        <p className="text-gray-500 text-sm leading-relaxed">Compete, climb, and claim your spot at the top.</p>
+        <p className="text-gray-400 text-lg leading-relaxed max-w-xl mx-auto">Compete, climb, and claim your spot at the top.</p>
+
         {totalPlayers && (
-          <div className="mt-4 inline-flex items-center gap-2 bg-white/5 border border-white/8 text-gray-400 text-xs font-semibold px-4 py-2 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <div className="mt-6 inline-flex items-center gap-2 bg-white/5 border border-white/8 text-gray-400 text-sm font-semibold px-5 py-2.5 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             {totalPlayers.toLocaleString()} players competing
           </div>
         )}
       </div>
 
       {/* ── Tab Switcher ── */}
-      <div className="flex items-center gap-1 mb-8 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-md">
+      <div className="flex items-center gap-1 mb-10 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-lg">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${
+            className={`relative flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${
               tab === t.key
-                ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30"
+                ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30"
                 : "text-gray-500 hover:text-gray-300"
             }`}>
             <span className="text-sm leading-none">{t.icon}</span>

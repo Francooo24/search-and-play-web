@@ -172,11 +172,11 @@ export default function HomeClient() {
           </span>
         </h1>
 
-        <p className="text-gray-400 text-xl sm:text-2xl max-w-2xl mb-14 leading-relaxed">
+        <p className="text-gray-400 text-xl sm:text-2xl max-w-4xl mb-14 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        <div className="w-full max-w-2xl mb-10">
+        <div className="w-full max-w-4xl mb-10">
           <SearchBox onSearch={handleSearch} />
         </div>
 
@@ -202,7 +202,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-16 -mt-28">
+      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-16 -mt-36">
         <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {STATS.map(s => (
             <div key={s.label}>
