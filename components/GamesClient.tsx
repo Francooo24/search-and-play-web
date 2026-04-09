@@ -141,7 +141,7 @@ function GameCard({ game, isFav }: { game: Game; isFav: boolean }) {
         {/* Play Store style icon banner */}
         <div
           aria-hidden="true"
-          className={`w-full aspect-square bg-gradient-to-br ${iconBg[game.group]} flex items-center justify-center text-6xl sm:text-7xl group-hover:scale-105 transition-transform duration-300`}
+          className={`w-full h-48 sm:h-56 bg-gradient-to-br ${iconBg[game.group]} flex items-center justify-center text-8xl sm:text-9xl group-hover:scale-105 transition-transform duration-300`}
         >
           {game.icon}
         </div>
