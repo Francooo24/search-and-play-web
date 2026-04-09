@@ -817,7 +817,7 @@ export default function LeaderboardClient() {
           <span suppressHydrationWarning>Hall of Fame</span>
         </div>
 
-        <h1 className="text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-7xl md:text-8xl font-black text-white tracking-tight leading-none mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
           Leader<span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">board</span>
         </h1>
         <p className="text-gray-400 text-lg leading-relaxed max-w-3xl mx-auto">Compete, climb, and claim your spot at the top.</p>
@@ -834,7 +834,7 @@ export default function LeaderboardClient() {
       <div className="flex items-center gap-1 mb-10 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-4xl">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`relative flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${
+            className={`relative flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 ${
               tab === t.key
                 ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30"
                 : "text-gray-500 hover:text-gray-300"
