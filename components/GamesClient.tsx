@@ -136,18 +136,18 @@ function GameCard({ game, isFav }: { game: Game; isFav: boolean }) {
       <Link
         href={`/games/${game.slug}`}
         aria-label={`Play ${game.name} — ${game.desc}`}
-        className="flex flex-col bg-[#0a0a12] border border-white/8 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60"
+        className="flex flex-col bg-[#0a0a12] border border-white/8 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 min-h-[320px] sm:min-h-[360px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60"
       >
         {/* Play Store style icon banner */}
         <div
           aria-hidden="true"
-          className={`w-full h-48 sm:h-56 bg-gradient-to-br ${iconBg[game.group]} flex items-center justify-center text-8xl sm:text-9xl group-hover:scale-105 transition-transform duration-300`}
+          className={`w-full flex-1 bg-gradient-to-br ${iconBg[game.group]} flex items-center justify-center text-[120px] sm:text-[140px] group-hover:scale-105 transition-transform duration-300`}
         >
           {game.icon}
         </div>
 
         {/* Card body */}
-        <div className="p-4 flex flex-col flex-1">
+        <div className="p-4 flex flex-col">
           <h3 className="text-white font-black text-sm sm:text-base mb-1 leading-tight group-hover:text-orange-400 transition-colors duration-200">
             {game.name}
           </h3>
