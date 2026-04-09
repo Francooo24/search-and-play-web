@@ -162,7 +162,7 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-6 pt-40 pb-44 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-6 pt-28 pb-44 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
         <div className="inline-flex items-center gap-3 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-7 py-2.5 rounded-full mb-16">
