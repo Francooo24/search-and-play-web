@@ -125,35 +125,41 @@ function FavButton({ game, initialSaved }: { game: string; initialSaved: boolean
 
 function GameCard({ game, isFav }: { game: Game; isFav: boolean }) {
   const accent = GROUP_ACCENT[game.group];
+  const iconBg: Record<string, string> = {
+    kids:  "from-blue-500 to-cyan-400",
+    teen:  "from-emerald-500 to-teal-400",
+    adult: "from-orange-500 to-amber-400",
+  };
   return (
     <div className="relative group" role="listitem">
       <FavButton game={game.name} initialSaved={isFav} />
       <Link
         href={`/games/${game.slug}`}
         aria-label={`Play ${game.name} — ${game.desc}`}
-        className="block bg-[#0a0a12] border border-white/8 hover:border-white/20 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60"
+        className="flex flex-col bg-[#0a0a12] border border-white/8 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60"
       >
-        {/* Icon */}
+        {/* Play Store style icon banner */}
         <div
           aria-hidden="true"
-          className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${accent.from} border ${accent.border} flex items-center justify-center text-2xl sm:text-3xl mb-4 sm:mb-5 group-hover:scale-110 transition-transform duration-300`}
+          className={`w-full aspect-square bg-gradient-to-br ${iconBg[game.group]} flex items-center justify-center text-6xl sm:text-7xl group-hover:scale-105 transition-transform duration-300`}
         >
           {game.icon}
         </div>
 
-        {/* Name */}
-        <h3 className="text-white font-black text-sm sm:text-base mb-1.5 leading-tight group-hover:text-orange-400 transition-colors duration-200">
-          {game.name}
-        </h3>
-
-        {/* Desc */}
-        <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-4">{game.desc}</p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end mt-auto">
-          <span aria-hidden="true" className="text-orange-500 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1 group-hover:translate-x-0">
-            Play →
-          </span>
+        {/* Card body */}
+        <div className="p-4 flex flex-col flex-1">
+          <h3 className="text-white font-black text-sm sm:text-base mb-1 leading-tight group-hover:text-orange-400 transition-colors duration-200">
+            {game.name}
+          </h3>
+          <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">{game.desc}</p>
+          <div className="flex items-center justify-between">
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${accent.pill}`}>
+              {game.group}
+            </span>
+            <span aria-hidden="true" className="text-orange-500 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200">
+              Play →
+            </span>
+          </div>
         </div>
       </Link>
     </div>
