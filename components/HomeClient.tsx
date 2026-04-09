@@ -164,32 +164,32 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-4 pt-16 pb-20 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-4 pt-24 pb-28 relative overflow-hidden">
         {/* Background glow blobs */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 left-1/4 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-          English Dictionary & Word Games
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-6 py-2 rounded-full mb-10">
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+          English Dictionary &amp; Word Games
         </div>
 
         {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-5 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-none mb-8 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
-          <span className="relative inline-block">
+          <span className="relative inline-block mt-2">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
-            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
+            <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
           </span>
         </h1>
 
-        <p className="text-gray-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
+        <p className="text-gray-400 text-xl sm:text-2xl max-w-2xl mb-12 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
         {/* Search */}
-        <div className="w-full max-w-2xl mb-6">
+        <div className="w-full max-w-2xl mb-8">
           <SearchBox onSearch={handleSearch} />
         </div>
 
