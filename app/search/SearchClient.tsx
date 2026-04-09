@@ -76,6 +76,46 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
       <div className="w-full max-w-5xl space-y-6">
 
+        {/* Tagalog & Bisaya translations */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Tagalog */}
+          <div className="glass-card rounded-2xl p-5 border border-blue-500/20 bg-blue-500/5">
+            <p className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3">🇵🇭 Tagalog</p>
+            {loadingTrans ? (
+              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
+            ) : tagalog ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-white font-black text-2xl">{tagalog}</p>
+                <button
+                  onClick={() => router.push(`/search?word=${encodeURIComponent(tagalog)}`)}
+                  className="text-xs bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 hover:text-blue-200 px-3 py-1.5 rounded-full transition font-bold">
+                  Search this →
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-600 text-sm">No translation found</p>
+            )}
+          </div>
+          {/* Bisaya */}
+          <div className="glass-card rounded-2xl p-5 border border-emerald-500/20 bg-emerald-500/5">
+            <p className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-3">🌴 Bisaya</p>
+            {loadingTrans ? (
+              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
+            ) : bisaya ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-white font-black text-2xl">{bisaya}</p>
+                <button
+                  onClick={() => router.push(`/search?word=${encodeURIComponent(bisaya)}`)}
+                  className="text-xs bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 px-3 py-1.5 rounded-full transition font-bold">
+                  Search this →
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-600 text-sm">No translation found</p>
+            )}
+          </div>
+        </div>
+
         {/* Word image */}
         {imgSrc && (
           <div className="relative w-full rounded-3xl overflow-hidden border border-white/10 h-72 sm:h-96 group shadow-2xl shadow-black/40">
@@ -111,48 +151,7 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
           </div>
         </div>
 
-        {/* Tagalog & Bisaya translations */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Tagalog */}
-          <div className="glass-card rounded-2xl p-5 border border-blue-500/20 bg-blue-500/5">
-            <p className="text-xs font-black uppercase tracking-widest text-blue-400 mb-3">🇵🇭 Tagalog</p>
-            {loadingTrans ? (
-              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
-            ) : tagalog ? (
-              <div className="flex items-center gap-3 flex-wrap">
-                <p className="text-white font-black text-2xl">{tagalog}</p>
-                <button
-                  onClick={() => router.push(`/search?word=${encodeURIComponent(tagalog)}`)}
-                  className="text-xs bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/30 text-blue-300 hover:text-blue-200 px-3 py-1.5 rounded-full transition font-bold">
-                  Search this →
-                </button>
-              </div>
-            ) : (
-              <p className="text-gray-600 text-sm">No translation found</p>
-            )}
-          </div>
 
-          {/* Bisaya */}
-          <div className="glass-card rounded-2xl p-5 border border-emerald-500/20 bg-emerald-500/5">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-3">🌴 Bisaya</p>
-            {loadingTrans ? (
-              <div className="h-6 bg-white/10 rounded animate-pulse w-32" />
-            ) : bisaya ? (
-              <div className="flex items-center gap-3 flex-wrap">
-                <p className="text-white font-black text-2xl">{bisaya}</p>
-                <button
-                  onClick={() => router.push(`/search?word=${encodeURIComponent(bisaya)}`)}
-                  className="text-xs bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 px-3 py-1.5 rounded-full transition font-bold">
-                  Search this →
-                </button>
-              </div>
-            ) : (
-              <p className="text-gray-600 text-sm">No translation found</p>
-            )}
-          </div>
-        </div>
-
-        {/* Origin */}
         {origin && (
           <div className="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
             <p className="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-1">Origin</p>
