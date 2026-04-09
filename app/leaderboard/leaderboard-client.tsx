@@ -805,7 +805,7 @@ export default function LeaderboardClient() {
   ];
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-12 md:py-20 relative z-10 w-full min-h-screen">
+    <div className="flex flex-col items-center px-4 sm:px-6 py-6 md:py-10 relative z-10 w-full min-h-screen">
 
       {/* ── Hero Header ── */}
       <div suppressHydrationWarning className="text-center mb-12 w-full max-w-3xl relative">
@@ -831,7 +831,7 @@ export default function LeaderboardClient() {
       </div>
 
       {/* ── Tab Switcher ── */}
-      <div className="flex items-center gap-1 mb-10 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-lg">
+      <div className="flex items-center gap-1 mb-10 bg-white/5 border border-white/8 rounded-2xl p-1 w-full max-w-4xl">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`relative flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${
