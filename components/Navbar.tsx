@@ -8,7 +8,6 @@ const NAV_ITEMS = [
   { label: "Dictionary",  href: "/" },
   { label: "Games",       href: "/games",       requireAuth: true },
   { label: "Leaderboard", href: "/leaderboard" },
-  { label: "Culture",     href: "/culture" },
 ];
 
 export default function Navbar() {
