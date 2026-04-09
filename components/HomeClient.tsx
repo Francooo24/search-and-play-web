@@ -165,11 +165,6 @@ export default function HomeClient() {
       <section className="w-full flex flex-col items-center text-center px-6 pt-28 pb-44 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-3 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-7 py-2.5 rounded-full mb-16">
-          <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-          English Dictionary &amp; Word Games
-        </div>
-
         <h1 className="text-8xl sm:text-9xl md:text-[10rem] font-black text-white tracking-tight leading-none mb-10 max-w-5xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
           <span className="relative inline-block mt-2">
