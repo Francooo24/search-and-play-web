@@ -234,102 +234,79 @@ function LeaderboardTab() {
             ))}
           </div>
         )}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {/* ── Rank Card ── */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1008] to-[#0f0f18] border border-orange-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-orange-500/5">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.12),transparent_60%)] pointer-events-none" />
-            {/* Header */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1008] to-[#0f0f18] border border-orange-500/30 p-7 flex flex-col gap-6 shadow-2xl shadow-orange-500/10">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.15),transparent_60%)] pointer-events-none" />
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-orange-400/80">Global Rank</span>
-                {myRank.rank === 1 && (
-                  <span className="text-[10px] bg-yellow-400/15 border border-yellow-400/30 text-yellow-300 px-2 py-0.5 rounded-full font-black">🥇 #1</span>
-                )}
-              </div>
-              <button onClick={handleShare} className="text-[10px] font-bold text-orange-400/70 hover:text-orange-300 transition flex items-center gap-1">
-                {copied ? "✓ Copied" : "↗ Share"}
-              </button>
+              <span className="text-xs font-black uppercase tracking-widest text-orange-400">Global Rank</span>
+              {myRank.rank === 1 && <span className="text-xs bg-yellow-400/15 border border-yellow-400/30 text-yellow-300 px-2.5 py-1 rounded-full font-black">🥇 #1</span>}
+              <button onClick={handleShare} className="text-xs font-bold text-orange-400/70 hover:text-orange-300 transition">{copied ? "✓ Copied" : "↗ Share"}</button>
             </div>
-            {/* Big rank number */}
             <div className="flex items-end gap-3">
-              <span className="text-6xl font-black text-white leading-none">#{displayRank}</span>
-              <div className="pb-1">
-                <p className="text-white font-bold text-sm leading-tight">{displayScore.toLocaleString()} pts</p>
-                <p className="text-gray-500 text-xs">of {myRank.total} players</p>
+              <span className="text-7xl font-black text-white leading-none">#{displayRank}</span>
+              <div className="pb-2">
+                <p className="text-white font-bold text-base">{displayScore.toLocaleString()} pts</p>
+                <p className="text-gray-500 text-sm">of {myRank.total} players</p>
               </div>
             </div>
-            {/* Tier */}
-            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
-              <span className="text-2xl">{myRank.tier?.icon}</span>
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5">
+              <span className="text-3xl">{myRank.tier?.icon}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-black text-sm">{myRank.tier?.name}</p>
-                <div className="mt-1.5 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <p className="text-white font-black text-base">{myRank.tier?.name}</p>
+                <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000" style={{ width: `${myRank.tierProgress}%` }} />
                 </div>
-                <p className="text-gray-600 text-[10px] mt-1">
-                  {myRank.nextTier
-                    ? `${(myRank.nextTier.min - myRank.score).toLocaleString()} pts → ${myRank.nextTier.name}`
-                    : "Max tier reached ⭐"}
-                </p>
+                <p className="text-gray-500 text-xs mt-1">{myRank.nextTier ? `${(myRank.nextTier.min - myRank.score).toLocaleString()} pts → ${myRank.nextTier.name}` : "Max tier reached ⭐"}</p>
               </div>
             </div>
           </div>
 
           {/* ── Personal Best Card ── */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1500] to-[#0f0f18] border border-yellow-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-yellow-500/5">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(234,179,8,0.10),transparent_60%)] pointer-events-none" />
-            {/* Header */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a1500] to-[#0f0f18] border border-yellow-500/30 p-7 flex flex-col gap-6 shadow-2xl shadow-yellow-500/10">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(234,179,8,0.12),transparent_60%)] pointer-events-none" />
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400/80">Personal Best</span>
-              <span className="text-lg">⭐</span>
+              <span className="text-xs font-black uppercase tracking-widest text-yellow-400">Personal Best</span>
+              <span className="text-2xl">⭐</span>
             </div>
-            {/* Big score */}
             <div className="flex items-end gap-3">
-              <span className="text-6xl font-black text-white leading-none">{(myRank.best ?? 0).toLocaleString()}</span>
-              <div className="pb-1">
-                <p className="text-white font-bold text-sm leading-tight">points</p>
-                <p className="text-gray-500 text-xs">single game</p>
+              <span className="text-7xl font-black text-white leading-none">{(myRank.best ?? 0).toLocaleString()}</span>
+              <div className="pb-2">
+                <p className="text-white font-bold text-base">points</p>
+                <p className="text-gray-500 text-sm">single game</p>
               </div>
             </div>
-            {/* Game */}
-            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
-              <span className="text-2xl">🎮</span>
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5">
+              <span className="text-3xl">🎮</span>
               <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Best Game</p>
-                <p className="text-white font-black text-sm truncate max-w-[160px]">{myRank.best_game ?? "No games yet"}</p>
+                <p className="text-gray-500 text-xs uppercase tracking-widest">Best Game</p>
+                <p className="text-white font-black text-base truncate max-w-[160px]">{myRank.best_game ?? "No games yet"}</p>
               </div>
             </div>
           </div>
 
           {/* ── Streak Card ── */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#180a08] to-[#0f0f18] border border-red-500/25 p-6 flex flex-col gap-5 shadow-xl shadow-red-500/5">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(239,68,68,0.10),transparent_60%)] pointer-events-none" />
-            {/* Header */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#180a08] to-[#0f0f18] border border-red-500/30 p-7 flex flex-col gap-6 shadow-2xl shadow-red-500/10">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(239,68,68,0.12),transparent_60%)] pointer-events-none" />
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-red-400/80">Win Streak</span>
-              <span className="text-lg">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "📅"}</span>
+              <span className="text-xs font-black uppercase tracking-widest text-red-400">Win Streak</span>
+              <span className="text-2xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "📅"}</span>
             </div>
-            {/* Big streak */}
             <div className="flex items-end gap-3">
-              <span className="text-6xl font-black text-white leading-none">{myRank.streak}</span>
-              <div className="pb-1">
-                <p className="text-white font-bold text-sm leading-tight">day{myRank.streak !== 1 ? "s" : ""}</p>
-                <p className="text-gray-500 text-xs">consecutive</p>
+              <span className="text-7xl font-black text-white leading-none">{myRank.streak}</span>
+              <div className="pb-2">
+                <p className="text-white font-bold text-base">day{myRank.streak !== 1 ? "s" : ""}</p>
+                <p className="text-gray-500 text-sm">consecutive</p>
               </div>
             </div>
-            {/* Status */}
-            <div className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-2xl px-4 py-3">
-              <span className="text-2xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "🎯"}</span>
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5">
+              <span className="text-3xl">{myRank.streak >= 7 ? "🔥" : myRank.streak >= 3 ? "⚡" : "🎯"}</span>
               <div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Status</p>
-                <p className="text-white font-black text-sm">
-                  {myRank.streak === 0 ? "Play today to start!" : myRank.streak >= 7 ? "You're on fire!" : myRank.streak >= 3 ? "Hot streak!" : "Keep going!"}
-                </p>
+                <p className="text-gray-500 text-xs uppercase tracking-widest">Status</p>
+                <p className="text-white font-black text-base">{myRank.streak === 0 ? "Play today to start!" : myRank.streak >= 7 ? "You're on fire!" : myRank.streak >= 3 ? "Hot streak!" : "Keep going!"}</p>
               </div>
             </div>
           </div>
-
         </div>
         </>
       )}
@@ -409,42 +386,52 @@ function LeaderboardTab() {
         return (
         <>
           {top3.length >= 2 && !search && (
-            <div className="relative bg-[#0f0f18] border border-white/8 rounded-3xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 via-transparent to-transparent pointer-events-none" />
-              <div className="relative flex items-end justify-center gap-2 px-6 pt-10 pb-0">
-                {podium.map(({ idx, label, medal, h, glow }, pi) => {
-                  const p = top3[idx];
-                  if (!p) return <div key={pi} className="flex-1" />;
-                  return (
-                    <div key={pi} className="flex-1 flex flex-col items-center gap-2 pb-0">
-                      <div className={`relative ${pi === 1 ? "scale-110" : ""}`}>
-                        <Avatar name={p.player_name} size={pi === 1 ? "xl" : "lg"} avatarUrl={avatars[p.player_name]} />
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br ${medal} flex items-center justify-center text-[9px] font-black text-white ring-2 ring-[#0f0f18]`}>
-                          {idx + 1}
+            <div className="relative rounded-3xl overflow-hidden border border-white/8" style={{background:"linear-gradient(135deg,#13111f 0%,#0a0a12 100%)"}}>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.07),transparent_60%)] pointer-events-none" />
+              <div className="px-6 pt-8 pb-0">
+                <p className="text-center text-[10px] font-black uppercase tracking-widest text-amber-400/60 mb-6">🏆 Top 3 Champions</p>
+                <div className="flex items-end justify-center gap-3">
+                  {podium.map(({ idx, label, medal, h, glow }, pi) => {
+                    const p = top3[idx];
+                    if (!p) return <div key={pi} className="flex-1" />;
+                    const isFirst = pi === 1;
+                    return (
+                      <div key={pi} className="flex-1 flex flex-col items-center gap-2">
+                        {isFirst && <div className="text-3xl mb-1 animate-bounce">👑</div>}
+                        <div className={`relative ${isFirst ? "scale-115" : ""}`}>
+                          <div className={`${isFirst ? "ring-4 ring-amber-400/40" : "ring-2 ring-white/10"} rounded-full`}>
+                            <Avatar name={p.player_name} size={isFirst ? "xl" : "lg"} avatarUrl={avatars[p.player_name]} />
+                          </div>
+                          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br ${medal} flex items-center justify-center text-[10px] font-black text-white ring-2 ring-[#0a0a12] shadow-lg`}>
+                            {idx + 1}
+                          </div>
+                        </div>
+                        <p className="text-white font-black text-xs truncate max-w-[90px] text-center mt-1">{p.player_name}</p>
+                        <AgeBadge age_group={p.age_group} />
+                        <p className={`font-black text-sm ${isFirst ? "text-amber-400" : "text-white"}`}>{p.total_score.toLocaleString()}</p>
+                        <div className={`w-full ${h} rounded-t-2xl flex items-center justify-center border-t border-x ${
+                          isFirst ? "bg-gradient-to-t from-amber-500/20 to-amber-500/5 border-amber-500/30 shadow-lg shadow-amber-500/10"
+                          : pi === 0 ? "bg-gradient-to-t from-slate-500/15 to-slate-500/5 border-slate-500/20"
+                          : "bg-gradient-to-t from-orange-700/15 to-orange-700/5 border-orange-700/20"
+                        }`}>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span>
                         </div>
                       </div>
-                      <p className="text-white font-bold text-xs truncate max-w-full text-center">{p.player_name} {flag(p.age_group === undefined ? null : (p as any).country)}</p>
-                      <AgeBadge age_group={p.age_group} />
-                      <p className="text-orange-400 font-black text-sm">{p.total_score.toLocaleString()}</p>
-                      <div className={`w-full ${h} bg-gradient-to-t from-white/8 to-white/3 border-t border-x border-white/10 rounded-t-2xl flex items-center justify-center shadow-lg ${glow}`}>
-                        <span className="text-gray-400 text-xs font-bold tracking-widest uppercase">{label}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
 
           {/* ── Rankings Table ── */}
-          <div className="rounded-2xl overflow-hidden border border-white/6" style={{ background: "linear-gradient(180deg, #0d0d1a 0%, #0a0a12 100%)" }}>
-            {/* Header */}
-            <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="rounded-3xl overflow-hidden border border-white/8" style={{ background: "linear-gradient(180deg, #0d0d1a 0%, #0a0a12 100%)" }}>
+            <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <div className="flex items-center gap-3">
-                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-orange-400 to-amber-600" />
+                <div className="w-1 h-8 rounded-full bg-gradient-to-b from-orange-400 to-amber-600" />
                 <div>
-                  <p className="text-sm font-black text-white">Player Rankings</p>
-                  <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">
+                  <p className="text-base font-black text-white">Player Rankings</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-widest mt-0.5">
                     {filtered.length} player{filtered.length !== 1 ? "s" : ""}
                     {gameFilter ? ` · ${gameFilter}` : ""}
                     {period !== "all" ? ` · ${PERIODS.find(p => p.key === period)?.label}` : ""}
@@ -452,76 +439,58 @@ function LeaderboardTab() {
                 </div>
               </div>
             </div>
-
-            {/* Rows */}
             <div>
               {filtered.map((player, i) => {
                 const isMe = currentUserId && player.user_id && Number(currentUserId) === Number(player.user_id);
                 const isTop3 = i < 3;
-                const rankColors = ["from-yellow-400/20 to-transparent", "from-slate-400/10 to-transparent", "from-orange-700/15 to-transparent"];
+                const rankColors = ["from-yellow-400/30 to-transparent", "from-slate-400/15 to-transparent", "from-orange-600/20 to-transparent"];
                 return (
                   <Link key={i} href={`/players/${encodeURIComponent(player.player_name)}`}
-                    className={`relative flex items-center gap-4 px-6 py-4 transition-all duration-200 cursor-pointer group ${
-                      isMe
-                        ? "bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent"
-                        : "hover:bg-white/3"
+                    className={`relative flex items-center gap-4 px-6 py-5 transition-all duration-200 cursor-pointer group ${
+                      isMe ? "bg-gradient-to-r from-orange-500/12 via-orange-500/5 to-transparent" : "hover:bg-white/3"
                     }`}
                     style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-
-                    {/* Left accent for top 3 */}
-                    {isTop3 && (
-                      <div className={`absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b ${rankColors[i]}`} />
-                    )}
-                    {isMe && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-500 to-amber-500" />}
-
-                    {/* Rank */}
-                    <div className="w-8 flex-shrink-0 flex items-center justify-center">
+                    {isTop3 && <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${rankColors[i]} rounded-r`} />}
+                    {isMe && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 to-amber-500 rounded-r" />}
+                    <div className="w-9 flex-shrink-0 flex items-center justify-center">
                       {i === 0 ? (
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                          <span className="text-xs font-black text-amber-900">1</span>
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                          <span className="text-sm font-black text-amber-900">1</span>
                         </div>
                       ) : i === 1 ? (
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center">
-                          <span className="text-xs font-black text-slate-800">2</span>
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center">
+                          <span className="text-sm font-black text-slate-800">2</span>
                         </div>
                       ) : i === 2 ? (
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                          <span className="text-xs font-black text-white">3</span>
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                          <span className="text-sm font-black text-white">3</span>
                         </div>
                       ) : (
-                        <span className="text-xs font-bold text-gray-700 tabular-nums">#{i + 1}</span>
+                        <span className="text-sm font-bold text-gray-600 tabular-nums">#{i + 1}</span>
                       )}
                     </div>
-
-                    {/* Avatar */}
-                    <Avatar name={player.player_name} size="sm" avatarUrl={avatars[player.player_name]} />
-
-                    {/* Player info */}
+                    <Avatar name={player.player_name} size="md" avatarUrl={avatars[player.player_name]} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-white group-hover:text-orange-300 font-bold text-sm truncate transition-colors duration-200">{player.player_name}</span>
-                        {flag(player.country) && <span className="text-sm leading-none">{flag(player.country)}</span>}
-                        {isMe && (
-                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-orange-500/20 text-orange-400 border border-orange-500/30">YOU</span>
-                        )}
+                        <span className="text-white group-hover:text-orange-300 font-bold text-base truncate transition-colors duration-200">{player.player_name}</span>
+                        {flag(player.country) && <span className="text-base leading-none">{flag(player.country)}</span>}
+                        {isMe && <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30">YOU</span>}
                         <AgeBadge age_group={player.age_group} />
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {!gameFilter && player.game && <span className="text-gray-700 text-[10px] truncate">{player.game}</span>}
-                        {player.total_games != null && <span className="text-gray-700 text-[10px]">{player.total_games} games</span>}
+                      <div className="flex items-center gap-2 mt-1">
+                        {!gameFilter && player.game && <span className="text-gray-600 text-xs truncate">{player.game}</span>}
+                        {player.total_games != null && <span className="text-gray-600 text-xs">{player.total_games} games</span>}
                         <div className="flex items-center gap-1">
                           {lastSeenDot(player.last_played)}
-                          <span className="text-gray-700 text-[10px]">{fmt(player.last_played)}</span>
+                          <span className="text-gray-600 text-xs">{fmt(player.last_played)}</span>
                         </div>
                       </div>
                     </div>
-
-                    {/* Score */}
                     <div className="text-right flex-shrink-0">
-                      <p className={`font-black text-base tabular-nums ${
+                      <p className={`font-black text-lg tabular-nums ${
                         i === 0 ? "text-yellow-400" : i === 1 ? "text-slate-300" : i === 2 ? "text-orange-400" : "text-white"
                       }`}>{player.total_score.toLocaleString()}</p>
-                      <p className="text-gray-700 text-[10px] uppercase tracking-widest">pts</p>
+                      <p className="text-gray-600 text-xs uppercase tracking-widest">pts</p>
                     </div>
                   </Link>
                 );
