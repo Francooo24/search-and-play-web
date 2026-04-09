@@ -162,27 +162,27 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-4 pt-10 pb-12 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+      <section className="w-full flex flex-col items-center text-center px-6 pt-20 pb-24 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
-          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-5 py-2 rounded-full mb-8">
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
           English Dictionary &amp; Word Games
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-4 max-w-3xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-6 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
-          <span className="relative inline-block mt-1">
+          <span className="relative inline-block mt-2">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
-            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
+            <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
           </span>
         </h1>
 
-        <p className="text-gray-400 text-base sm:text-lg max-w-xl mb-6 leading-relaxed">
+        <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-10 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        <div className="w-full max-w-lg mb-4">
+        <div className="w-full max-w-xl mb-6">
           <SearchBox onSearch={handleSearch} />
         </div>
 
@@ -208,52 +208,52 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-4 mb-8">
-        <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+      <section className="w-full border-y border-white/5 bg-white/2 py-8 mb-16">
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {STATS.map(s => (
             <div key={s.label}>
-              <p className="text-2xl font-black text-white mb-0.5">{s.value}</p>
-              <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              <p className="text-4xl font-black text-white mb-1">{s.value}</p>
+              <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto px-4 space-y-8 pb-12">
+      <div className="w-full max-w-4xl mx-auto px-6 space-y-16 pb-20">
 
         {/* ── DAILY CHALLENGE ── */}
         <section>
-          <div className="mb-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Today</p>
-            <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
+          <div className="mb-6">
+            <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
+            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
           </div>
           <DailyChallengeBanner />
         </section>
 
         {/* ── FEATURED GAMES ── */}
         <section>
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Featured</p>
-              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
+              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
+              <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
             </div>
-            <Link href="/games" className="text-xs font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+            <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-5 py-2.5 rounded-xl transition">
               All Games →
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {FEATURED_GAMES.map(g => (
               <Link key={g.slug} href={`/games/${g.slug}`}
                 className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
-                <div className={`h-32 bg-gradient-to-br ${g.color} flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`h-40 bg-gradient-to-br ${g.color} flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-300`}>
                   {g.icon}
                 </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-white font-black text-sm">{g.name}</p>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/8 text-gray-400 border border-white/10">{g.badge}</span>
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-white font-black text-base">{g.name}</p>
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/8 text-gray-400 border border-white/10">{g.badge}</span>
                   </div>
-                  <p className="text-gray-500 text-xs leading-relaxed">{g.desc}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed">{g.desc}</p>
                 </div>
               </Link>
             ))}
@@ -262,12 +262,12 @@ export default function HomeClient() {
 
         {/* ── TOP PLAYERS ── */}
         <section>
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Rankings</p>
-              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Top Players</h2>
+              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Rankings</p>
+              <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Top Players</h2>
             </div>
-            <Link href="/leaderboard" className="text-xs font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+            <Link href="/leaderboard" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-5 py-2.5 rounded-xl transition">
               Full Board →
             </Link>
           </div>
@@ -276,24 +276,24 @@ export default function HomeClient() {
 
         {/* ── BROWSE CATEGORIES ── */}
         <section>
-          <div className="mb-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Explore</p>
-            <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Category</h2>
+          <div className="mb-6">
+            <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
+            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Category</h2>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 mb-5">
             {CATEGORIES.map((cat, i) => (
               <button key={cat.label} onClick={() => setActiveCategory(activeCategory === i ? null : i)}
-                className={`rounded-2xl p-3 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
+                className={`rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
                   ${activeCategory === i
                     ? "border-orange-500/50 bg-orange-500/10 shadow-lg shadow-orange-500/10"
                     : "border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5"}`}>
-                <div className="text-2xl mb-1">{cat.emoji}</div>
-                <div className="text-xs font-bold text-gray-300">{cat.label}</div>
+                <div className="text-3xl mb-2">{cat.emoji}</div>
+                <div className="text-sm font-bold text-gray-300">{cat.label}</div>
               </button>
             ))}
           </div>
           {activeCategory !== null && (
-            <div className="flex flex-wrap gap-2 justify-center p-4 rounded-2xl border border-white/8 bg-white/2">
+            <div className="flex flex-wrap gap-3 justify-center p-5 rounded-2xl border border-white/8 bg-white/2">
               {CATEGORIES[activeCategory].words.map(w => (
                 <Link key={w} href={`/search?word=${w}`}
                   className="text-sm bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-4 py-1.5 rounded-full transition">
