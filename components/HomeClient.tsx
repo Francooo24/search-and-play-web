@@ -7,8 +7,6 @@ import dynamic from "next/dynamic";
 
 const SearchBox = dynamic(() => import("@/components/SearchBox"), { ssr: false });
 
-const POPULAR = ["serendipity", "ephemeral", "resilience", "wanderlust", "eloquent"];
-
 const FEATURED_GAMES = [
   { slug: "wordle",    name: "WordGuess",   icon: "📝", desc: "Guess the 5-letter word in 6 tries!",          color: "from-emerald-500 to-teal-600",  badge: "Teen"  },
   { slug: "wordblitz", name: "Word Blitz",  icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-500 to-amber-600",   badge: "Adult" },
@@ -164,18 +162,15 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-4 pt-16 pb-20 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+      <section className="w-full flex flex-col items-center text-center px-4 pt-10 pb-12 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
           English Dictionary &amp; Word Games
         </div>
 
-        {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-5 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-4 max-w-3xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
           <span className="relative inline-block mt-1">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
@@ -183,20 +178,18 @@ export default function HomeClient() {
           </span>
         </h1>
 
-        {/* Subtitle */}
-        <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-8 leading-relaxed">
+        <p className="text-gray-400 text-base sm:text-lg max-w-xl mb-6 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        {/* Search */}
-        <div className="w-full max-w-xl mb-6">
+        <div className="w-full max-w-lg mb-4">
           <SearchBox onSearch={handleSearch} />
         </div>
 
-        {/* Recent searches */}
-        {mounted && recentSearches.length > 0 && (
+        {mounted && (
           <div className="flex items-center gap-2 flex-wrap justify-center">
-            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent:</span>
+            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent Searches:</span>
+            {recentSearches.length === 0 && <span className="text-xs text-gray-700">None yet</span>}
             {recentSearches.map(w => (
               <button key={w} onClick={() => handleSearch(w)}
                 className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
@@ -206,25 +199,27 @@ export default function HomeClient() {
                 {w}
               </button>
             ))}
-            <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
-              className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
+            {recentSearches.length > 0 && (
+              <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
+                className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
+            )}
           </div>
         )}
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-6 mb-12">
-        <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <section className="w-full border-y border-white/5 bg-white/2 py-4 mb-8">
+        <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           {STATS.map(s => (
             <div key={s.label}>
-              <p className="text-3xl font-black text-white mb-0.5">{s.value}</p>
+              <p className="text-2xl font-black text-white mb-0.5">{s.value}</p>
               <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="w-full max-w-5xl mx-auto px-4 space-y-12 pb-16">
+      <div className="w-full max-w-4xl mx-auto px-4 space-y-8 pb-12">
 
         {/* ── DAILY CHALLENGE ── */}
         <section>
