@@ -162,15 +162,15 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-6 pt-20 pb-24 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-6 pt-32 pb-36 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-5 py-2 rounded-full mb-8">
+        <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/25 text-orange-400 text-sm font-black uppercase tracking-widest px-6 py-2.5 rounded-full mb-12">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
           English Dictionary &amp; Word Games
         </div>
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-6 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-none mb-8 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn.<br />
           <span className="relative inline-block mt-2">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
@@ -178,11 +178,11 @@ export default function HomeClient() {
           </span>
         </h1>
 
-        <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-10 leading-relaxed">
+        <p className="text-gray-400 text-xl sm:text-2xl max-w-2xl mb-12 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        <div className="w-full max-w-xl mb-6">
+        <div className="w-full max-w-2xl mb-8">
           <SearchBox onSearch={handleSearch} />
         </div>
 
@@ -208,18 +208,18 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-8 mb-16">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <section className="w-full border-y border-white/5 bg-white/2 py-12 mb-20">
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {STATS.map(s => (
             <div key={s.label}>
-              <p className="text-4xl font-black text-white mb-1">{s.value}</p>
+              <p className="text-5xl font-black text-white mb-2">{s.value}</p>
               <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto px-6 space-y-16 pb-20">
+      <div className="w-full max-w-4xl mx-auto px-6 space-y-24 pb-28">
 
         {/* ── DAILY CHALLENGE ── */}
         <section>
