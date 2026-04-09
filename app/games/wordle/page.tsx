@@ -61,19 +61,18 @@ function WordleGame() {
 
   const maxRows = difficulty ? DIFF_CONFIG[difficulty].maxRows : 6;
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 1500); };
+  const showToast = useCallback((msg: string) => {
+    setToast(msg); setTimeout(() => setToast(""), 1500);
+  }, []);
 
-  function startGame(d: Difficulty, si = setIdx) {
+  const startGame = useCallback((d: Difficulty, si = 0) => {
     setDifficulty(d);
     const words = WORD_SETS[si].words;
     const t = words[Math.floor(Math.random() * words.length)];
     setTarget(t);
     setGrid(Array.from({length:DIFF_CONFIG[d].maxRows}, () => Array.from({length:WORD_LEN}, () => ({letter:"",state:"" as TileState}))));
     setCurrentRow(0); setCurrentCol(0); setKeyState({}); setGameOver(false); setResult(null);
-  }
-
-  if (!mounted) return null;
-  if (!difficulty) return <DifficultySelect title="WordGuess" icon="📝" subtitle="Guess the 5-letter word!" descriptions={{ Easy: DIFF_CONFIG.Easy.desc, Medium: DIFF_CONFIG.Medium.desc, Hard: DIFF_CONFIG.Hard.desc }} onSelect={startGame} />;
+  }, []);
 
   const addLetter = useCallback((l: string) => {
     if (gameOver || currentCol >= WORD_LEN) return;
@@ -111,14 +110,14 @@ function WordleGame() {
       setTimeout(() => setResult({emoji:"😔",title:"Game Over!",sub:`The word was: ${target}`,pts:"Better luck next time!"}), 800);
     }
     setCurrentRow(nextRow); setCurrentCol(0);
-  }, [currentCol, currentRow, grid, target, keyState, difficulty]);
+  }, [currentCol, currentRow, grid, target, keyState, difficulty, showToast]);
 
   const pressKey = useCallback((k: string) => {
     if (paused) return;
     if (k === "BACKSPACE") { deleteLetter(); return; }
     if (k === "ENTER") { submitGuess(); return; }
     if (/^[A-Z]$/.test(k)) addLetter(k);
-  }, [addLetter, deleteLetter, submitGuess]);
+  }, [addLetter, deleteLetter, submitGuess, paused]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -130,6 +129,9 @@ function WordleGame() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [pressKey]);
+
+  if (!mounted) return null;
+  if (!difficulty) return <DifficultySelect title="WordGuess" icon="📝" subtitle="Guess the 5-letter word!" descriptions={{ Easy: DIFF_CONFIG.Easy.desc, Medium: DIFF_CONFIG.Medium.desc, Hard: DIFF_CONFIG.Hard.desc }} onSelect={startGame} />;
 
   const tileColor = (state: TileState) => {
     if (state === "correct") return "bg-[#538d4e] border-[#538d4e]";
@@ -206,7 +208,7 @@ function WordleGame() {
           </div>
         ))}
       </div>
-      <button onClick={() => startGame(difficulty)} className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm mb-6">🔄 New Word</button>
+      <button onClick={() => startGame(difficulty, setIdx)} className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm mb-6">🔄 New Word</button>
       {result && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-white/10 rounded-3xl p-8 text-center max-w-xs w-full">
@@ -215,7 +217,7 @@ function WordleGame() {
             <p className="text-gray-400 text-sm mb-1">{result.sub}</p>
             <p className="text-orange-400 font-bold mb-5">{result.pts}</p>
             <div className="flex gap-3 justify-center">
-              <button onClick={() => { setResult(null); startGame(difficulty); }} className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-5 py-2 rounded-xl transition text-sm">Next Word</button>
+              <button onClick={() => { setResult(null); startGame(difficulty, setIdx); }} className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-5 py-2 rounded-xl transition text-sm">Next Word</button>
               <button onClick={() => { setResult(null); setDifficulty(null); }} className="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-2 rounded-xl transition text-sm">🎯 Difficulty</button>
               <Link href="/games" className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-5 py-2 rounded-xl transition text-sm">Back</Link>
             </div>
