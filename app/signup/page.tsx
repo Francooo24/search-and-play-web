@@ -352,13 +352,13 @@ export default function SignupPage() {
             </div>
           ) : <div />}
 
-{pwMatch !== null && (
+          <p className="text-xs text-gray-400 md:col-span-2">Password must be at least 8 characters</p>
+
+          {pwMatch !== null && (
             <p className={`text-sm md:col-span-2 ${pwMatch ? "text-green-400" : "text-red-400"}`}>
               {pwMatch ? "✓ Passwords match" : "✗ Passwords do not match"}
             </p>
           )}
-
-          <p className="text-xs text-gray-400 md:col-span-2">Password must be at least 8 characters</p>
 
           {/* Strength Bar */}
           <div className="h-1 bg-white/10 rounded-full overflow-hidden md:col-span-2">
