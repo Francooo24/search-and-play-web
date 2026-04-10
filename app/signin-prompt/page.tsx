@@ -19,7 +19,7 @@ export default async function SignInPromptPage({
   const fromParam = from ? `?from=${encodeURIComponent(from)}` : "";
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative z-10">
+    <div className="min-h-screen flex items-start justify-center px-4 pt-8 relative z-10">
       <style>{`footer { display: none !important; } body { overflow: hidden; }`}</style>
       <div
         className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-12 max-w-[480px] w-[92%] text-center"
