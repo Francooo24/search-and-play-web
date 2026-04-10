@@ -27,7 +27,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-4 relative z-10">
+    <div className="min-h-screen flex items-center justify-center px-4 relative z-10">
+      <style>{`footer { display: none !important; } body { overflow: hidden; }`}</style>
       {/* Error Modal */}
       {error && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-[10px] flex items-center justify-center z-50" onClick={() => setError("")}>
