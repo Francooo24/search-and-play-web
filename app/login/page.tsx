@@ -27,7 +27,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative z-10">
+    <div className="min-h-screen flex items-start justify-center px-4 pt-8 relative z-10">
       <style>{`footer { display: none !important; } body { overflow: hidden; }`}</style>
       {/* Error Modal */}
       {error && (
