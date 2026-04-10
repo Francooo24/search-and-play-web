@@ -17,6 +17,45 @@ async function fetchDefinition(word: string) {
   } catch { return null; }
 }
 
+async function fetchAIDefinition(word: string) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+        max_tokens: 300,
+        messages: [{
+          role: "user",
+          content: `Define the word "${word}" in simple English. Reply in this exact JSON format only:
+{"partOfSpeech":"noun/verb/adjective/etc","definition":"clear simple definition","example":"example sentence using the word"}`
+        }]
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    const data = await res.json();
+    const content = data?.choices?.[0]?.message?.content ?? "";
+    const parsed = JSON.parse(content);
+    // Shape it like dictionaryapi.dev format
+    return [{
+      word,
+      phonetic: "",
+      origin: "",
+      meanings: [{
+        partOfSpeech: parsed.partOfSpeech ?? "word",
+        definitions: [{ definition: parsed.definition, example: parsed.example ?? "" }],
+        synonyms: [],
+      }]
+    }];
+  } catch { return null; }
+}
+
 export default async function SearchPage({
   searchParams,
 }: {
@@ -37,7 +76,7 @@ export default async function SearchPage({
     isSaved = rows.length > 0;
   }
 
-  const definition = await fetchDefinition(word);
+  const definition = await fetchDefinition(word) ?? await fetchAIDefinition(word);
   const phonetic = definition?.[0]?.phonetic ?? "";
   const origin   = definition?.[0]?.origin ?? "";
 
