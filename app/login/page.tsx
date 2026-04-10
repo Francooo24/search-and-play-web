@@ -59,9 +59,9 @@ function LoginForm() {
 
           <div className="space-y-6">
             {[
-              { quote: "The limits of my language mean the limits of my world.", author: "Ludwig Wittgenstein" },
-              { quote: "One word can change the world.", author: "Unknown" },
-              { quote: "Words are, of course, the most powerful drug used by mankind.", author: "Rudyard Kipling" },
+              { quote: "Search a word, master it, then play your way to fluency.", author: "Search & Play" },
+              { quote: "Every word you search is a step closer to becoming a better version of yourself.", author: "Search & Play" },
+              { quote: "Learn the word. Play the game. Own the language.", author: "Search & Play" },
             ].map((q, i) => (
               <div key={i} className="border-l-2 border-orange-500/40 pl-4">
                 <p className="text-gray-300 text-sm italic leading-relaxed">&ldquo;{q.quote}&rdquo;</p>
