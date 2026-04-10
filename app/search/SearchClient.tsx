@@ -3,6 +3,56 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AudioButton from "@/components/AudioButton";
 
+const ALL_GAMES = [
+  { slug: "hangman",       name: "Hangman",         icon: "🪢", desc: "Guess the word letter by letter!",         group: "teen"  },
+  { slug: "wordle",        name: "WordGuess",        icon: "📝", desc: "Guess the 5-letter word in 6 tries!",       group: "teen"  },
+  { slug: "wordsearch",    name: "Word Search",      icon: "🔍", desc: "Find hidden words in the grid!",            group: "teen"  },
+  { slug: "spellingbee",   name: "Spelling Bee",     icon: "🐝", desc: "Spell the word from its definition!",       group: "teen"  },
+  { slug: "scramble",      name: "Word Scramble",    icon: "🔀", desc: "Unscramble the letters!",                   group: "teen"  },
+  { slug: "synonymmatch",  name: "Synonym Match",    icon: "🔄", desc: "Match words with their synonyms!",          group: "teen"  },
+  { slug: "fillinblank",   name: "Fill in the Blank",icon: "✏️", desc: "Complete the sentence!",                   group: "teen"  },
+  { slug: "contextclues",  name: "Context Clues",    icon: "📖", desc: "Figure out the meaning from context!",     group: "teen"  },
+  { slug: "crossword",     name: "Crossword",        icon: "📋", desc: "Fill the grid using the clues!",            group: "adult" },
+  { slug: "wordblitz",     name: "Word Blitz",       icon: "⚡", desc: "Type as many words as you can!",            group: "adult" },
+  { slug: "anagram",       name: "Anagram Master",   icon: "🔀", desc: "Form words from the given letters!",        group: "adult" },
+  { slug: "vocabquiz",     name: "Vocabulary Quiz",  icon: "📚", desc: "Test your vocabulary!",                     group: "adult" },
+  { slug: "memory",        name: "Memory Game",      icon: "🧠", desc: "Flip cards and find matching pairs!",       group: "kids"  },
+  { slug: "colorwords",    name: "Color Words",      icon: "🎨", desc: "Identify the correct color!",               group: "kids"  },
+  { slug: "puzzle",        name: "Word Puzzle",      icon: "🔤", desc: "Click tiles to unscramble the word!",       group: "adult" },
+  { slug: "idiomchallenge",name: "Idiom Challenge",  icon: "💬", desc: "Guess the meaning of idioms!",              group: "adult" },
+];
+
+function getRecommendedGames(word: string, meanings: any[]) {
+  const len = word.length;
+  const pos = meanings.map((m: any) => m.partOfSpeech).join(" ").toLowerCase();
+  const hasSynonyms = meanings.some((m: any) => m.synonyms?.length > 0);
+  const recommended: typeof ALL_GAMES = [];
+
+  // Based on word length
+  if (len === 5) recommended.push(...ALL_GAMES.filter(g => g.slug === "wordle" || g.slug === "hangman"));
+  if (len >= 6)  recommended.push(...ALL_GAMES.filter(g => g.slug === "scramble" || g.slug === "anagram"));
+  if (len <= 4)  recommended.push(...ALL_GAMES.filter(g => g.slug === "memory" || g.slug === "colorwords"));
+
+  // Based on part of speech
+  if (pos.includes("noun"))      recommended.push(...ALL_GAMES.filter(g => g.slug === "wordsearch" || g.slug === "crossword"));
+  if (pos.includes("verb"))      recommended.push(...ALL_GAMES.filter(g => g.slug === "fillinblank" || g.slug === "contextclues"));
+  if (pos.includes("adjective")) recommended.push(...ALL_GAMES.filter(g => g.slug === "synonymmatch" || g.slug === "vocabquiz"));
+  if (hasSynonyms)               recommended.push(...ALL_GAMES.filter(g => g.slug === "synonymmatch"));
+
+  // Always add spelling bee and word blitz
+  recommended.push(...ALL_GAMES.filter(g => g.slug === "spellingbee" || g.slug === "wordblitz"));
+
+  // Deduplicate and return top 4
+  const seen = new Set<string>();
+  return recommended.filter(g => { if (seen.has(g.slug)) return false; seen.add(g.slug); return true; }).slice(0, 4);
+}
+
+const GROUP_COLOR: Record<string, string> = {
+  kids:  "from-blue-500 to-cyan-400",
+  teen:  "from-emerald-500 to-teal-400",
+  adult: "from-orange-500 to-amber-400",
+};
+
 export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn }: {
   word: string;
   definition: any;
@@ -130,6 +180,35 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
             <p className="text-gray-600 text-sm mt-1">Try checking the spelling or search another word.</p>
           </div>
         )}
+
+        {/* Game Recommendations */}
+        {(() => {
+          const recommended = getRecommendedGames(word, allMeanings);
+          if (recommended.length === 0) return null;
+          return (
+            <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
+              <div className="mb-5">
+                <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
+                <h3 className="text-xl font-black text-white">Practice &ldquo;{word}&rdquo; with these games</h3>
+                <p className="text-gray-500 text-sm mt-1">Based on this word, these games will help you master it!</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {recommended.map(g => (
+                  <Link key={g.slug} href={`/games/${g.slug}`}
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
+                    <div className={`h-20 bg-gradient-to-br ${GROUP_COLOR[g.group]} flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300`}>
+                      {g.icon}
+                    </div>
+                    <div className="p-3">
+                      <p className="text-white font-black text-xs mb-0.5">{g.name}</p>
+                      <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">{g.desc}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         <Link href="/" className="inline-block text-orange-400 hover:text-orange-300 transition text-sm mt-2">← Back to Home</Link>
       </div>
