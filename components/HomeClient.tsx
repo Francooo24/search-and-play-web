@@ -165,7 +165,7 @@ export default function HomeClient() {
       <section className="w-full flex flex-col items-center text-center px-6 pt-16 pb-44 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
-        <h1 className="text-7xl sm:text-8xl md:text-9xl font-black text-white tracking-tight leading-tight mb-10 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-tight mb-10 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
           Search. Learn. <span className="relative inline-block">
             <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
