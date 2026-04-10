@@ -310,6 +310,31 @@ export default function SignupPage() {
             </button>
           </div>
 
+          {/* Extra Games Options - shown beside confirm password column */}
+          {ageGroup && !ageError ? (
+            <div className="px-3 py-2 rounded-xl border border-white/10 bg-white/5 space-y-2">
+              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Also show games from other age groups?</p>
+              {ageGroup !== "kids" && (
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={form.show_kids} onChange={e => setForm({ ...form, show_kids: e.target.checked })} className="w-3.5 h-3.5 accent-blue-500 cursor-pointer" />
+                  <span className="text-xs text-blue-300 group-hover:text-blue-200 transition">🧒 Kids Games <span className="text-gray-500">(6–12)</span></span>
+                </label>
+              )}
+              {ageGroup !== "teen" && (
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={form.show_teen} onChange={e => setForm({ ...form, show_teen: e.target.checked })} className="w-3.5 h-3.5 accent-green-500 cursor-pointer" />
+                  <span className="text-xs text-green-300 group-hover:text-green-200 transition">🧑 Teen Games <span className="text-gray-500">(13–17)</span></span>
+                </label>
+              )}
+              {ageGroup !== "adult" && (
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={form.show_adult} onChange={e => setForm({ ...form, show_adult: e.target.checked })} className="w-3.5 h-3.5 accent-orange-500 cursor-pointer" />
+                  <span className="text-xs text-orange-300 group-hover:text-orange-200 transition">🔞 Adult Games <span className="text-gray-500">(18+)</span></span>
+                </label>
+              )}
+            </div>
+          ) : <div />}
+
           {/* Password */}
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 opacity-70 pointer-events-none">
@@ -340,32 +365,7 @@ export default function SignupPage() {
             <div className={`h-full rounded-full transition-all ${strengthColor}`} style={{ width: strengthW }} />
           </div>
 
-          {/* Extra Games Options */}
-          {ageGroup && !ageError && (
-            <div className="md:col-span-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 space-y-3">
-              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Also show games from other age groups?</p>
-              {ageGroup !== "kids" && (
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" checked={form.show_kids} onChange={e => setForm({ ...form, show_kids: e.target.checked })} className="w-4 h-4 accent-blue-500 cursor-pointer" />
-                  <span className="text-sm text-blue-300 group-hover:text-blue-200 transition">🧒 Kids Games <span className="text-gray-500">(Ages 6–12)</span></span>
-                </label>
-              )}
-              {ageGroup !== "teen" && (
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" checked={form.show_teen} onChange={e => setForm({ ...form, show_teen: e.target.checked })} className="w-4 h-4 accent-green-500 cursor-pointer" />
-                  <span className="text-sm text-green-300 group-hover:text-green-200 transition">🧑 Teen Games <span className="text-gray-500">(Ages 13–17)</span></span>
-                </label>
-              )}
-              {ageGroup !== "adult" && (
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" checked={form.show_adult} onChange={e => setForm({ ...form, show_adult: e.target.checked })} className="w-4 h-4 accent-orange-500 cursor-pointer" />
-                  <span className="text-sm text-orange-300 group-hover:text-orange-200 transition">🔞 Adult Games <span className="text-gray-500">(Ages 18+)</span></span>
-                </label>
-              )}
-            </div>
-          )}
-
-          <button type="submit" disabled={loading || pwMatch === false || !!ageError}
+<button type="submit" disabled={loading || pwMatch === false || !!ageError}
             className="md:col-span-2 w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-2.5 text-sm rounded-xl font-semibold shadow-xl flex items-center justify-center gap-2 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
