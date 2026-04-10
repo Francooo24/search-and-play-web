@@ -235,9 +235,9 @@ export default function SignupPage() {
             </div>
           )}
           {ageGroup && !ageError && (
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Your Age Group</p>
-              <div className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
+            <div className="space-y-1 flex flex-col justify-center">
+              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide text-center">Your Age Group</p>
+              <div className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 ${
                 ageGroup === "kids"  ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
                 ageGroup === "teen"  ? "bg-green-500/10 border-green-500/30 text-green-400" :
                                        "bg-orange-500/10 border-orange-500/30 text-orange-400"
