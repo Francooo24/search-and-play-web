@@ -227,7 +227,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-16 -mt-36">
+      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-10 -mt-36">
         <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {STATS.map(s => (
             <div key={s.label}>
@@ -238,7 +238,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      <div className="w-full max-w-5xl mx-auto px-8 space-y-20 pb-28">
+      <div className="w-full max-w-5xl mx-auto px-8 space-y-14 pb-28">
 
         {/* ── DAILY CHALLENGE ── */}
         <section>
