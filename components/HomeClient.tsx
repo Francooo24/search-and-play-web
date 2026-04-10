@@ -176,12 +176,12 @@ export default function HomeClient() {
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        <div className="w-full max-w-4xl mb-6">
+        <div className="w-full max-w-4xl mb-4">
           <SearchBox onSearch={handleSearch} />
         </div>
 
         {mounted && (
-          <div className="flex items-center gap-2 flex-wrap justify-center mb-8">
+          <div className="flex items-center gap-2 flex-wrap justify-center mb-5">
             <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent Searches:</span>
             {recentSearches.length === 0 && <span className="text-xs text-gray-700">None yet</span>}
             {recentSearches.map(w => (
