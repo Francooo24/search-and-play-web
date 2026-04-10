@@ -162,7 +162,7 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-6 pt-8 pb-44 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-6 pt-4 pb-44 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-tight mb-10 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
