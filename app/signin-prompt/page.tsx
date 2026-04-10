@@ -19,7 +19,7 @@ export default async function SignInPromptPage({
   const fromParam = from ? `?from=${encodeURIComponent(from)}` : "";
 
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
+    <div className="flex-grow flex items-center justify-center px-4 py-4 relative z-10">
       <div
         className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-12 max-w-[480px] w-[92%] text-center"
         style={{ animation: "fadeInUp 0.8s ease-out" }}
