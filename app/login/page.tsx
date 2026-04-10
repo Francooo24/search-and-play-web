@@ -27,7 +27,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center px-4 pt-8 relative z-10 overflow-y-auto scrollbar-hide">
+    <div className="min-h-screen flex items-start justify-center px-4 pt-4 relative z-10 overflow-y-auto scrollbar-hide">
       <style>{`footer { display: none !important; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
       {/* Error Modal */}
       {error && (
