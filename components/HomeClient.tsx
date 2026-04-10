@@ -180,7 +180,6 @@ export default function HomeClient() {
         <div className="w-full max-w-4xl mb-10">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">Featured</p>
               <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
             </div>
             <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">All Games →</Link>
