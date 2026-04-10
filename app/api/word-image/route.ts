@@ -4,20 +4,22 @@ export async function GET(req: NextRequest) {
   const word = req.nextUrl.searchParams.get("word") ?? "";
   if (!word) return NextResponse.json({ url: null });
 
-  const apiKey = process.env.PIXABAY_API_KEY;
-
-  // 1. Pixabay (best quality, needs free API key)
-  if (apiKey && apiKey !== "your_pixabay_api_key_here") {
-    try {
-      const res = await fetch(
-        `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(word)}&image_type=photo&orientation=horizontal&min_width=800&safesearch=true&per_page=3`,
-        { cache: "no-store", signal: AbortSignal.timeout(5000) }
-      );
-      const data = await res.json();
-      const hit = data?.hits?.[0];
-      if (hit?.largeImageURL) return NextResponse.json({ url: hit.largeImageURL });
-    } catch {}
-  }
+  // 1. Openverse (WordPress) — free, no API key, safe images
+  try {
+    const res = await fetch(
+      `https://api.openverse.org/v1/images/?q=${encodeURIComponent(word)}&page_size=5&mature=false`,
+      {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+        headers: { "User-Agent": "SearchAndPlay/1.0" },
+      }
+    );
+    const data = await res.json();
+    const results = data?.results ?? [];
+    // Pick image with highest resolution
+    const best = results.find((r: any) => r.url && r.width > 600) || results[0];
+    if (best?.url) return NextResponse.json({ url: best.url });
+  } catch {}
 
   // 2. Wikipedia summary image
   try {
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
     if (url) return NextResponse.json({ url });
   } catch {}
 
-  // 3. Wikimedia Commons search
+  // 3. Wikimedia Commons
   try {
     const res = await fetch(
       `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(word)}&prop=pageimages&format=json&pithumbsize=800&origin=*`,
@@ -43,8 +45,5 @@ export async function GET(req: NextRequest) {
     if (url) return NextResponse.json({ url });
   } catch {}
 
-  // 4. Unsplash fallback (no key needed, may be rate limited)
-  return NextResponse.json({
-    url: `https://source.unsplash.com/1200x600/?${encodeURIComponent(word)},nature`
-  });
+  return NextResponse.json({ url: null });
 }
