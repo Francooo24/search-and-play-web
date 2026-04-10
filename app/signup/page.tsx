@@ -230,14 +230,14 @@ export default function SignupPage() {
 
           {/* Age Group Preview */}
           {ageError && (
-            <div className="md:col-span-2 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-semibold flex items-center gap-2">
+            <div className="px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-semibold flex items-center gap-2">
               ❌ {ageError}
             </div>
           )}
           {ageGroup && !ageError && (
-            <div className="md:col-span-2 space-y-2">
+            <div className="space-y-1">
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Your Age Group</p>
-              <div className={`px-4 py-3 rounded-xl border text-sm font-semibold flex items-center gap-2 ${
+              <div className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
                 ageGroup === "kids"  ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
                 ageGroup === "teen"  ? "bg-green-500/10 border-green-500/30 text-green-400" :
                                        "bg-orange-500/10 border-orange-500/30 text-orange-400"
