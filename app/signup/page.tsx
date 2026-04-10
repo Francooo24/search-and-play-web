@@ -384,7 +384,7 @@ export default function SignupPage() {
         </div>
 
         {/* Right — Quotes */}
-        <div className="hidden md:flex flex-col justify-center items-start flex-shrink-0 w-72 px-4 py-12 space-y-6">
+        <div className="hidden md:flex flex-col justify-start items-start flex-shrink-0 w-72 px-4 pt-8 space-y-6">
           <div className="mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-4">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
