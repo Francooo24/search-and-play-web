@@ -4,22 +4,25 @@ export async function GET(req: NextRequest) {
   const word = req.nextUrl.searchParams.get("word") ?? "";
   if (!word) return NextResponse.json({ url: null });
 
-  // 1. Openverse (WordPress) — free, no API key, safe images
-  try {
-    const res = await fetch(
-      `https://api.openverse.org/v1/images/?q=${encodeURIComponent(word)}&page_size=5&mature=false`,
-      {
-        cache: "no-store",
-        signal: AbortSignal.timeout(5000),
-        headers: { "User-Agent": "SearchAndPlay/1.0" },
-      }
-    );
-    const data = await res.json();
-    const results = data?.results ?? [];
-    // Pick image with highest resolution
-    const best = results.find((r: any) => r.url && r.width > 600) || results[0];
-    if (best?.url) return NextResponse.json({ url: best.url });
-  } catch {}
+  const pexelsKey = process.env.PEXELS_API_KEY;
+
+  // 1. Pexels — beautiful, relevant, safe photos
+  if (pexelsKey) {
+    try {
+      const res = await fetch(
+        `https://api.pexels.com/v1/search?query=${encodeURIComponent(word)}&per_page=1&orientation=landscape`,
+        {
+          cache: "no-store",
+          signal: AbortSignal.timeout(6000),
+          headers: { Authorization: pexelsKey },
+        }
+      );
+      const data = await res.json();
+      const photo = data?.photos?.[0];
+      if (photo?.src?.large2x) return NextResponse.json({ url: photo.src.large2x });
+      if (photo?.src?.large)   return NextResponse.json({ url: photo.src.large });
+    } catch {}
+  }
 
   // 2. Wikipedia summary image
   try {

@@ -20,6 +20,7 @@ const nextConfig = {
       { hostname: "wp.en.aleteia.org" },
       { hostname: "encrypted-tbn0.gstatic.com" },
       { hostname: "flagcdn.com" },
+      { hostname: "images.pexels.com" },
     ],
   },
   compress: true,
