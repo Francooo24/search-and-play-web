@@ -72,23 +72,23 @@ function LoginForm() {
         </div>
 
         {/* Right side — Login form */}
-        <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-8 w-full md:max-w-[440px] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
-        <div className="mb-6">
-          <svg className="w-12 h-12 mx-auto text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-6 w-full md:max-w-[400px] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
+        <div className="mb-4">
+          <svg className="w-10 h-10 mx-auto text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Welcome Back</h1>
-        <p className="text-lg text-gray-300 mb-6">Sign in to continue your learning journey</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Welcome Back</h1>
+        <p className="text-base text-gray-300 mb-5">Sign in to continue your learning journey</p>
 
-        <form onSubmit={handleSubmit} className="space-y-6 text-left">
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* Email */}
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 opacity-70 pointer-events-none">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
             </div>
             <input type="email" placeholder="Email Address" required value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full pl-12 pr-5 py-4 text-base rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
+              className="w-full pl-12 pr-5 py-3 text-sm rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
           </div>
 
           {/* Password */}
@@ -97,7 +97,7 @@ function LoginForm() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             </div>
             <input type={showPw ? "text" : "password"} placeholder="Password" required value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full pl-12 pr-12 py-4 text-base rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
+              className="w-full pl-12 pr-12 py-3 text-sm rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
             <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-orange-400 opacity-70 hover:opacity-100 transition">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {showPw
@@ -113,12 +113,12 @@ function LoginForm() {
           </div>
 
           <button type="submit" disabled={loading}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 text-lg rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50">
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50">
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <p className="mt-6 text-base text-gray-400 text-center">
+        <p className="mt-4 text-sm text-gray-400 text-center">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="text-orange-400 hover:text-orange-300 font-semibold transition">Create one here</Link>
         </p>
