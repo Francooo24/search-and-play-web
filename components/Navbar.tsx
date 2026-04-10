@@ -41,7 +41,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex justify-between items-center px-4 md:px-8 py-6 text-white z-50">
+      <nav className="flex justify-between items-center px-4 md:px-8 py-3 text-white z-50">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
