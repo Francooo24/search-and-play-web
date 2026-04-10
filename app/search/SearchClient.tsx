@@ -181,8 +181,8 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
           </div>
         )}
 
-        {/* Game Recommendations */}
-        {(() => {
+        {/* Game Recommendations - only show if logged in */}
+        {isLoggedIn && (() => {
           const recommended = getRecommendedGames(word, allMeanings);
           if (recommended.length === 0) return null;
           return (
