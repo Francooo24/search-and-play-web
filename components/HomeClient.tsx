@@ -176,12 +176,14 @@ export default function HomeClient() {
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
 
-        {/* ── FEATURED GAMES inside hero ── */}
+        <div className="w-full max-w-4xl mb-6">
+          <SearchBox onSearch={handleSearch} />
+        </div>
+
+        {/* Popular Games */}
         <div className="w-full max-w-4xl mb-10">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
-            </div>
+            <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
             <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">All Games →</Link>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -201,10 +203,6 @@ export default function HomeClient() {
               </Link>
             ))}
           </div>
-        </div>
-
-        <div className="w-full max-w-4xl mb-10">
-          <SearchBox onSearch={handleSearch} />
         </div>
 
         {mounted && (
