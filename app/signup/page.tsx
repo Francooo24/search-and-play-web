@@ -185,6 +185,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
+      <style>{`footer { display: none !important; }`}</style>
 
       {/* Error Modal */}
       {error && (
