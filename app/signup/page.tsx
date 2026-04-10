@@ -204,14 +204,19 @@ export default function SignupPage() {
         </div>
       )}
 
-      <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-12 max-w-[480px] w-[92%] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
-        <svg className="w-16 h-16 mx-auto mb-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-        </svg>
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Create Account</h1>
-        <p className="text-lg text-gray-300 mb-10">Start your vocabulary journey</p>
+      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-8 items-start">
 
-        <form onSubmit={handleSubmit} className="space-y-6 text-left">
+        {/* Left — Form */}
+        <div className="glass-card border-l-[5px] border-l-orange-500 rounded-2xl p-8 w-full text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Create Account</h1>
+        </div>
+        <p className="text-sm text-gray-300 mb-6">Start your vocabulary journey</p>
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
 
           {/* Birthdate */}
           <div className="relative">
@@ -225,12 +230,12 @@ export default function SignupPage() {
 
           {/* Age Group Preview */}
           {ageError && (
-            <div className="px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-semibold flex items-center gap-2">
+            <div className="md:col-span-2 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-semibold flex items-center gap-2">
               ❌ {ageError}
             </div>
           )}
           {ageGroup && !ageError && (
-            <div className="space-y-2">
+            <div className="md:col-span-2 space-y-2">
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Your Age Group</p>
               <div className={`px-4 py-3 rounded-xl border text-sm font-semibold flex items-center gap-2 ${
                 ageGroup === "kids"  ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
@@ -309,7 +314,7 @@ export default function SignupPage() {
           </div>
 
           {/* Strength Bar */}
-          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1 bg-white/10 rounded-full overflow-hidden md:col-span-2">
             <div className={`h-full rounded-full transition-all ${strengthColor}`} style={{ width: strengthW }} />
           </div>
 
@@ -331,16 +336,16 @@ export default function SignupPage() {
           </div>
 
           {pwMatch !== null && (
-            <p className={`text-sm ${pwMatch ? "text-green-400" : "text-red-400"}`}>
+            <p className={`text-sm md:col-span-2 ${pwMatch ? "text-green-400" : "text-red-400"}`}>
               {pwMatch ? "✓ Passwords match" : "✗ Passwords do not match"}
             </p>
           )}
 
-          <p className="text-xs text-gray-400">Password must be at least 8 characters</p>
+          <p className="text-xs text-gray-400 md:col-span-2">Password must be at least 8 characters</p>
 
           {/* Extra Games Options */}
           {ageGroup && !ageError && (
-            <div className="px-4 py-3 rounded-xl border border-white/10 bg-white/5 space-y-3">
+            <div className="md:col-span-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 space-y-3">
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Also show games from other age groups?</p>
               {ageGroup !== "kids" && (
                 <label className="flex items-center gap-3 cursor-pointer group">
@@ -364,18 +369,43 @@ export default function SignupPage() {
           )}
 
           <button type="submit" disabled={loading || pwMatch === false || !!ageError}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 text-lg rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed mt-4">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            className="md:col-span-2 w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed mt-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
             {loading ? "Creating..." : "Create Account"}
           </button>
         </form>
 
-        <p className="mt-8 text-base text-gray-400 text-center">
+        <p className="mt-5 text-sm text-gray-400 text-center">
           Already have an account?{" "}
           <Link href="/login" className="text-orange-400 hover:text-orange-300 hover:underline font-semibold transition">Sign In</Link>
         </p>
+        </div>
+
+        {/* Right — Quotes */}
+        <div className="hidden md:flex flex-col justify-center items-start flex-shrink-0 w-72 px-4 py-12 space-y-6">
+          <div className="mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-4">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Join Search <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">&</span> Play</h2>
+            <p className="text-gray-500 text-xs mt-1">Start your learning journey today</p>
+          </div>
+          {[
+            { quote: "A word after a word after a word is power.", author: "Margaret Atwood" },
+            { quote: "To learn a language is to have one more window from which to look at the world.", author: "Chinese Proverb" },
+            { quote: "Play is the highest form of research.", author: "Albert Einstein" },
+          ].map((q, i) => (
+            <div key={i} className="border-l-2 border-orange-500/40 pl-4">
+              <p className="text-gray-300 text-sm italic leading-relaxed">&ldquo;{q.quote}&rdquo;</p>
+              <p className="text-orange-400/70 text-xs font-semibold mt-1">— {q.author}</p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

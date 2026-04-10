@@ -46,7 +46,7 @@ function LoginForm() {
       <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-start pt-4">
 
         {/* Left side — Quotes */}
-        <div className="hidden md:flex flex-col justify-center items-center flex-1 px-6 py-12 text-center">
+        <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 text-left">
           <div className="mb-8">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-6">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ function LoginForm() {
               { quote: "One word can change the world.", author: "Unknown" },
               { quote: "Words are, of course, the most powerful drug used by mankind.", author: "Rudyard Kipling" },
             ].map((q, i) => (
-              <div key={i} className="border-l-2 border-orange-500/40 pl-4 text-left">
+              <div key={i} className="border-l-2 border-orange-500/40 pl-4">
                 <p className="text-gray-300 text-sm italic leading-relaxed">&ldquo;{q.quote}&rdquo;</p>
                 <p className="text-orange-400/70 text-xs font-semibold mt-1">— {q.author}</p>
               </div>
