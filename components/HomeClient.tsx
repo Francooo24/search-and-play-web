@@ -180,6 +180,26 @@ export default function HomeClient() {
           <SearchBox onSearch={handleSearch} />
         </div>
 
+        {mounted && (
+          <div className="flex items-center gap-2 flex-wrap justify-center mb-8">
+            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent Searches:</span>
+            {recentSearches.length === 0 && <span className="text-xs text-gray-700">None yet</span>}
+            {recentSearches.map(w => (
+              <button key={w} onClick={() => handleSearch(w)}
+                className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
+                <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {w}
+              </button>
+            ))}
+            {recentSearches.length > 0 && (
+              <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
+                className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
+            )}
+          </div>
+        )}
+
         {/* Popular Games */}
         <div className="w-full max-w-4xl mb-10">
           <div className="flex items-center justify-between mb-4">
@@ -204,26 +224,6 @@ export default function HomeClient() {
             ))}
           </div>
         </div>
-
-        {mounted && (
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent Searches:</span>
-            {recentSearches.length === 0 && <span className="text-xs text-gray-700">None yet</span>}
-            {recentSearches.map(w => (
-              <button key={w} onClick={() => handleSearch(w)}
-                className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
-                <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {w}
-              </button>
-            ))}
-            {recentSearches.length > 0 && (
-              <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
-                className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
-            )}
-          </div>
-        )}
       </section>
 
       {/* ── STATS BAR ── */}
