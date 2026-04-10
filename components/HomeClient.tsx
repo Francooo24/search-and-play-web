@@ -172,9 +172,37 @@ export default function HomeClient() {
           </span>
         </h1>
 
-        <p className="text-gray-400 text-xl sm:text-2xl max-w-4xl mb-14 leading-relaxed">
+        <p className="text-gray-400 text-xl sm:text-2xl max-w-4xl mb-8 leading-relaxed">
           Your all-in-one English dictionary and word games platform — search any word, then play to master it.
         </p>
+
+        {/* ── FEATURED GAMES inside hero ── */}
+        <div className="w-full max-w-4xl mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">Featured</p>
+              <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
+            </div>
+            <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">All Games →</Link>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {FEATURED_GAMES.map(g => (
+              <Link key={g.slug} href={`/games/${g.slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1 flex flex-col min-h-[200px]">
+                <div className={`w-full flex-1 bg-gradient-to-br ${g.color} flex items-center justify-center text-[80px] group-hover:scale-105 transition-transform duration-300`}>
+                  {g.icon}
+                </div>
+                <div className="p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-white font-black text-sm">{g.name}</p>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/8 text-white/80 border border-white/10">{g.badge}</span>
+                  </div>
+                  <p className="text-white/60 text-xs leading-relaxed">{g.desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
 
         <div className="w-full max-w-4xl mb-10">
           <SearchBox onSearch={handleSearch} />
@@ -224,38 +252,7 @@ export default function HomeClient() {
           <DailyChallengeBanner />
         </section>
 
-        {/* ── FEATURED GAMES ── */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
-              <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
-            </div>
-            <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-5 py-2.5 rounded-xl transition">
-              All Games →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {FEATURED_GAMES.map(g => (
-              <Link key={g.slug} href={`/games/${g.slug}`}
-                className="group relative overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1 flex flex-col min-h-[280px]">
-                {/* Play Store style full icon banner */}
-                <div className={`w-full flex-1 bg-gradient-to-br ${g.color} flex items-center justify-center text-[100px] group-hover:scale-105 transition-transform duration-300`}>
-                  {g.icon}
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-white font-black text-base">{g.name}</p>
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/8 text-white/80 border border-white/10">{g.badge}</span>
-                  </div>
-                  <p className="text-white/60 text-sm leading-relaxed">{g.desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ── TOP PLAYERS ── */}
+{/* ── TOP PLAYERS ── */}
         <section>
           <div className="flex items-center justify-between mb-6">
             <div>
