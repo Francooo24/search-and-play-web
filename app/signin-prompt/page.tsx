@@ -94,7 +94,7 @@ export default async function SignInPromptPage({
         </div>
 
         {/* Right — Quotes */}
-        <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 pl-16 text-left">
+        <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 pl-20 text-left">
           <div className="mb-8">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-6">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
