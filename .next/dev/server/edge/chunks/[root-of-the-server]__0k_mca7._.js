@@ -36,6 +36,10 @@ const PROTECTED = [
 ];
 async function middleware(req) {
     const { pathname } = req.nextUrl;
+    // Always allow public files
+    if (pathname.startsWith("/manifest") || pathname.startsWith("/icons") || pathname.startsWith("/sw") || pathname === "/favicon.ico") {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$web$2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
+    }
     const isProtected = PROTECTED.some((p)=>pathname === p || pathname.startsWith(p + "/"));
     if (!isProtected) return __TURBOPACK__imported__module__$5b$project$5d2f$web$2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
     const token = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$web$2f$node_modules$2f$next$2d$auth$2f$jwt$2f$index$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["getToken"])({
@@ -59,7 +63,8 @@ const config = {
         "/favorites/:path*",
         "/stats/:path*",
         "/achievements/:path*",
-        "/daily-challenge/:path*"
+        "/daily-challenge/:path*",
+        "/((?!manifest.json|favicon.ico|icons|sw.js|_next|api).*)"
     ]
 };
 }),

@@ -30,5 +30,9 @@ self.__MIDDLEWARE_MATCHERS = [
   {
     "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/daily-challenge(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
     "originalSource": "/daily-challenge/:path*"
+  },
+  {
+    "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!manifest.json|favicon.ico|icons|sw.js|_next|api).*))(\\\\.json)?[\\/#\\?]?$",
+    "originalSource": "/((?!manifest.json|favicon.ico|icons|sw.js|_next|api).*)"
   }
 ];self.__MIDDLEWARE_MATCHERS_CB && self.__MIDDLEWARE_MATCHERS_CB()
