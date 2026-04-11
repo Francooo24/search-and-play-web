@@ -121,49 +121,74 @@ export default function SignupPage() {
 
   if (otpPending) {
     return (
-      <div className="flex-grow flex items-center justify-center px-4 py-8 relative z-10">
-        <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 items-start">
+      <div className="min-h-screen flex items-start justify-center px-4 pt-4 relative z-10 overflow-y-auto scrollbar-hide">
+        <style>{`footer { display: none !important; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+        <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-start pt-4">
 
-          {/* Left — OTP Card */}
-          <div className="glass-card border-l-[5px] border-l-orange-500 rounded-2xl p-6 w-full text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
+          {/* Left — Quotes */}
+          <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 text-left">
+            <div className="mb-8">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-6">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h2 className="text-4xl font-black text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Almost <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">There!</span></h2>
+              <p className="text-gray-500 text-sm">One last step to join Search &amp; Play</p>
+            </div>
+            <div className="space-y-6">
+              {[
+                { quote: "Every great journey begins with a single step — yours starts with this code.", author: "Search & Play" },
+                { quote: "Verify your email and unlock 50+ games designed to make learning fun.", author: "Search & Play" },
+                { quote: "Your vocabulary adventure is just one click away.", author: "Search & Play" },
+              ].map((q, i) => (
+                <div key={i} className="border-l-2 border-orange-500/40 pl-4">
+                  <p className="text-gray-300 text-sm italic leading-relaxed">&ldquo;{q.quote}&rdquo;</p>
+                  <p className="text-orange-400/70 text-xs font-semibold mt-1">— {q.author}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right — OTP Card */}
+          <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-6 w-full md:max-w-[400px] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
             {otpSuccess ? (
               <>
-                <div className="w-14 h-14 bg-green-500/20 border border-green-500/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="mb-4">
+                  <svg className="w-10 h-10 mx-auto text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h1 className="text-xl font-bold text-white mb-1">Account Created!</h1>
-                <p className="text-gray-400 text-sm">Redirecting to login...</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Account Created!</h1>
+                <p className="text-base text-gray-300">Redirecting to login...</p>
               </>
             ) : (
               <>
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-xl">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="mb-4">
+                  <svg className="w-10 h-10 mx-auto text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h1 className="text-xl font-bold text-white mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Check Your Email</h1>
-                <p className="text-gray-400 text-xs mb-1">We sent a 6-digit code to:</p>
-                <p className="text-orange-400 font-semibold text-sm mb-4">{pendingEmail}</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Check Your Email</h1>
+                <p className="text-base text-gray-300 mb-1">We sent a 6-digit code to:</p>
+                <p className="text-orange-400 font-semibold text-sm mb-5">{pendingEmail}</p>
 
-                <form onSubmit={handleOtpSubmit} className="space-y-3">
+                <form onSubmit={handleOtpSubmit} className="space-y-4 text-left">
                   <input
                     type="text" inputMode="numeric" maxLength={6} placeholder="000000"
                     value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-                    className="w-full text-center text-base font-bold tracking-[0.25em] py-2.5 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
+                    className="w-full text-center text-sm font-bold tracking-[0.25em] py-3 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
                     required
                   />
-                  {otpError && <p className="text-red-400 text-xs">{otpError}</p>}
+                  {otpError && <p className="text-red-400 text-sm">{otpError}</p>}
                   <p className="text-gray-500 text-xs">Code expires in 10 minutes.</p>
                   <button type="submit" disabled={otpLoading || otp.length !== 6}
-                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-2.5 text-sm rounded-xl font-semibold shadow-xl hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed">
                     {otpLoading ? "Verifying..." : "Verify & Create Account"}
                   </button>
-
                   <div className="text-center">
                     {resendMsg && (
-                      <p className={`text-xs mb-1.5 ${resendMsg.includes("sent") ? "text-green-400" : "text-red-400"}`}>{resendMsg}</p>
+                      <p className={`text-xs mb-2 ${resendMsg.includes("sent") ? "text-green-400" : "text-red-400"}`}>{resendMsg}</p>
                     )}
                     <button type="button" onClick={handleResend}
                       disabled={resendCooldown > 0 || resendLoading}
@@ -173,36 +198,13 @@ export default function SignupPage() {
                   </div>
                 </form>
 
-                <p className="mt-4 text-xs text-gray-500">
+                <p className="mt-4 text-sm text-gray-400 text-center">
                   Wrong email?{" "}
                   <button onClick={() => { setOtpPending(false); setOtp(""); setOtpError(""); }}
                     className="text-orange-400 hover:text-orange-300 font-semibold transition">Sign up again</button>
                 </p>
               </>
             )}
-          </div>
-
-          {/* Right — Quotes */}
-          <div className="hidden md:flex flex-col justify-start items-start flex-shrink-0 w-72 px-4 pt-6 space-y-6">
-            <div className="mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Almost <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">There!</span></h2>
-              <p className="text-gray-500 text-xs mt-1">One last step to join Search & Play</p>
-            </div>
-            {[
-              { quote: "Every great journey begins with a single step — yours starts with this code.", author: "Search & Play" },
-              { quote: "Verify your email and unlock 50+ games designed to make learning fun.", author: "Search & Play" },
-              { quote: "Your vocabulary adventure is just one click away.", author: "Search & Play" },
-            ].map((q, i) => (
-              <div key={i} className="border-l-2 border-orange-500/40 pl-4">
-                <p className="text-gray-300 text-sm italic leading-relaxed">&ldquo;{q.quote}&rdquo;</p>
-                <p className="text-orange-400/70 text-xs font-semibold mt-1">— {q.author}</p>
-              </div>
-            ))}
           </div>
 
         </div>
