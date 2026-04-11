@@ -52,20 +52,6 @@ export default async function SignInPromptPage({
             You need to be signed in to access this page and save your progress.
           </p>
 
-          {/* Perks */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {[
-              { icon: "🎮", label: "50+ Games" },
-              { icon: "📖", label: "Dictionary" },
-              { icon: "🏆", label: "Leaderboard" },
-            ].map((perk) => (
-              <div key={perk.label} className="bg-white/5 border border-white/10 rounded-xl py-2.5 px-1 flex flex-col items-center gap-1">
-                <span className="text-lg">{perk.icon}</span>
-                <span className="text-xs text-gray-400 font-medium">{perk.label}</span>
-              </div>
-            ))}
-          </div>
-
           <Link
             href={`/login${fromParam}`}
             className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-2 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition"
