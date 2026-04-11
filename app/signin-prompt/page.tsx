@@ -26,35 +26,71 @@ export default async function SignInPromptPage({
 
         {/* Left — Card */}
         <div
-          className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-6 w-full md:max-w-[400px] text-center"
+          className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-8 w-full md:max-w-[420px] text-center"
           style={{ animation: "fadeInUp 0.8s ease-out" }}
         >
-          <div className="mb-4">
-            <svg className="w-10 h-10 mx-auto text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+          {/* Animated lock icon with glow ring */}
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-orange-500/20 animate-ping" style={{ animationDuration: "2.5s" }} />
+            <div className="relative w-20 h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.4)]">
+              <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+            Members Only
           </div>
 
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
             Sign In Required
           </h1>
-          <p className="text-base text-gray-300 mb-5">
+          <p className="text-sm text-gray-400 mb-6 leading-relaxed">
             You need to be signed in to access this page and save your progress.
           </p>
 
+          {/* Perks */}
+          <div className="grid grid-cols-3 gap-2 mb-6">
+            {[
+              { icon: "🎮", label: "50+ Games" },
+              { icon: "📖", label: "Dictionary" },
+              { icon: "🏆", label: "Leaderboard" },
+            ].map((perk) => (
+              <div key={perk.label} className="bg-white/5 border border-white/10 rounded-xl py-2.5 px-1 flex flex-col items-center gap-1">
+                <span className="text-lg">{perk.icon}</span>
+                <span className="text-xs text-gray-400 font-medium">{perk.label}</span>
+              </div>
+            ))}
+          </div>
+
           <Link
             href={`/login${fromParam}`}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition"
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-base rounded-xl font-semibold shadow-xl flex items-center justify-center gap-2 hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition"
           >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
             Sign In Now
           </Link>
 
-          <p className="mt-4 text-sm text-gray-400">
-            Don&apos;t have an account yet?{" "}
-            <Link href="/signup" className="text-orange-400 hover:text-orange-300 font-semibold transition hover:underline">
-              Create one here
-            </Link>
-          </p>
+          <div className="flex items-center gap-3 my-4">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-gray-500">or</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+
+          <Link
+            href="/signup"
+            className="w-full border border-white/15 text-gray-300 py-2.5 text-sm rounded-xl font-semibold flex items-center justify-center gap-2 hover:border-orange-500/50 hover:text-white transition"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Create an Account
+          </Link>
         </div>
 
         {/* Right — Quotes */}
