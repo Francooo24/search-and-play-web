@@ -22,7 +22,7 @@ export default async function SignInPromptPage({
     <div className="min-h-screen flex items-start justify-center px-4 pt-4 relative z-10 overflow-y-auto scrollbar-hide">
       <style>{`footer { display: none !important; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
 
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-start pt-4">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-center pt-4">
 
         {/* Left — Card */}
         <div
@@ -58,7 +58,7 @@ export default async function SignInPromptPage({
         </div>
 
         {/* Right — Quotes */}
-        <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 text-left">
+        <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 pl-16 text-left">
           <div className="mb-8">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-6">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
