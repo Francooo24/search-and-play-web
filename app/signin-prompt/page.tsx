@@ -19,10 +19,10 @@ export default async function SignInPromptPage({
   const fromParam = from ? `?from=${encodeURIComponent(from)}` : "";
 
   return (
-    <div className="min-h-screen flex items-start justify-center px-4 pt-4 relative z-10 overflow-y-auto scrollbar-hide">
+    <div className="min-h-screen flex items-center justify-center px-4 relative z-10 overflow-y-auto scrollbar-hide">
       <style>{`footer { display: none !important; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
 
-      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-center pt-4">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-center">
 
         {/* Left — Card */}
         <div
