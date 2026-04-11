@@ -122,7 +122,7 @@ export default function SignupPage() {
   if (otpPending) {
     return (
       <div className="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
-        <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-12 max-w-[480px] w-[92%] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
+        <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-6 max-w-[420px] w-[92%] text-center" style={{ animation: "fadeInUp 0.8s ease-out" }}>
           {otpSuccess ? (
             <>
               <div className="w-16 h-16 bg-green-500/20 border border-green-500/40 rounded-2xl flex items-center justify-center mx-auto mb-6">
@@ -140,21 +140,21 @@ export default function SignupPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Check Your Email</h1>
+              <h1 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Check Your Email</h1>
               <p className="text-gray-400 text-sm mb-1">We sent a 6-digit OTP to:</p>
-              <p className="text-orange-400 font-semibold mb-8">{pendingEmail}</p>
+              <p className="text-orange-400 font-semibold text-sm mb-5">{pendingEmail}</p>
 
               <form onSubmit={handleOtpSubmit} className="space-y-4">
                 <input
                   type="text" inputMode="numeric" maxLength={6} placeholder="Enter 6-digit OTP"
                   value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full text-center text-3xl font-bold tracking-[0.5em] py-4 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
+                  className="w-full text-center text-xl font-bold tracking-[0.3em] py-3 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
                   required
                 />
                 {otpError && <p className="text-red-400 text-sm">{otpError}</p>}
                 <p className="text-gray-500 text-xs">Code expires in 10 minutes.</p>
                 <button type="submit" disabled={otpLoading || otp.length !== 6}
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 rounded-xl font-semibold shadow-xl hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3 text-sm rounded-xl font-semibold shadow-xl hover:from-orange-600 hover:to-amber-600 hover:-translate-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed">
                   {otpLoading ? "Verifying..." : "Verify & Create Account"}
                 </button>
 
@@ -171,7 +171,7 @@ export default function SignupPage() {
                 </div>
               </form>
 
-              <p className="mt-6 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-gray-500">
                 Wrong email?{" "}
                 <button onClick={() => { setOtpPending(false); setOtp(""); setOtpError(""); }}
                   className="text-orange-400 hover:text-orange-300 font-semibold transition">Sign up again</button>

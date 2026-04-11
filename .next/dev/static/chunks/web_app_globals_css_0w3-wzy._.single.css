@@ -1389,6 +1389,10 @@ img, video {
   border-color: #ffffff0d;
 }
 
+.self-start {
+  align-self: flex-start;
+}
+
 .self-center {
   align-self: center;
 }
@@ -4733,6 +4737,10 @@ body {
 @media (min-width: 768px) {
   .md\:col-span-2 {
     grid-column: span 2 / span 2;
+  }
+
+  .md\:block {
+    display: block;
   }
 
   .md\:flex {

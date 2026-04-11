@@ -1,4 +1,5 @@
-{"timestamp":"00:00:12.455","source":"Server","level":"WARN","message":"⚠ Slow filesystem detected. The benchmark took 339ms. If C:\\Users\\Louise Carmel\\Music\\Capstone\\web/.next/dev is a network drive, consider moving it to a local folder.\nSee more: https://nextjs.org/docs/app/guides/local-development"}
-{"timestamp":"00:00:15.626","source":"Server","level":"LOG","message":"○ Compiling middleware ..."}
-{"timestamp":"00:00:18.911","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
-{"timestamp":"00:00:22.205","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:09.233","source":"Server","level":"WARN","message":"⚠ Slow filesystem detected. The benchmark took 591ms. If C:\\Users\\Louise Carmel\\Music\\Capstone\\web/.next/dev is a network drive, consider moving it to a local folder.\nSee more: https://nextjs.org/docs/app/guides/local-development"}
+{"timestamp":"00:00:19.098","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
+{"timestamp":"00:00:24.087","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:24.857","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:29.387","source":"Server","level":"LOG","message":"○ Compiling /signup ..."}
