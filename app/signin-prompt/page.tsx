@@ -26,21 +26,21 @@ export default async function SignInPromptPage({
 
         {/* Left — Card */}
         <div
-          className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-8 w-full md:max-w-[420px] text-center"
+          className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-6 w-full md:max-w-[370px] text-center"
           style={{ animation: "fadeInUp 0.8s ease-out" }}
         >
-          {/* Animated lock icon with glow ring */}
-          <div className="relative w-20 h-20 mx-auto mb-6">
+          {/* Animated icon with glow ring */}
+          <div className="relative w-14 h-14 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full bg-orange-500/20 animate-ping" style={{ animationDuration: "2.5s" }} />
-            <div className="relative w-20 h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.4)]">
-              <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <div className="relative w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center shadow-[0_0_24px_rgba(249,115,22,0.4)]">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
           </div>
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+          <div className="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold px-3 py-1 rounded-full mb-3">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
             Members Only
           </div>
@@ -48,12 +48,12 @@ export default async function SignInPromptPage({
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
             Sign In Required
           </h1>
-          <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+          <p className="text-sm text-gray-400 mb-4 leading-relaxed">
             You need to be signed in to access this page and save your progress.
           </p>
 
           {/* Perks */}
-          <div className="grid grid-cols-3 gap-2 mb-6">
+          <div className="grid grid-cols-3 gap-2 mb-4">
             {[
               { icon: "🎮", label: "50+ Games" },
               { icon: "📖", label: "Dictionary" },
