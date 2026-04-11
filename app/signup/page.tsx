@@ -177,7 +177,7 @@ export default function SignupPage() {
                   <input
                     type="text" inputMode="numeric" maxLength={6} placeholder="000000"
                     value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-                    className="w-full text-center text-sm font-bold tracking-[0.25em] py-3 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
+                    className="w-48 mx-auto block text-center text-sm font-bold tracking-[0.25em] py-2 rounded-xl bg-white/5 border border-white/12 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition"
                     required
                   />
                   {otpError && <p className="text-red-400 text-sm">{otpError}</p>}
