@@ -228,22 +228,25 @@ export default function SignupPage() {
               className="w-full pl-12 pr-5 py-3 text-sm rounded-xl bg-white/5 border border-white/12 text-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/30 transition" />
           </div>
 
-          {/* Age Group Preview */}
-          {ageError && (
+          {/* Age Group Preview (keep the grid slot stable to prevent layout shifting) */}
+          {ageError ? (
             <div className="px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-sm font-semibold flex items-center gap-2">
               ❌ {ageError}
             </div>
-          )}
-          {ageGroup && !ageError && (
-            <div className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border text-xs font-semibold h-full ${
-                ageGroup === "kids"  ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
-                ageGroup === "teen"  ? "bg-green-500/10 border-green-500/30 text-green-400" :
-                                       "bg-orange-500/10 border-orange-500/30 text-orange-400"
-              }`}>
-                {ageGroup === "kids" ? "🧒 Kids (Ages 6–12)" :
-                 ageGroup === "teen" ? "🧑 Teen (Ages 13–17)" :
-                                      "🔞 Adult (Ages 18+)"}
+          ) : ageGroup ? (
+            <div
+              className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border text-xs font-semibold h-full ${
+                ageGroup === "kids" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
+                ageGroup === "teen" ? "bg-green-500/10 border-green-500/30 text-green-400" :
+                                      "bg-orange-500/10 border-orange-500/30 text-orange-400"
+              }`}
+            >
+              {ageGroup === "kids" ? "🧒 Kids (Ages 6–12)" :
+               ageGroup === "teen" ? "🧑 Teen (Ages 13–17)" :
+                                    "🔞 Adult (Ages 18+)"}
             </div>
+          ) : (
+            <div className="hidden md:block" aria-hidden="true" />
           )}
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 opacity-70 pointer-events-none">
