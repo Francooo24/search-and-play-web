@@ -28,19 +28,17 @@ export async function GET(req: NextRequest) {
     if (url) return NextResponse.json({ url });
   } catch {}
 
-  // 3. Openverse — free, no key needed
+  // 3. Wikimedia Commons image search
   try {
     const res = await fetch(
-      `https://api.openverse.org/v1/images/?q=${encodeURIComponent(word)}&page_size=1&mature=false`,
-      {
-        cache: "no-store",
-        signal: AbortSignal.timeout(5000),
-        headers: { "User-Agent": "SearchAndPlay/1.0" },
-      }
+      `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(word)}&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`,
+      { cache: "no-store", signal: AbortSignal.timeout(5000) }
     );
     const data = await res.json();
-    const img = data?.results?.[0]?.url || null;
-    if (img) return NextResponse.json({ url: img });
+    const pages = data?.query?.pages ?? {};
+    const page = Object.values(pages)[0] as any;
+    const url = page?.imageinfo?.[0]?.thumburl || page?.imageinfo?.[0]?.url || null;
+    if (url) return NextResponse.json({ url });
   } catch {}
 
   // 4. Wikidata image
@@ -64,6 +62,18 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ url });
       }
     }
+  } catch {}
+
+  // 5. Pixabay fallback
+  try {
+    const key = process.env.PIXABAY_API_KEY;
+    const res = await fetch(
+      `https://pixabay.com/api/?key=${key}&q=${encodeURIComponent(word)}&image_type=photo&per_page=3&safesearch=true`,
+      { cache: "no-store", signal: AbortSignal.timeout(5000) }
+    );
+    const data = await res.json();
+    const url = data?.hits?.[0]?.webformatURL || null;
+    if (url) return NextResponse.json({ url });
   } catch {}
 
   return NextResponse.json({ url: null });

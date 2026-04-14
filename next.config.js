@@ -10,6 +10,8 @@ const nextConfig = {
       { hostname: "warwick.ac.uk" },
       { hostname: "theclassicalscroll.wordpress.com" },
       { hostname: "upload.wikimedia.org" },
+      { hostname: "commons.wikimedia.org" },
+      { hostname: "*.wikimedia.org" },
       { hostname: "centralca.cdn-anvilcms.net" },
       { hostname: "www.elissos.com" },
       { hostname: "las.illinois.edu" },
