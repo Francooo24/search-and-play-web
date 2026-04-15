@@ -100,10 +100,10 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
         {/* Word image */}
         {imgSrc && (
-          <div className="relative w-full rounded-3xl overflow-hidden border border-white/10 h-72 sm:h-96 group shadow-2xl shadow-black/40">
+          <div className="relative w-full rounded-3xl overflow-hidden border border-white/10 group shadow-2xl shadow-black/40">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgSrc} alt={word} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <img src={imgSrc} alt={word} className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
             <div className="absolute bottom-0 left-0 right-0 px-8 py-6">
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">📖 Word Image</p>
               <h2 className="text-4xl font-black text-white capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>{word}</h2>
