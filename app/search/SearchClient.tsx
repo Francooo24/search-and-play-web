@@ -98,14 +98,26 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
       <div className="w-full max-w-5xl space-y-6">
 
-        {/* Word header with small image */}
-        <div className="flex items-center gap-5 flex-wrap">
-          {imgSrc && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imgSrc} alt={word}
-              className="w-64 h-64 object-cover rounded-2xl border border-white/10 shadow-lg flex-shrink-0" />
-          )}
-          <div className="flex-1 min-w-0">
+        {/* Word image card */}
+        {imgSrc && (
+          <div className="glass-card rounded-3xl border border-white/10 overflow-hidden shadow-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imgSrc}
+              alt={word}
+              className="w-full h-72 object-cover"
+            />
+            <div className="px-5 py-3 flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-orange-400">📖 Word Image</span>
+              <span className="text-gray-600 text-xs">—</span>
+              <span className="text-gray-400 text-xs capitalize">{word}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Word header */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>
               {word}
             </h1>
