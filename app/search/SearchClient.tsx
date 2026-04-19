@@ -99,29 +99,29 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
       <div className="w-full max-w-5xl space-y-6">
 
         {/* Word header with image */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex items-start gap-6 flex-wrap">
           {imgSrc && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imgSrc} alt={word}
-              className="object-cover rounded-2xl border border-white/10 shadow-xl"
-              style={{ width: "300px", height: "300px" }} />
+              className="object-cover rounded-2xl border border-white/10 shadow-xl flex-shrink-0"
+              style={{ width: "500px", height: "500px" }} />
           )}
-          <div className="flex items-center justify-between w-full flex-wrap gap-3">
-            <div>
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <div className="flex items-start justify-between">
               <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>
                 {word}
               </h1>
-              {phonetic && <p className="text-amber-300 font-mono text-lg mt-1">{phonetic}</p>}
+              <div className="flex items-center gap-3 ml-6">
+                <AudioButton text={word} lang="en" label="Listen" />
+                {isLoggedIn && (
+                  <button onClick={toggleSave}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition ${saved ? "bg-orange-500/20 border-orange-500/40 text-orange-400" : "bg-white/5 border-white/10 text-gray-400 hover:border-orange-500/30 hover:text-orange-400"}`}>
+                    {saved ? "★ Saved" : "☆ Save"}
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <AudioButton text={word} lang="en" label="Listen" />
-              {isLoggedIn && (
-                <button onClick={toggleSave}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition ${saved ? "bg-orange-500/20 border-orange-500/40 text-orange-400" : "bg-white/5 border-white/10 text-gray-400 hover:border-orange-500/30 hover:text-orange-400"}`}>
-                  {saved ? "★ Saved" : "☆ Save"}
-                </button>
-              )}
-            </div>
+            {phonetic && <p className="text-amber-300 font-mono text-lg">{phonetic}</p>}
           </div>
         </div>
 
