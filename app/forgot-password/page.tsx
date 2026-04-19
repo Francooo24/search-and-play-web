@@ -101,8 +101,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
 
-      {/* Left side — Quotes (same as login page) */}
-      <div className="hidden md:flex flex-col justify-center items-start flex-1 px-6 py-12 text-left max-w-md">
+      {/* Left side — Quotes */}
+      <div className="hidden md:flex flex-col justify-center items-start flex-1 pl-12 pr-6 py-12 text-left max-w-sm">
         <div className="mb-8">
           <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl mb-6">
             <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-10 max-w-[480px] w-[92%]" style={{ animation: "fadeInUp 0.8s ease-out" }}>
+      <div className="glass-card border-l-[5px] border-l-orange-500 rounded-[1.75rem] p-8 max-w-[420px] w-[92%] mr-8" style={{ animation: "fadeInUp 0.8s ease-out" }}>
 
         {/* Step Indicator */}
         <div className="flex items-center justify-center gap-0 mb-8">
