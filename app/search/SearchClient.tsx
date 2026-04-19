@@ -98,29 +98,18 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
       <div className="w-full max-w-5xl space-y-6">
 
-        {/* Word image */}
-        {imgSrc && (
-          <div className="relative w-full rounded-3xl overflow-hidden border border-white/10 group shadow-2xl shadow-black/40">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgSrc} alt={word} className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 px-8 py-6">
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">📖 Word Image</p>
-              <h2 className="text-4xl font-black text-white capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>{word}</h2>
-              {phonetic && <p className="text-amber-300 font-mono text-base mt-1">{phonetic}</p>}
-            </div>
-          </div>
-        )}
-
-        {/* Word header */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            {!imgSrc && (
-              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-                {word}
-              </h1>
-            )}
-            {!imgSrc && phonetic && <p className="text-amber-300 font-mono text-lg mt-1">{phonetic}</p>}
+        {/* Word header with small image */}
+        <div className="flex items-center gap-5 flex-wrap">
+          {imgSrc && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imgSrc} alt={word}
+              className="w-28 h-28 object-cover rounded-2xl border border-white/10 shadow-lg flex-shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>
+              {word}
+            </h1>
+            {phonetic && <p className="text-amber-300 font-mono text-lg mt-1">{phonetic}</p>}
           </div>
           <div className="flex items-center gap-3">
             <AudioButton text={word} lang="en" label="Listen" />
