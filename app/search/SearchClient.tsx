@@ -103,7 +103,7 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
           {imgSrc && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imgSrc} alt={word}
-              className="w-28 h-28 object-cover rounded-2xl border border-white/10 shadow-lg flex-shrink-0" />
+              className="w-64 h-64 object-cover rounded-2xl border border-white/10 shadow-lg flex-shrink-0" />
           )}
           <div className="flex-1 min-w-0">
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight capitalize" style={{ fontFamily: "'Playfair Display', serif" }}>
