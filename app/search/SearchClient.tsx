@@ -104,7 +104,7 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imgSrc} alt={word}
               className="object-cover rounded-2xl border border-white/10 shadow-xl flex-shrink-0"
-              style={{ width: "500px", height: "500px" }} />
+              style={{ width: "350px", height: "350px" }} />
           )}
           <div className="flex-1 min-w-0 flex flex-col gap-2">
             <div className="flex items-start justify-between">

@@ -27,8 +27,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center px-4 pt-4 relative z-10 overflow-y-auto scrollbar-hide">
-      <style>{`footer { display: none !important; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+    <div className="flex-grow flex items-center justify-center px-4 py-8 relative z-10">
+      <style>{`footer { display: none !important; }`}</style>
       {/* Error Modal */}
       {error && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-[10px] flex items-center justify-center z-50" onClick={() => setError("")}>
