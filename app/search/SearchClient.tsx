@@ -131,8 +131,6 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <span className="text-xs bg-orange-500/10 border border-orange-500/20 text-orange-300 px-3 py-1 rounded-full">📖 Dictionary</span>
-                <span className="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1 rounded-full">🔊 Pronunciation</span>
-                <span className="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1 rounded-full">🎮 Play & Learn</span>
               </div>
             </div>
           </div>
