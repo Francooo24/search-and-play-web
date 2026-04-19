@@ -4,6 +4,7 @@ export async function GET(req: NextRequest) {
   const word = req.nextUrl.searchParams.get("word") ?? "";
   if (!word) return NextResponse.json({ url: null });
 
+  // Try Pixabay first
   try {
     const key = process.env.PIXABAY_API_KEY;
     const res = await fetch(
@@ -12,6 +13,18 @@ export async function GET(req: NextRequest) {
     );
     const data = await res.json();
     const url = data?.hits?.[0]?.webformatURL || null;
+    if (url) return NextResponse.json({ url });
+  } catch {}
+
+  // Fall back to Pexels (better for people, sports, NBA players)
+  try {
+    const key = process.env.PEXELS_API_KEY;
+    const res = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(word)}&per_page=1`,
+      { headers: { Authorization: key ?? "" }, cache: "no-store", signal: AbortSignal.timeout(5000) }
+    );
+    const data = await res.json();
+    const url = data?.photos?.[0]?.src?.large || null;
     if (url) return NextResponse.json({ url });
   } catch {}
 

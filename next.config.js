@@ -23,6 +23,7 @@ const nextConfig = {
       { hostname: "encrypted-tbn0.gstatic.com" },
       { hostname: "flagcdn.com" },
       { hostname: "images.pexels.com" },
+      { hostname: "*.pexels.com" },
     ],
   },
   compress: true,
