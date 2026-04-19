@@ -12,6 +12,7 @@ const nextConfig = {
       { hostname: "upload.wikimedia.org" },
       { hostname: "commons.wikimedia.org" },
       { hostname: "*.wikimedia.org" },
+      { hostname: "*.wikipedia.org" },
       { hostname: "centralca.cdn-anvilcms.net" },
       { hostname: "www.elissos.com" },
       { hostname: "las.illinois.edu" },

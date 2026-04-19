@@ -4,7 +4,18 @@ export async function GET(req: NextRequest) {
   const word = req.nextUrl.searchParams.get("word") ?? "";
   if (!word) return NextResponse.json({ url: null });
 
-  // Try Pixabay first
+  // 1. Wikipedia — most accurate for dictionary words (apple = apple, elephant = elephant)
+  try {
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`,
+      { cache: "no-store", signal: AbortSignal.timeout(5000) }
+    );
+    const data = await res.json();
+    const url = data?.thumbnail?.source || data?.originalimage?.source || null;
+    if (url) return NextResponse.json({ url });
+  } catch {}
+
+  // 2. Pixabay — good for general words
   try {
     const key = process.env.PIXABAY_API_KEY;
     const res = await fetch(
@@ -16,7 +27,7 @@ export async function GET(req: NextRequest) {
     if (url) return NextResponse.json({ url });
   } catch {}
 
-  // Fall back to Pexels (better for people, sports, NBA players)
+  // 3. Pexels — best for NBA players, athletes, sports names
   try {
     const key = process.env.PEXELS_API_KEY;
     const res = await fetch(
