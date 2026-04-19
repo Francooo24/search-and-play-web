@@ -122,6 +122,19 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
               </div>
             </div>
             {phonetic && <p className="text-amber-300 font-mono text-lg">{phonetic}</p>}
+
+            {/* Fun fact filler card */}
+            <div className="mt-4 glass-card rounded-2xl p-5 border border-white/10 space-y-3">
+              <p className="text-xs font-black uppercase tracking-widest text-orange-400">✨ Word Spotlight</p>
+              <p className="text-white text-sm leading-relaxed">
+                You searched for <span className="text-orange-400 font-bold capitalize">&ldquo;{word}&rdquo;</span>. Keep exploring — every word you learn brings you one step closer to mastering the English language!
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-xs bg-orange-500/10 border border-orange-500/20 text-orange-300 px-3 py-1 rounded-full">📖 Dictionary</span>
+                <span className="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1 rounded-full">🔊 Pronunciation</span>
+                <span className="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1 rounded-full">🎮 Play & Learn</span>
+              </div>
+            </div>
           </div>
         </div>
 
