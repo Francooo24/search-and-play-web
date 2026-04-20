@@ -101,6 +101,7 @@ function MemoryGame() {
           setTotalPts(p => p + pts);
           fetch("/api/games/score", {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ game: "Memory Game", won: true, score: pts }),
           }).then(() => checkAchievements()).then(setNewBadges);

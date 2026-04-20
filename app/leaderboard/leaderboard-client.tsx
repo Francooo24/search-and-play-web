@@ -10,7 +10,7 @@ interface LeaderboardPlayer { player_name: string; user_id: number | null; total
 interface GameTopPlayer     { player_name: string; score: number; created_at: string; country?: string | null; }
 interface GameEntry         { player_name: string; best_score: number; plays: number; last_played: string; country?: string | null; }
 interface RankTier          { name: string; min: number; max: number; icon: string; color: string; bg: string; border: string; desc: string; }
-interface RankedPlayer      { id: number; player_name: string; total_points: number; total_games: number; avg_score: number; last_played: string; tier: RankTier; progress: number; age_group?: string | null; country?: string | null; }
+interface RankedPlayer      { id: number; player_name: string; total_points: number; total_games: number; avg_score: number; last_played: string; tier: RankTier; progress: number; age_group?: string | null; country?: string | null; games_played?: string[]; }
 
 const PERIODS: { key: Period; label: string }[] = [
   { key: "all",     label: "All Time"   },
@@ -658,6 +658,13 @@ function GroupRankList({ ag, label, icon, headerColor, borderColor }: {
                     {isMe && <span className="text-[9px] bg-orange-500/15 text-orange-400 border border-orange-500/25 px-1.5 py-0.5 rounded-full font-bold">YOU</span>}
                   </div>
                   <p className="text-gray-700 text-[10px]">{row.total_games} games</p>
+                  {row.games_played && row.games_played.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {row.games_played.map(g => (
+                        <span key={g} className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-500">{g}</span>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1 mt-0.5">
                     {lastSeenDot(row.last_played)}
                     <p className="text-gray-700 text-[10px]">{fmt(row.last_played)}</p>

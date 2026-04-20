@@ -88,7 +88,8 @@ export async function GET(req: NextRequest) {
       const { rows } = await pool.query(
         `SELECT p.id, p.player_name, COALESCE(SUM(l.score),0) AS total_points,
                 COUNT(l.id) AS total_games, COALESCE(AVG(l.score),0) AS avg_score,
-                MAX(l.created_at) AS last_played, p.birthdate, p.country
+                MAX(l.created_at) AS last_played, p.birthdate, p.country,
+                ARRAY_AGG(DISTINCT l.game) FILTER (WHERE l.game IS NOT NULL) AS games_played
          FROM players p LEFT JOIN leaderboard l ON p.id = l.user_id
          WHERE p.is_admin = FALSE
          GROUP BY p.id, p.player_name, p.birthdate, p.country
@@ -102,7 +103,8 @@ export async function GET(req: NextRequest) {
           const ag = calcAgeGroup(r.birthdate);
           return { id: r.id, player_name: r.player_name, total_points: pts,
             total_games: Number(r.total_games), avg_score: parseFloat(r.avg_score),
-            last_played: String(r.last_played), tier, progress, age_group: ag, country: r.country };
+            last_played: String(r.last_played), tier, progress, age_group: ag, country: r.country,
+            games_played: (r.games_played ?? []).filter(Boolean).sort() };
         })
         .filter(r => !ageGroup || r.age_group === ageGroup);
       return NextResponse.json({ players, tiers: TIERS });

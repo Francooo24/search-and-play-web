@@ -100,12 +100,12 @@ function WordleGame() {
     const nextRow = currentRow + 1;
     if (won) {
       setGameOver(true); setScore(s => s+10); setWins(w => w+1); setStreak(s => s+1);
-      fetch("/api/games/score", { method: "POST", headers: { "Content-Type": "application/json" },
+      fetch("/api/games/score", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ game: "WordGuess", won: true, score: 10 }) }).catch(() => {});
       setTimeout(() => setResult({emoji:"🎉",title:"Brilliant!",sub:`The word was: ${target}`,pts:"+10 pts!"}), 1800);
     } else if (nextRow >= DIFF_CONFIG[difficulty].maxRows) {
       setGameOver(true); setStreak(0);
-      fetch("/api/games/score", { method: "POST", headers: { "Content-Type": "application/json" },
+      fetch("/api/games/score", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ game: "WordGuess", won: false, score: 0 }) }).catch(() => {});
       setTimeout(() => setResult({emoji:"😔",title:"Game Over!",sub:`The word was: ${target}`,pts:"Better luck next time!"}), 800);
     }

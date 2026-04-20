@@ -10,7 +10,15 @@ export async function GET() {
 
   // Always return total players count (public)
   const { rows: totalRows } = await pool.query(
-    "SELECT COUNT(DISTINCT l.user_id) AS total FROM leaderboard l JOIN players p ON l.user_id = p.id WHERE p.is_admin = false"
+    `SELECT COUNT(*) AS total
+     FROM (
+       SELECT l.user_id
+       FROM leaderboard l
+       JOIN players p ON l.user_id = p.id
+       WHERE p.is_admin = false
+       GROUP BY l.user_id
+       HAVING SUM(l.score) > 0
+     ) sub`
   );
   const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
 
@@ -21,13 +29,19 @@ export async function GET() {
   try {
     // Get user's total score and best single score
     const { rows: userRows } = await pool.query(
-      "SELECT COALESCE(SUM(score), 0) AS total, COALESCE(MAX(score), 0) AS best, (SELECT game FROM leaderboard WHERE user_id = $1 ORDER BY score DESC LIMIT 1) AS best_game FROM leaderboard WHERE user_id = $2",
-      [userId, userId]
+      `SELECT COALESCE(SUM(score), 0) AS total, COALESCE(MAX(score), 0) AS best
+       FROM leaderboard WHERE user_id = $1`,
+      [userId]
     );
     const userTotal = Number(userRows[0]?.total ?? 0);
     const userBest  = Number(userRows[0]?.best ?? 0);
-    const bestGame  = userRows[0]?.best_game ?? null;
-    if (userTotal === 0) return NextResponse.json({ rank: null, total: 0, best: 0, best_game: null, streak: 0 });
+    if (userTotal === 0) return NextResponse.json({ rank: null, total: totalPlayers, best: 0, best_game: null, streak: 0 });
+    // Fetch best game separately (the game where user scored highest)
+    const { rows: bestGameRows } = await pool.query(
+      `SELECT game FROM leaderboard WHERE user_id = $1 ORDER BY score DESC LIMIT 1`,
+      [userId]
+    );
+    const bestGame = bestGameRows[0]?.game ?? null;
 
     // Compute win streak — consecutive distinct days played up to today
     const { rows: dateRows } = await pool.query(
@@ -46,16 +60,19 @@ export async function GET() {
 
     // Count how many non-admin players have a higher total score
     const { rows: rankRows } = await pool.query(
-      `SELECT COUNT(DISTINCT l.user_id) + 1 AS rank
-       FROM leaderboard l
-       JOIN players p ON l.user_id = p.id
-       WHERE l.user_id != $1 AND p.is_admin = false
-       GROUP BY l.user_id
-       HAVING SUM(l.score) > $2`,
+      `SELECT COUNT(*) AS ahead
+       FROM (
+         SELECT l.user_id
+         FROM leaderboard l
+         JOIN players p ON l.user_id = p.id
+         WHERE l.user_id != $1 AND p.is_admin = false
+         GROUP BY l.user_id
+         HAVING SUM(l.score) > $2
+       ) sub`,
       [userId, userTotal]
     );
 
-    const rank = rankRows.length + 1;
+    const rank = Number(rankRows[0]?.ahead ?? 0) + 1;
 
     // Total ranked non-admin players — already computed above
 
