@@ -4,47 +4,129 @@ import Link from "next/link";
 import AudioButton from "@/components/AudioButton";
 
 const ALL_GAMES = [
-  { slug: "hangman",       name: "Hangman",         icon: "🪢", desc: "Guess the word letter by letter!",         group: "teen"  },
-  { slug: "wordle",        name: "WordGuess",        icon: "📝", desc: "Guess the 5-letter word in 6 tries!",       group: "teen"  },
-  { slug: "wordsearch",    name: "Word Search",      icon: "🔍", desc: "Find hidden words in the grid!",            group: "teen"  },
-  { slug: "spellingbee",   name: "Spelling Bee",     icon: "🐝", desc: "Spell the word from its definition!",       group: "teen"  },
-  { slug: "scramble",      name: "Word Scramble",    icon: "🔀", desc: "Unscramble the letters!",                   group: "teen"  },
-  { slug: "synonymmatch",  name: "Synonym Match",    icon: "🔄", desc: "Match words with their synonyms!",          group: "teen"  },
-  { slug: "fillinblank",   name: "Fill in the Blank",icon: "✏️", desc: "Complete the sentence!",                   group: "teen"  },
-  { slug: "contextclues",  name: "Context Clues",    icon: "📖", desc: "Figure out the meaning from context!",     group: "teen"  },
-  { slug: "crossword",     name: "Crossword",        icon: "📋", desc: "Fill the grid using the clues!",            group: "adult" },
-  { slug: "wordblitz",     name: "Word Blitz",       icon: "⚡", desc: "Type as many words as you can!",            group: "adult" },
-  { slug: "anagram",       name: "Anagram Master",   icon: "🔀", desc: "Form words from the given letters!",        group: "adult" },
-  { slug: "vocabquiz",     name: "Vocabulary Quiz",  icon: "📚", desc: "Test your vocabulary!",                     group: "adult" },
-  { slug: "memory",        name: "Memory Game",      icon: "🧠", desc: "Flip cards and find matching pairs!",       group: "kids"  },
-  { slug: "colorwords",    name: "Color Words",      icon: "🎨", desc: "Identify the correct color!",               group: "kids"  },
-  { slug: "puzzle",        name: "Word Puzzle",      icon: "🔤", desc: "Click tiles to unscramble the word!",       group: "adult" },
-  { slug: "idiomchallenge",name: "Idiom Challenge",  icon: "💬", desc: "Guess the meaning of idioms!",              group: "adult" },
+  { slug: "tictactoe",       name: "Tic Tac Toe",       icon: "⭕", desc: "Classic game of X and O",                                group: "kids"  },
+  { slug: "memory",          name: "Memory Game",       icon: "🧠", desc: "Flip cards and find all matching pairs!",                 group: "kids"  },
+  { slug: "animalmatch",     name: "Animal Match",      icon: "🐾", desc: "Match the animal to its sound!",                         group: "kids"  },
+  { slug: "colorwords",      name: "Color Words",       icon: "🎨", desc: "Identify the correct color!",                            group: "kids"  },
+  { slug: "countclick",      name: "Count & Click",     icon: "🔢", desc: "Count the objects and pick the number!",                 group: "kids"  },
+  { slug: "shapematch",      name: "Shape Match",       icon: "🔷", desc: "Match the shapes before time runs out!",                 group: "kids"  },
+  { slug: "rhymetime",       name: "Rhyme Time",        icon: "🎵", desc: "Pick the word that rhymes!",                             group: "kids"  },
+  { slug: "simplemath",      name: "Simple Math",       icon: "➕", desc: "Solve easy math problems to earn points!",               group: "kids"  },
+  { slug: "balloonpop",      name: "Balloon Pop",       icon: "🎈", desc: "Pop the balloon with the correct answer!",               group: "kids"  },
+  { slug: "caterpillarcount",name: "Caterpillar Count", icon: "🐛", desc: "Count the emojis and pick the right number!",            group: "kids"  },
+  { slug: "colormix",        name: "Color Mix",         icon: "🌈", desc: "Mix two colors and guess the result!",                   group: "kids"  },
+  { slug: "oddoneout",       name: "Odd One Out",       icon: "🎪", desc: "Find the item that doesn't belong!",                    group: "kids"  },
+  { slug: "hangman",         name: "Hangman",           icon: "🪢", desc: "Guess the word letter by letter!",                      group: "teen"  },
+  { slug: "wordle",          name: "WordGuess",         icon: "📝", desc: "Guess the 5-letter word in 6 tries!",                   group: "teen"  },
+  { slug: "wordsearch",      name: "Word Search",       icon: "🔍", desc: "Find hidden words in the grid!",                        group: "teen"  },
+  { slug: "spellingbee",     name: "Spelling Bee",      icon: "🐝", desc: "Spell the word from its definition!",                   group: "teen"  },
+  { slug: "synonymmatch",    name: "Synonym Match",     icon: "🔄", desc: "Match words with their synonyms!",                      group: "teen"  },
+  { slug: "scramble",        name: "Word Scramble",     icon: "🔀", desc: "Unscramble the letters!",                               group: "teen"  },
+  { slug: "abcorder",        name: "ABC Order",         icon: "🔤", desc: "Arrange the words alphabetically!",                     group: "teen"  },
+  { slug: "fillinblank",     name: "Fill in the Blank", icon: "✏️", desc: "Complete the sentence!",                               group: "teen"  },
+  { slug: "prefixsuffix",    name: "Prefix & Suffix",   icon: "🔤", desc: "Complete the word with the correct prefix or suffix!",  group: "teen"  },
+  { slug: "contextclues",    name: "Context Clues",     icon: "📖", desc: "Figure out the meaning from context!",                  group: "teen"  },
+  { slug: "picturepuzzle",   name: "Picture Puzzle",    icon: "🧩", desc: "Slide the tiles to complete the picture!",              group: "teen"  },
+  { slug: "triviablitz",     name: "Trivia Blitz",      icon: "🧠", desc: "Answer trivia questions as fast as you can!",           group: "teen"  },
+  { slug: "flagquiz",        name: "Flag Quiz",         icon: "🗺️", desc: "Guess the country from its flag!",                     group: "teen"  },
+  { slug: "mathrace",        name: "Math Race",         icon: "🧮", desc: "Solve algebra and percentage problems fast!",           group: "teen"  },
+  { slug: "sentencefix",     name: "Sentence Fix",      icon: "✍️", desc: "Spot and fix the grammar error in each sentence!",     group: "teen"  },
+  { slug: "crossword",       name: "Crossword",         icon: "📋", desc: "Fill the grid using the clues!",                        group: "adult" },
+  { slug: "cryptogram",      name: "Cryptogram",        icon: "🔐", desc: "Decode the encrypted quote!",                           group: "adult" },
+  { slug: "wordblitz",       name: "Word Blitz",        icon: "⚡", desc: "Type as many words as you can in 60 seconds!",          group: "adult" },
+  { slug: "anagram",         name: "Anagram Master",    icon: "🔀", desc: "Form words from the given letters!",                   group: "adult" },
+  { slug: "wordduel",        name: "Word Duel",         icon: "⚔️", desc: "Guess the secret word in 8 tries!",                    group: "adult" },
+  { slug: "trivia",          name: "Speed Trivia",      icon: "🧠", desc: "Answer trivia questions as fast as possible!",          group: "adult" },
+  { slug: "vocabquiz",       name: "Vocabulary Quiz",   icon: "📚", desc: "Test your vocabulary with challenging definitions!",    group: "adult" },
+  { slug: "idiomchallenge",  name: "Idiom Challenge",   icon: "💬", desc: "Guess the meaning of common idioms!",                  group: "adult" },
+  { slug: "wordassoc",       name: "Word Association",  icon: "🧩", desc: "Chain words by association!",                          group: "adult" },
+  { slug: "wordbingo",       name: "Word Bingo",        icon: "🎯", desc: "Mark the words as they are called out!",               group: "adult" },
+  { slug: "wordchain",       name: "Word Chain",        icon: "🔗", desc: "Chain words using the last letter!",                   group: "adult" },
+  { slug: "wordconnect",     name: "Word Connect",      icon: "🔗", desc: "Connect letters to form as many words as possible!",   group: "adult" },
+  { slug: "wordladder",      name: "Word Ladder",       icon: "🪜", desc: "Change one letter at a time to reach the target!",     group: "adult" },
+  { slug: "puzzle",          name: "Word Puzzle",       icon: "🔤", desc: "Click tiles to unscramble the word!",                  group: "adult" },
+  { slug: "debatethis",      name: "Debate This",       icon: "🎭", desc: "Pick a side and face the counter-argument!",           group: "adult" },
+  { slug: "fakeorfact",      name: "Fake or Fact",      icon: "📰", desc: "Can you tell what's real from what's not?",            group: "adult" },
+  { slug: "logicgrid",       name: "Logic Grid",        icon: "🔍", desc: "Use deductive reasoning to solve logic puzzles!",      group: "adult" },
+  { slug: "deduction",       name: "Deduction",         icon: "🧩", desc: "Crack the secret 4-digit code in 8 tries!",            group: "adult" },
 ];
 
+// word-to-game relevance tags
+const GAME_TAGS: Record<string, string[]> = {
+  tictactoe:       ["strategy", "classic", "logic", "kids"],
+  memory:          ["memory", "match", "pairs", "kids", "animal", "food", "music"],
+  animalmatch:     ["animal", "sound", "match", "kids", "nature"],
+  colorwords:      ["color", "visual", "kids", "identify"],
+  countclick:      ["number", "count", "math", "kids"],
+  shapematch:      ["shape", "visual", "match", "kids", "geometry"],
+  rhymetime:       ["rhyme", "sound", "poetry", "kids", "music", "word"],
+  simplemath:      ["math", "number", "addition", "kids", "arithmetic"],
+  balloonpop:      ["number", "kids", "quick", "answer"],
+  caterpillarcount:["count", "number", "kids", "math"],
+  colormix:        ["color", "mix", "visual", "kids", "art"],
+  oddoneout:       ["logic", "classify", "kids", "category", "identify"],
+  hangman:         ["word", "letter", "guess", "spelling", "teen"],
+  wordle:          ["word", "letter", "guess", "5-letter", "teen"],
+  wordsearch:      ["word", "search", "find", "grid", "teen", "noun"],
+  spellingbee:     ["spelling", "word", "definition", "teen", "letter"],
+  synonymmatch:    ["synonym", "word", "match", "adjective", "teen", "vocabulary"],
+  scramble:        ["word", "scramble", "letters", "unscramble", "teen"],
+  abcorder:        ["alphabet", "order", "letter", "teen", "arrange"],
+  fillinblank:     ["sentence", "verb", "grammar", "teen", "complete"],
+  prefixsuffix:    ["prefix", "suffix", "word", "teen", "spelling"],
+  contextclues:    ["context", "meaning", "verb", "adjective", "teen", "sentence"],
+  picturepuzzle:   ["picture", "puzzle", "slide", "teen", "visual"],
+  triviablitz:     ["trivia", "fact", "knowledge", "teen", "history", "science", "sport", "country"],
+  flagquiz:        ["flag", "country", "geography", "teen", "nation"],
+  mathrace:        ["math", "algebra", "teen", "number", "equation"],
+  sentencefix:     ["sentence", "grammar", "fix", "teen", "verb", "adverb"],
+  crossword:       ["word", "clue", "grid", "adult", "noun", "vocabulary"],
+  cryptogram:      ["code", "decode", "cipher", "adult", "logic", "letter"],
+  wordblitz:       ["word", "fast", "type", "adult", "vocabulary"],
+  anagram:         ["word", "letters", "rearrange", "adult", "scramble"],
+  wordduel:        ["word", "guess", "adult", "5-letter", "duel"],
+  trivia:          ["trivia", "fact", "knowledge", "adult", "history", "science"],
+  vocabquiz:       ["vocabulary", "definition", "adult", "adjective", "synonym"],
+  idiomchallenge:  ["idiom", "phrase", "meaning", "adult", "expression"],
+  wordassoc:       ["association", "word", "chain", "adult", "adjective", "verb"],
+  wordbingo:       ["bingo", "word", "adult", "listen", "mark"],
+  wordchain:       ["chain", "word", "letter", "adult", "verb"],
+  wordconnect:     ["connect", "word", "letters", "adult"],
+  wordladder:      ["ladder", "word", "change", "adult", "letter"],
+  puzzle:          ["puzzle", "word", "unscramble", "adult", "tiles"],
+  debatethis:      ["debate", "argument", "opinion", "adult", "fact"],
+  fakeorfact:      ["fact", "fake", "truth", "adult", "knowledge"],
+  logicgrid:       ["logic", "deduce", "grid", "adult", "reasoning"],
+  deduction:       ["logic", "code", "deduce", "adult", "number", "reasoning"],
+};
+
+// rotating index stored in module scope — advances every call
+let rotateOffset = 0;
+
 function getRecommendedGames(word: string, meanings: any[]) {
-  const len = word.length;
-  const pos = meanings.map((m: any) => m.partOfSpeech).join(" ").toLowerCase();
-  const hasSynonyms = meanings.some((m: any) => m.synonyms?.length > 0);
-  const recommended: typeof ALL_GAMES = [];
+  const corpus = [
+    word.toLowerCase(),
+    meanings.map((m: any) => m.partOfSpeech ?? "").join(" ").toLowerCase(),
+    meanings.flatMap((m: any) => (m.definitions ?? []).map((d: any) => d.definition ?? "")).join(" ").toLowerCase(),
+    meanings.flatMap((m: any) => m.synonyms ?? []).join(" ").toLowerCase(),
+  ].join(" ");
 
-  // Based on word length
-  if (len === 5) recommended.push(...ALL_GAMES.filter(g => g.slug === "wordle" || g.slug === "hangman"));
-  if (len >= 6)  recommended.push(...ALL_GAMES.filter(g => g.slug === "scramble" || g.slug === "anagram"));
-  if (len <= 4)  recommended.push(...ALL_GAMES.filter(g => g.slug === "memory" || g.slug === "colorwords"));
+  // score each game: count how many of its tags appear in the corpus
+  const scored = ALL_GAMES.map(g => ({
+    ...g,
+    score: (GAME_TAGS[g.slug] ?? []).filter(tag => corpus.includes(tag)).length,
+  }));
 
-  // Based on part of speech
-  if (pos.includes("noun"))      recommended.push(...ALL_GAMES.filter(g => g.slug === "wordsearch" || g.slug === "crossword"));
-  if (pos.includes("verb"))      recommended.push(...ALL_GAMES.filter(g => g.slug === "fillinblank" || g.slug === "contextclues"));
-  if (pos.includes("adjective")) recommended.push(...ALL_GAMES.filter(g => g.slug === "synonymmatch" || g.slug === "vocabquiz"));
-  if (hasSynonyms)               recommended.push(...ALL_GAMES.filter(g => g.slug === "synonymmatch"));
+  // separate relevant (score > 0) from the rest
+  const relevant = scored.filter(g => g.score > 0).sort((a, b) => b.score - a.score);
+  const rest     = scored.filter(g => g.score === 0);
 
-  // Always add spelling bee and word blitz
-  recommended.push(...ALL_GAMES.filter(g => g.slug === "spellingbee" || g.slug === "wordblitz"));
+  // rotate the non-relevant pool so every search surfaces different games
+  const rotated = [...rest.slice(rotateOffset), ...rest.slice(0, rotateOffset)];
+  rotateOffset = (rotateOffset + 4) % Math.max(rest.length, 1);
 
-  // Deduplicate and return top 4
-  const seen = new Set<string>();
-  return recommended.filter(g => { if (seen.has(g.slug)) return false; seen.add(g.slug); return true; }).slice(0, 4);
+  // fill up to 4: relevant first, then rotated
+  return [...relevant, ...rotated].slice(0, 4);
 }
 
 const GROUP_COLOR: Record<string, string> = {
