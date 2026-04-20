@@ -10,17 +10,46 @@ function timeAgo(dateStr: string) {
   if (diff < 60) return "just now";
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function getIcon(activity: string) {
-  if (activity.toLowerCase().includes("played") || activity.toLowerCase().includes("won") || activity.toLowerCase().includes("lost")) return "🎮";
-  if (activity.toLowerCase().includes("searched")) return "🔍";
-  if (activity.toLowerCase().includes("achievement")) return "🏆";
-  if (activity.toLowerCase().includes("daily")) return "⚡";
-  if (activity.toLowerCase().includes("saved")) return "⭐";
-  if (activity.toLowerCase().includes("logged in")) return "🔐";
-  return "🔔";
+function categorize(activity: string): { type: string; icon: string; color: string; bg: string; border: string } {
+  const a = activity.toLowerCase();
+  if (a.includes("won") || a.includes("played") || a.includes("lost"))
+    return { type: "Games", icon: "🎮", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" };
+  if (a.includes("searched"))
+    return { type: "Search", icon: "🔍", color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" };
+  if (a.includes("achievement") || a.includes("unlocked"))
+    return { type: "Achievement", icon: "🏆", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" };
+  if (a.includes("daily") || a.includes("challenge"))
+    return { type: "Daily", icon: "⚡", color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" };
+  if (a.includes("saved") || a.includes("favorite"))
+    return { type: "Saved", icon: "⭐", color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/20" };
+  if (a.includes("logged in"))
+    return { type: "Login", icon: "🔐", color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20" };
+  return { type: "Other", icon: "🔔", color: "text-gray-400", bg: "bg-white/5", border: "border-white/10" };
+}
+
+function groupByDate(items: Notification[]) {
+  const groups: Record<string, Notification[]> = {};
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+  const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
+
+  for (const item of items) {
+    const d = new Date(item.created_at);
+    const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    let label = "";
+    if (dateOnly.getTime() === today.getTime()) label = "Today";
+    else if (dateOnly.getTime() === yesterday.getTime()) label = "Yesterday";
+    else if (dateOnly >= weekAgo) label = "This Week";
+    else label = "Older";
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(item);
+  }
+  return groups;
 }
 
 export default function NotificationsPage() {
@@ -28,15 +57,14 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastRead, setLastRead] = useState<string>("");
+  const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    // Get last read time before marking as read
     const prev = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
     setLastRead(prev);
 
-    // Mark all as read now
     const now = new Date().toISOString();
     localStorage.setItem("notif_last_read", now);
 
@@ -49,59 +77,201 @@ export default function NotificationsPage() {
 
   if (status === "unauthenticated") {
     return (
-      <div className="flex-grow flex items-center justify-center">
-        <p className="text-gray-400">Please <Link href="/login" className="text-orange-400 underline">sign in</Link> to view notifications.</p>
+      <div className="flex-grow flex items-center justify-center px-4">
+        <div className="bg-[#0f0f18] border border-white/8 rounded-3xl p-12 text-center max-w-md w-full">
+          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-3xl mx-auto mb-5">🔒</div>
+          <h2 className="text-xl font-black text-white mb-2">Sign in to view notifications</h2>
+          <p className="text-gray-500 text-sm mb-6">Your activity feed is saved to your account.</p>
+          <Link href="/login" className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-8 py-3 rounded-xl hover:from-orange-600 hover:to-amber-600 transition shadow-lg shadow-orange-500/20">
+            Sign In
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const filtered = filter === "all" ? notifications : notifications.filter(n => categorize(n.activity).type === filter);
+  const grouped = groupByDate(filtered);
+  const newCount = notifications.filter(n => new Date(n.created_at) > new Date(lastRead)).length;
+  
+  const categories = ["Games", "Search", "Achievement", "Daily", "Saved", "Login"];
+  const categoryCounts = categories.map(cat => ({
+    name: cat,
+    count: notifications.filter(n => categorize(n.activity).type === cat).length,
+    ...categorize(`${cat} test`),
+  }));
+
   return (
-    <div className="flex-grow w-full max-w-2xl mx-auto px-4 py-10">
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/" className="text-gray-400 hover:text-white transition text-sm">← Back</Link>
-        <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-          🔔 Notifications
-        </h1>
+    <div className="flex-grow w-full px-4 sm:px-6 py-8 md:py-12 relative z-10">
+      
+      {/* Hero Header */}
+      <div className="max-w-5xl mx-auto mb-10">
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/" className="text-gray-500 hover:text-white transition text-sm font-semibold flex items-center gap-1">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </Link>
+        </div>
+
+        <div className="relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+              Activity Feed
+            </div>
+            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight leading-none mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Notifi<span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">cations</span>
+            </h1>
+            <p className="text-gray-400 text-base max-w-xl mx-auto">
+              Stay updated with your learning progress, achievements, and game activity.
+            </p>
+          </div>
+
+          {/* Stats Overview */}
+          {!loading && notifications.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+              <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/5 border border-orange-500/20 rounded-2xl p-5 text-center">
+                <p className="text-3xl font-black text-white mb-1">{notifications.length}</p>
+                <p className="text-xs text-orange-300 uppercase tracking-widest font-bold">Total Activity</p>
+              </div>
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-2xl p-5 text-center">
+                <p className="text-3xl font-black text-white mb-1">{newCount}</p>
+                <p className="text-xs text-green-300 uppercase tracking-widest font-bold">New</p>
+              </div>
+              <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 rounded-2xl p-5 text-center">
+                <p className="text-3xl font-black text-white mb-1">{categoryCounts.filter(c => c.count > 0).length}</p>
+                <p className="text-xs text-purple-300 uppercase tracking-widest font-bold">Categories</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex flex-col gap-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />
-          ))}
-        </div>
-      ) : notifications.length === 0 ? (
-        <div className="flex flex-col items-center py-24 gap-3">
-          <p className="text-5xl">🔔</p>
-          <p className="text-gray-400 font-semibold">No activity yet</p>
-          <p className="text-gray-600 text-sm">Play games or search words to see your activity here.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {notifications.map((n) => {
-            const isNew = new Date(n.created_at) > new Date(lastRead);
-            return (
-              <div key={n.id}
-                className={`flex items-start gap-4 px-5 py-4 rounded-xl border transition
-                  ${isNew
-                    ? "bg-orange-500/8 border-orange-500/25"
-                    : "bg-white/3 border-white/8 hover:bg-white/5"
-                  }`}>
-                <span className="text-xl mt-0.5 flex-shrink-0">{getIcon(n.activity)}</span>
-                <div className="flex-1 min-w-0">
+      {/* Main Content */}
+      <div className="max-w-3xl mx-auto">
+        
+        {/* Category Filter */}
+        {!loading && notifications.length > 0 && (
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                filter === "all"
+                  ? "bg-orange-500/20 border border-orange-500/40 text-orange-300"
+                  : "bg-white/5 border border-white/8 text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              All <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{notifications.length}</span>
+            </button>
+            {categoryCounts.filter(c => c.count > 0).map(cat => (
+              <button
+                key={cat.name}
+                onClick={() => setFilter(cat.name)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                  filter === cat.name
+                    ? `${cat.bg} border ${cat.border} ${cat.color}`
+                    : "bg-white/5 border border-white/8 text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                <span>{cat.icon}</span>
+                {cat.name}
+                <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{cat.count}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <div className="space-y-3">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-20 rounded-2xl bg-white/3 animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && filtered.length === 0 && (
+          <div className="flex flex-col items-center py-20 gap-4">
+            <div className="w-20 h-20 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-4xl mb-2">
+              🔔
+            </div>
+            <p className="text-xl font-bold text-white">
+              {notifications.length === 0 ? "No activity yet" : `No ${filter} activity`}
+            </p>
+            <p className="text-gray-500 text-sm max-w-sm text-center">
+              {notifications.length === 0
+                ? "Play games, search words, or complete challenges to see your activity here."
+                : `Try selecting a different category or view all notifications.`}
+            </p>
+            {notifications.length === 0 && (
+              <Link href="/games" className="mt-4 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl transition shadow-lg shadow-orange-500/20">
+                Start Playing →
+              </Link>
+            )}
+          </div>
+        )}
+
+        {/* Timeline View */}
+        {!loading && filtered.length > 0 && (
+          <div className="space-y-8">
+            {Object.entries(grouped).map(([label, items]) => (
+              <div key={label}>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-gray-200 font-medium">{n.activity}</p>
-                    {isNew && (
-                      <span className="text-[10px] bg-orange-500 text-white px-1.5 py-0.5 rounded-full font-bold flex-shrink-0">NEW</span>
-                    )}
+                    <div className="w-2 h-2 rounded-full bg-orange-500" />
+                    <h2 className="text-sm font-black text-white uppercase tracking-widest">{label}</h2>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">{timeAgo(n.created_at)}</p>
+                  <div className="flex-1 h-px bg-white/5" />
+                  <span className="text-xs text-gray-600 font-semibold">{items.length}</span>
+                </div>
+
+                <div className="space-y-2">
+                  {items.map((n, idx) => {
+                    const isNew = new Date(n.created_at) > new Date(lastRead);
+                    const cat = categorize(n.activity);
+                    return (
+                      <div
+                        key={n.id}
+                        className={`group relative flex items-start gap-4 px-5 py-4 rounded-2xl border transition-all duration-200 ${
+                          isNew
+                            ? "bg-orange-500/10 border-orange-500/30 shadow-lg shadow-orange-500/5"
+                            : "bg-[#0a0a12] border-white/8 hover:border-white/15 hover:bg-[#0f0f18]"
+                        }`}
+                        style={{ animationDelay: `${idx * 50}ms` }}
+                      >
+                        {/* Timeline dot */}
+                        <div className={`absolute -left-[9px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#0a0a12] border-2 transition ${
+                          isNew ? "border-orange-500" : "border-white/20 group-hover:border-orange-500/50"
+                        }`} />
+                        
+                        <div className={`w-12 h-12 rounded-xl ${cat.bg} border ${cat.border} flex items-center justify-center flex-shrink-0 text-xl transition`}>
+                          {cat.icon}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {isNew && (
+                              <span className="text-[9px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">New</span>
+                            )}
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${cat.color}`}>{cat.type}</span>
+                          </div>
+                          <p className="text-white font-semibold text-sm leading-relaxed">{n.activity}</p>
+                          <p className="text-gray-600 text-xs mt-1">{timeAgo(n.created_at)}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
