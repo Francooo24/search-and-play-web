@@ -1,18 +1,24 @@
 import nodemailer from "nodemailer";
 
-export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-    ciphers: "SSLv3",
-  },
-});
+function createTransporter() {
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+      ciphers: "SSLv3",
+    },
+  });
+}
+
+export const transporter = { 
+  sendMail: (opts: any) => createTransporter().sendMail(opts) 
+};
 
 export const FROM = `"Search & Play" <${process.env.EMAIL_USER}>`;
 
