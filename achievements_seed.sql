@@ -1,10 +1,7 @@
--- Run this to replace old achievements with the full reward system
-USE games_dictionary;
-
+-- PostgreSQL version — run once to seed all achievements
 -- Clear old data
 DELETE FROM user_achievements;
 DELETE FROM achievements;
-ALTER TABLE achievements AUTO_INCREMENT = 1;
 
 -- ── Milestone: Games Played ──────────────────────────────────────────────────
 INSERT INTO achievements (name, description, icon, condition_type, condition_value, game_specific) VALUES
