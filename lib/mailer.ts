@@ -11,7 +11,6 @@ function createTransporter() {
     },
     tls: {
       rejectUnauthorized: false,
-      ciphers: "SSLv3",
     },
   });
 }
