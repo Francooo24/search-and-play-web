@@ -41,7 +41,8 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex justify-between items-center px-4 md:px-8 py-3 text-white z-50">
+      <div className="w-full border-b border-white/5">
+      <nav className="flex justify-between items-center px-4 md:px-6 py-3 text-white z-50 max-w-7xl mx-auto w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-amber-700 rounded-xl flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
@@ -145,6 +146,7 @@ export default function Navbar() {
           <span className={`h-0.5 bg-white rounded-full transition-all ${menuOpen ? "-rotate-45 -translate-y-2.5" : ""}`} />
         </button>
       </nav>
+      </div>
 
       {/* Mobile overlay */}
       {menuOpen && <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setMenuOpen(false)} />}

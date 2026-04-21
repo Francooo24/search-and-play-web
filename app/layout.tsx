@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <Navbar />
           <BackendStatusBanner />
-          <main className="flex-grow">{children}</main>
+          <main className="flex-grow w-full max-w-7xl mx-auto">{children}</main>
           <Footer />
           <GlobalScoreToast />
           <GlobalSoundManager />

@@ -102,7 +102,7 @@ export default function NotificationsPage() {
   }));
 
   return (
-    <div className="flex-grow w-full px-4 sm:px-6 py-8 md:py-12 relative z-10">
+    <div className="flex-grow w-full px-4 sm:px-6 py-8 md:py-10 relative z-10">
       
       {/* Hero Header */}
       <div className="max-w-5xl mx-auto mb-10">

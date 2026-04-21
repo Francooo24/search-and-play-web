@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-auto border-t border-gray-800/50" style={{ background: "radial-gradient(ellipse at bottom, #171721 0%, #0d0d14 65%, #000000 100%)" }}>
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-xl flex items-center justify-center shadow-lg">

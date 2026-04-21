@@ -162,7 +162,7 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-6 pt-4 pb-44 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-4 sm:px-6 pt-4 pb-32 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-tight mb-5 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -227,7 +227,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-14 mb-10 -mt-36">
+      <section className="w-full border-y border-white/5 bg-white/2 py-10 mb-10">
         <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {STATS.map(s => (
             <div key={s.label}>
@@ -238,7 +238,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      <div className="w-full max-w-5xl mx-auto px-8 space-y-14 pb-28">
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 space-y-10 pb-16">
 
         {/* ── DAILY CHALLENGE ── */}
         <section>

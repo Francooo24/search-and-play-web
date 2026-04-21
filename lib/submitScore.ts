@@ -16,7 +16,7 @@ export async function submitScore(
   score: number,
   difficulty?: string
 ): Promise<ScoreResult> {
-  if (score <= 0) return { saved: false, badges: [] };
+  if (score < 0) return { saved: false, badges: [] };
 
   try {
     const res = await fetch("/api/games/score", {

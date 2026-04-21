@@ -107,7 +107,7 @@ export default function AchievementsPage() {
     });
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-8 md:py-12 w-full min-h-screen relative z-10" suppressHydrationWarning>
+    <div className="flex flex-col items-center px-4 sm:px-6 py-8 md:py-10 w-full min-h-screen relative z-10" suppressHydrationWarning>
       {mounted && <>
 
       {/* ── Hero ── */}

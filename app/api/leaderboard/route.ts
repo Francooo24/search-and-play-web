@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
          FROM players p LEFT JOIN leaderboard l ON p.id = l.user_id
          WHERE p.is_admin = FALSE
          GROUP BY p.id, p.player_name, p.birthdate, p.country
-         HAVING COALESCE(SUM(l.score),0) > 0
+         HAVING COALESCE(SUM(l.score),0) >= 0
          ORDER BY total_points DESC LIMIT 50`
       );
       const players = rows
@@ -131,7 +131,7 @@ export async function GET(req: NextRequest) {
        FROM leaderboard l LEFT JOIN players p ON l.user_id = p.id
        ${where}
        GROUP BY l.player_name, l.user_id, p.birthdate, p.country
-       HAVING SUM(l.score) > 0
+       HAVING SUM(l.score) >= 0
        ORDER BY total_score DESC
        LIMIT $${limitIdx} OFFSET $${offIdx}`,
       [...params, limit, offset]

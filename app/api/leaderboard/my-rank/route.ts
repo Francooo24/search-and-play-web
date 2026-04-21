@@ -17,7 +17,6 @@ export async function GET() {
        JOIN players p ON l.user_id = p.id
        WHERE p.is_admin = false
        GROUP BY l.user_id
-       HAVING SUM(l.score) > 0
      ) sub`
   );
   const totalPlayers = Number((totalRows as any)[0]?.total ?? 0);
@@ -35,7 +34,13 @@ export async function GET() {
     );
     const userTotal = Number(userRows[0]?.total ?? 0);
     const userBest  = Number(userRows[0]?.best ?? 0);
-    if (userTotal === 0) return NextResponse.json({ rank: null, total: totalPlayers, best: 0, best_game: null, streak: 0 });
+    // Check if user has played any game at all
+    const { rows: playedRows } = await pool.query(
+      `SELECT COUNT(*) AS games FROM leaderboard WHERE user_id = $1`,
+      [userId]
+    );
+    const gamesPlayed = Number(playedRows[0]?.games ?? 0);
+    if (gamesPlayed === 0) return NextResponse.json({ rank: null, total: totalPlayers, best: 0, best_game: null, streak: 0 });
     // Fetch best game separately (the game where user scored highest)
     const { rows: bestGameRows } = await pool.query(
       `SELECT game FROM leaderboard WHERE user_id = $1 ORDER BY score DESC LIMIT 1`,
