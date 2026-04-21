@@ -73,9 +73,9 @@ describe("GamesClient", () => {
     expect(screen.getByText(/pick any game/i)).toBeInTheDocument();
   });
 
-  it("renders fav button as filled star for saved games", () => {
+  it("renders fav button as saved for saved games", () => {
     render(<GamesClient sections={mockSections} games={mockGames} favGames={["Hangman"]} />);
-    const stars = screen.getAllByText("★");
-    expect(stars.length).toBeGreaterThan(0);
+    const savedBtn = screen.getByLabelText(/remove hangman from favorites/i);
+    expect(savedBtn).toBeInTheDocument();
   });
 });

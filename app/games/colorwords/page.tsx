@@ -112,7 +112,6 @@ function ColorWordsGame() {
   useEffect(() => {
     if (!q || selected || done || paused) return;
     if (timeLeft <= 0) {
-      // time's up — treat as wrong
       setSelected("__timeout__");
       setStreak(0);
       playWrong();

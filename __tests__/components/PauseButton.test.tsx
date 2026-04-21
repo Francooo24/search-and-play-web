@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import PauseButton from "@/components/PauseButton";
 
 describe("PauseButton", () => {
@@ -37,12 +37,14 @@ describe("PauseButton", () => {
     expect(onPause).not.toHaveBeenCalled();
   });
 
-  it("auto-resumes when disabled prop becomes true while paused", () => {
+  it("auto-resumes when disabled prop becomes true while paused", async () => {
     const onPause = jest.fn();
     const { rerender } = render(<PauseButton onPause={onPause} />);
     fireEvent.click(screen.getByText(/pause/i));
     expect(onPause).toHaveBeenCalledWith(true);
-    rerender(<PauseButton onPause={onPause} disabled />);
-    expect(onPause).toHaveBeenLastCalledWith(false);
+    await act(async () => {
+      rerender(<PauseButton onPause={onPause} disabled />);
+    });
+    await waitFor(() => expect(onPause).toHaveBeenLastCalledWith(false));
   });
 });

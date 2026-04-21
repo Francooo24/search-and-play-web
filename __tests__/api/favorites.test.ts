@@ -21,7 +21,7 @@ function makeRequest(body: object) {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (pool.query as jest.Mock).mockResolvedValue([{}]);
+  (pool.query as jest.Mock).mockResolvedValue({ rows: [] });
 });
 
 describe("POST /api/favorites/games", () => {

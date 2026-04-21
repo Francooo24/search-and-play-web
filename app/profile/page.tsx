@@ -180,7 +180,7 @@ export default async function ProfilePage() {
         <div className="glass-card rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
             <h2 className="font-bold text-white flex items-center gap-2">🕐 Recent Games</h2>
-            <Link href="/games/history" className="text-xs text-orange-400 hover:text-orange-300 transition">View all →</Link>
+            <Link href="/stats" className="text-xs text-orange-400 hover:text-orange-300 transition">View all →</Link>
           </div>
           <div className="p-4">
             {recent.length > 0 ? (

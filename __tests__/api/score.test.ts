@@ -12,8 +12,8 @@ import { POST, GET } from "@/app/api/games/score/route";
 const mockSession = (user: object | null) =>
   (getServerSession as jest.Mock).mockResolvedValue(user ? { user } : null);
 
-const mockQuery = (result: any) =>
-  (pool.query as jest.Mock).mockResolvedValue([result]);
+const mockQuery = (rows: any[]) =>
+  (pool.query as jest.Mock).mockResolvedValue({ rows });
 
 function makeRequest(body?: object, method = "POST", search = "") {
   const url = `http://localhost/api/games/score${search}`;
@@ -52,21 +52,23 @@ describe("POST /api/games/score", () => {
 
   it("saves score and activity log on valid submission", async () => {
     mockSession({ id: 1, name: "Player" });
-    (pool.query as jest.Mock).mockResolvedValue([{}]);
+    (pool.query as jest.Mock).mockResolvedValue({ rows: [] });
     const res = await POST(makeRequest({ game: "Hangman", won: true, score: 100 }));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(body.pts).toBe(100);
-    expect(pool.query).toHaveBeenCalledTimes(2); // leaderboard + activity_log
+    // leaderboard insert + notify query + activity_log insert
+    expect(pool.query).toHaveBeenCalledTimes(3);
   });
 
-  it("skips leaderboard insert when score is 0", async () => {
+  it("saves score 0 to leaderboard and activity log", async () => {
     mockSession({ id: 1, name: "Player" });
-    (pool.query as jest.Mock).mockResolvedValue([{}]);
+    (pool.query as jest.Mock).mockResolvedValue({ rows: [] });
     const res = await POST(makeRequest({ game: "Hangman", won: false, score: 0 }));
     expect(res.status).toBe(200);
-    expect(pool.query).toHaveBeenCalledTimes(1); // only activity_log
+    // leaderboard insert + activity_log (no notify for score 0)
+    expect(pool.query).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -81,7 +83,7 @@ describe("GET /api/games/score", () => {
 
   it("returns bestScore from DB", async () => {
     mockSession({ id: 1, name: "Player" });
-    mockQuery([{ best: 250 }]);
+    (pool.query as jest.Mock).mockResolvedValue({ rows: [{ best: 250 }] });
     const res = await GET(makeRequest(undefined, "GET", "?game=Hangman"));
     const body = await res.json();
     expect(body.bestScore).toBe(250);
@@ -89,7 +91,7 @@ describe("GET /api/games/score", () => {
 
   it("returns bestScore 0 when no scores exist", async () => {
     mockSession({ id: 1, name: "Player" });
-    mockQuery([{ best: null }]);
+    (pool.query as jest.Mock).mockResolvedValue({ rows: [{ best: null }] });
     const res = await GET(makeRequest(undefined, "GET", "?game=Hangman"));
     const body = await res.json();
     expect(body.bestScore).toBe(0);

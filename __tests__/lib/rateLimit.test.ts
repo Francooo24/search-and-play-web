@@ -1,22 +1,21 @@
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
-// Reset the internal store between tests by re-importing with jest module isolation
-beforeEach(() => jest.resetModules());
+// Each test uses a unique key so the shared store doesn't cause interference
 
 describe("rateLimit", () => {
   it("allows first request", () => {
-    expect(rateLimit("test:1.1.1.1", 3, 60_000)).toBe(false);
+    expect(rateLimit("rl-test-a:1.1.1.1", 3, 60_000)).toBe(false);
   });
 
   it("allows requests up to the limit", () => {
-    const key = "test:2.2.2.2";
+    const key = "rl-test-b:2.2.2.2";
     expect(rateLimit(key, 3, 60_000)).toBe(false); // 1
     expect(rateLimit(key, 3, 60_000)).toBe(false); // 2
     expect(rateLimit(key, 3, 60_000)).toBe(false); // 3
   });
 
   it("blocks request over the limit", () => {
-    const key = "test:3.3.3.3";
+    const key = "rl-test-c:3.3.3.3";
     rateLimit(key, 3, 60_000); // 1
     rateLimit(key, 3, 60_000); // 2
     rateLimit(key, 3, 60_000); // 3
@@ -25,7 +24,7 @@ describe("rateLimit", () => {
 
   it("resets after window expires", () => {
     jest.useFakeTimers();
-    const key = "test:4.4.4.4";
+    const key = "rl-test-d:4.4.4.4";
     rateLimit(key, 2, 1_000);
     rateLimit(key, 2, 1_000);
     expect(rateLimit(key, 2, 1_000)).toBe(true); // blocked
@@ -36,9 +35,9 @@ describe("rateLimit", () => {
   });
 
   it("tracks different keys independently", () => {
-    rateLimit("test:a", 1, 60_000);
-    expect(rateLimit("test:a", 1, 60_000)).toBe(true);  // blocked
-    expect(rateLimit("test:b", 1, 60_000)).toBe(false); // different key — allowed
+    rateLimit("rl-test-e:a", 1, 60_000);
+    expect(rateLimit("rl-test-e:a", 1, 60_000)).toBe(true);  // blocked
+    expect(rateLimit("rl-test-e:b", 1, 60_000)).toBe(false); // different key — allowed
   });
 });
 

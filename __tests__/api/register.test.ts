@@ -29,7 +29,7 @@ function makeRequest(body: object) {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (pool.query as jest.Mock).mockResolvedValue([[]]);
+  (pool.query as jest.Mock).mockResolvedValue({ rows: [] });
 });
 
 describe("POST /api/auth/register", () => {
@@ -69,11 +69,7 @@ describe("POST /api/auth/register", () => {
   });
 
   it("returns 409 when email is already registered", async () => {
-    (pool.query as jest.Mock)
-      .mockResolvedValueOnce([[]])           // CREATE TABLE
-      .mockResolvedValueOnce([[{ id: 1 }]]); // SELECT existing email
-    // Re-mock to return existing user on the SELECT check
-    (pool.query as jest.Mock).mockResolvedValueOnce([[{ id: 1 }]]);
+    (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ id: 1 }] });
     const res = await POST(makeRequest(validBody));
     expect(res.status).toBe(409);
     const body = await res.json();
@@ -82,10 +78,9 @@ describe("POST /api/auth/register", () => {
 
   it("returns verifyLink and email on successful registration", async () => {
     (pool.query as jest.Mock)
-      .mockResolvedValueOnce([[]])                    // SELECT existing (none)
-      .mockResolvedValueOnce([[]])                    // CREATE TABLE
-      .mockResolvedValueOnce([[]])                    // DELETE pending
-      .mockResolvedValueOnce([{ insertId: 1 }]);      // INSERT pending
+      .mockResolvedValueOnce({ rows: [] })          // SELECT existing (none)
+      .mockResolvedValueOnce({ rows: [] })          // DELETE pending
+      .mockResolvedValueOnce({ rows: [{ id: 1 }] }); // INSERT pending
     const res = await POST(makeRequest(validBody));
     expect(res.status).toBe(200);
     const body = await res.json();

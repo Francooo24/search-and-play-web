@@ -9,13 +9,16 @@ function makeRequest(search: string) {
   return new NextRequest(`http://localhost/api/leaderboard${search}`);
 }
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  (pool.query as jest.Mock).mockResolvedValue({ rows: [] });
+});
 
 describe("GET /api/leaderboard", () => {
   it("returns players and game_types for default leaderboard view", async () => {
-    (pool.query as jest.Mock).mockResolvedValue([
-      [{ player_name: "Alice", total_score: 500, last_played: "2024-01-01", game: "Hangman" }],
-    ]);
+    (pool.query as jest.Mock)
+      .mockResolvedValueOnce({ rows: [{ player_name: "Alice", total_score: 500, last_played: "2024-01-01", game: "Hangman", birthdate: null, country: null, total_games: 5 }] })
+      .mockResolvedValueOnce({ rows: [{ game: "Hangman" }] });
     const res = await GET(makeRequest(""));
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -24,9 +27,9 @@ describe("GET /api/leaderboard", () => {
   });
 
   it("filters by game when game param is provided", async () => {
-    (pool.query as jest.Mock).mockResolvedValue([[
-      { player_name: "Bob", total_score: 200, last_played: "2024-01-01", game: "Wordle" },
-    ]]);
+    (pool.query as jest.Mock)
+      .mockResolvedValueOnce({ rows: [{ player_name: "Bob", total_score: 200, last_played: "2024-01-01", birthdate: null, country: null, total_games: 2 }] })
+      .mockResolvedValueOnce({ rows: [{ game: "Wordle" }] });
     const res = await GET(makeRequest("?game=Wordle"));
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -34,9 +37,9 @@ describe("GET /api/leaderboard", () => {
   });
 
   it("returns per-game data for pergame view", async () => {
-    (pool.query as jest.Mock).mockResolvedValue([[
-      { game: "Hangman", player_name: "Alice", score: 100, created_at: "2024-01-01" },
-    ]]);
+    (pool.query as jest.Mock)
+      .mockResolvedValueOnce({ rows: [{ game: "Hangman", player_name: "Alice", score: 100, country: null }] })
+      .mockResolvedValueOnce({ rows: [{ game: "Hangman" }] });
     const res = await GET(makeRequest("?view=pergame"));
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -45,9 +48,9 @@ describe("GET /api/leaderboard", () => {
   });
 
   it("returns top 10 players for game view", async () => {
-    (pool.query as jest.Mock).mockResolvedValue([[
-      { player_name: "Alice", best_score: 300, plays: 5, last_played: "2024-01-01" },
-    ]]);
+    (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [
+      { player_name: "Alice", best_score: 300, plays: 5, last_played: "2024-01-01", country: null },
+    ]});
     const res = await GET(makeRequest("?view=game&game=Hangman"));
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -56,9 +59,9 @@ describe("GET /api/leaderboard", () => {
   });
 
   it("returns rankings with tier info", async () => {
-    (pool.query as jest.Mock).mockResolvedValue([[
-      { id: 1, player_name: "Alice", total_points: 1600, total_games: 10, avg_score: 160, highest_score: 300, last_played: "2024-01-01" },
-    ]]);
+    (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [
+      { id: 1, player_name: "Alice", total_points: 1600, total_games: 10, avg_score: 160, last_played: "2024-01-01", birthdate: null, country: null, games_played: ["Hangman"] },
+    ]});
     const res = await GET(makeRequest("?view=rankings"));
     expect(res.status).toBe(200);
     const body = await res.json();

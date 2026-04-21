@@ -56,7 +56,7 @@ function VocabQuizGame() {
     setSelected(opt);
     if (opt === questions[idx].def) { setScore(s => s + CONFIG[difficulty].pts); playCorrect(); } else { playWrong(); }
     setTimeout(() => {
-      if (idx + 1 >= questions.length) { setDone(true); submitScore("Vocab Quiz", score + (opt === questions[idx].def ? CONFIG[difficulty].pts : 0), difficulty); return; }
+      if (idx + 1 >= questions.length) { setDone(true); submitScore("Vocabulary Quiz", score + (opt === questions[idx].def ? CONFIG[difficulty].pts : 0), difficulty); return; }
       setIdx(i => i + 1); setSelected(null);
     }, 900);
   }

@@ -56,6 +56,7 @@ function TicTacToeGame() {
     if (mode === "ai") setScoresAI(s => ({ ...s, [key]: s[key as keyof typeof s] + 1 }));
     else setScores2P(s => ({ ...s, [key]: s[key as keyof typeof s] + 1 }));
     if (winner === "X" && mode === "2p") submitScore("Tic Tac Toe", 10).then(setNewBadges);
+    if (winner === "X" && mode === "ai")  submitScore("Tic Tac Toe", 10).then(setNewBadges);
     const isWin = winner === "X";
     if (winner) { if (isWin) playCorrect(); else playWrong(); }
     setTimeout(() => setResult(draw

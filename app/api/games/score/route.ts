@@ -75,7 +75,10 @@ export async function POST(req: NextRequest) {
   const playerName = (session.user as any).name ?? "Unknown";
   const { game, score, won, difficulty } = await req.json();
 
-  if (!game || score === undefined) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  if (!game || typeof game !== "string" || !game.trim())
+    return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
+  if (score === undefined || score === null || typeof score !== "number" || score < 0 || score > 1_000_000)
+    return NextResponse.json({ error: "Invalid score" }, { status: 400 });
 
   // Append difficulty to game name if provided
   const gameLabel = difficulty ? `${game} (${difficulty})` : game;
@@ -94,5 +97,5 @@ export async function POST(req: NextRequest) {
     [playerName, `${result} "${gameLabel}" with score ${score}`]
   ).catch(() => {});
 
-  return NextResponse.json({ ok: true, score });
+  return NextResponse.json({ ok: true, success: true, score, pts: score });
 }
