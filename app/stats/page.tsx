@@ -12,7 +12,7 @@ const GAME_EMOJI: Record<string, string> = {
   "Speed Trivia": "🧠", "Word Scramble": "🔀", "Trivia Blitz": "🧠", "Vocabulary Quiz": "📚",
   "Word Association": "💬", "Word Bingo": "🎱", "Word Connect": "🔗", "Word Ladder": "🪜",
   "Word Search": "🔍", "Fill in the Blank": "✏️", "Flag Quiz": "🚩", "Idiom Challenge": "💡",
-  "Logic Grid": "🧩", "Math Race": "🧮", "Prefix & Suffix": "🔤", "Word Puzzle": "🔤",
+  "Logic Grid": "🧩", "Math Race": "🧮", "Prefix & Suffix": "🔤",
   "Scramble": "🔀", "Sentence Fix": "✍️", "Shape Match": "🔷", "Simple Math": "🔢",
   "Synonym Match": "🔤", "Deduction": "🕵️", "Fake or Fact": "❓", "Context Clues": "📖",
   "Debate This": "🗣️", "Balloon Pop": "🎈", "Caterpillar Count": "🐛",
