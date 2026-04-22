@@ -140,7 +140,6 @@ function TopPlayers() {
 export default function HomeClient() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -271,26 +270,14 @@ export default function HomeClient() {
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-5 mb-6">
             {CATEGORIES.map((cat, i) => (
-              <button key={cat.label} onClick={() => setActiveCategory(activeCategory === i ? null : i)}
-                className={`rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border
-                  ${activeCategory === i
-                    ? "border-orange-500/50 bg-orange-500/10 shadow-lg shadow-orange-500/10"
-                    : "border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5"}`}>
+              <Link key={cat.label} href={`/search?word=${encodeURIComponent(cat.label)}`}
+                className="rounded-2xl p-5 text-center transition-all duration-200 hover:-translate-y-1 border block border-white/8 bg-white/3 hover:border-orange-500/50 hover:bg-orange-500/10 hover:shadow-lg hover:shadow-orange-500/10">
                 <div className="text-4xl mb-3">{cat.emoji}</div>
                 <div className="text-sm font-bold text-gray-300">{cat.label}</div>
-              </button>
+              </Link>
             ))}
           </div>
-          {activeCategory !== null && (
-            <div className="flex flex-wrap gap-3 justify-center p-6 rounded-2xl border border-white/8 bg-white/2">
-              {CATEGORIES[activeCategory].words.map(w => (
-                <Link key={w} href={`/search?word=${w}`}
-                  className="text-base bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-300 px-6 py-2 rounded-full transition">
-                  {w}
-                </Link>
-              ))}
-            </div>
-          )}
+
         </section>
 
         {/* ── CTA ── */}
