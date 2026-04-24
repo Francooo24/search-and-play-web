@@ -62,34 +62,65 @@ function DailyChallengeBanner() {
   const authed = status === "authenticated";
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-5 p-10 sm:p-12 w-full
+    <div className={`relative overflow-hidden rounded-3xl border w-full
       ${completed ? "border-green-500/25 bg-gradient-to-br from-green-500/8 to-transparent" : "border-orange-500/25 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent"}`}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.06),transparent_60%)] pointer-events-none" />
-      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${completed ? "bg-green-500/15 border border-green-500/25" : "bg-orange-500/15 border border-orange-500/25"}`}>
-        {completed ? "✅" : "⚡"}
+
+      {/* Top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-orange-500/60 via-amber-400/40 to-transparent" />
+
+      <div className="relative p-8">
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${completed ? "bg-green-500/15 border border-green-500/25" : "bg-orange-500/15 border border-orange-500/25"}`}>
+              {completed ? "✅" : "⚡"}
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-400">Daily Challenge</p>
+              <p className="text-white font-black text-lg leading-tight">Today&apos;s Mission</p>
+            </div>
+          </div>
+          {!authed ? (
+            <Link href="/login" className="text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-5 py-2 rounded-xl transition shadow-lg shadow-orange-500/20">Sign In</Link>
+          ) : completed ? (
+            <Link href="/daily-challenge" className="text-xs font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-5 py-2 rounded-xl transition">View</Link>
+          ) : challenge ? (
+            <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-5 py-2 rounded-xl transition shadow-lg shadow-orange-500/20 whitespace-nowrap">Play Now →</Link>
+          ) : null}
+        </div>
+
+        {/* Content */}
+        <div className="bg-white/3 border border-white/8 rounded-2xl p-5">
+          {!authed ? (
+            <div className="flex items-center gap-4">
+              <div className="text-4xl">🔒</div>
+              <div>
+                <p className="text-white font-bold text-base">Sign in to unlock today&apos;s challenge</p>
+                <p className="text-gray-500 text-sm mt-0.5">Earn bonus points by completing daily challenges</p>
+              </div>
+            </div>
+          ) : !challenge ? (
+            <p className="text-gray-400 text-sm">No challenge available today</p>
+          ) : completed ? (
+            <div className="flex items-center gap-4">
+              <div className="text-4xl">🎉</div>
+              <div>
+                <p className="text-white font-bold text-base">Challenge Complete!</p>
+                <p className="text-gray-500 text-sm mt-0.5">Next challenge in <span className="text-green-400 font-mono font-bold">{countdown}</span></p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-white font-bold text-base mb-2">{challenge.title}</p>
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-xs text-gray-500">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span></span>
+                <span className="text-xs bg-amber-500/15 border border-amber-500/25 text-amber-300 font-bold px-2.5 py-0.5 rounded-full">+{challenge.bonus_points} pts</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="flex-1 min-w-0 relative">
-        <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-1">Daily Challenge</p>
-        {!authed ? (
-          <p className="text-white font-bold text-lg">Sign in to see today&apos;s challenge</p>
-        ) : !challenge ? (
-          <p className="text-white font-bold text-lg">No challenge available today</p>
-        ) : completed ? (
-          <p className="text-white font-bold text-lg">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
-        ) : (
-          <>
-            <p className="text-white font-bold text-lg truncate">{challenge.title}</p>
-            <p className="text-gray-500 text-sm mt-1">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · <span className="text-amber-400 font-bold">+{challenge.bonus_points} pts</span></p>
-          </>
-        )}
-      </div>
-      {!authed ? (
-        <Link href="/login" className="flex-shrink-0 text-sm font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl transition shadow-lg shadow-orange-500/20">Sign In</Link>
-      ) : completed ? (
-        <Link href="/daily-challenge" className="flex-shrink-0 text-sm font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-6 py-2.5 rounded-xl transition">View</Link>
-      ) : challenge ? (
-        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-sm font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl transition shadow-lg shadow-orange-500/20 whitespace-nowrap">Play Now →</Link>
-      ) : null}
     </div>
   );
 }
@@ -163,6 +194,10 @@ export default function HomeClient() {
 
   useEffect(() => {
     fetch("/api/home-stats").then(r => r.json()).then(d => setHomeStats(d)).catch(() => {});
+    const interval = setInterval(() => {
+      fetch("/api/home-stats").then(r => r.json()).then(d => setHomeStats(d)).catch(() => {});
+    }, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -199,7 +234,7 @@ export default function HomeClient() {
 
           {/* Headline */}
           <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Search &amp; Learn.{" "}
+            Search. Learn &amp;{" "}
             <span className="relative">
               <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             </span>
@@ -265,17 +300,17 @@ export default function HomeClient() {
           </div>
 
           {/* Stats row moved below popular games */}
-          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16">
+          <div className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16">
             {[
               { value: "45",  label: "Word Games",     icon: "🎮" },
               { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
               { value: "3",   label: "Age Groups",     icon: "🎯" },
               { value: "Free", label: "Always Free",   icon: "✨" },
             ].map(s => (
-              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-6 py-8 flex flex-col items-center gap-3">
-                <span className="text-5xl">{s.icon}</span>
-                <p className="text-5xl font-black text-white">{s.value}</p>
-                <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              <div key={s.label} className="bg-white/3 border border-white/8 rounded-3xl px-8 py-10 flex flex-col items-center gap-4">
+                <span className="text-6xl">{s.icon}</span>
+                <p className="text-6xl font-black text-white">{s.value}</p>
+                <p className="text-base text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
               </div>
             ))}
           </div>
