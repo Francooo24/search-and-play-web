@@ -174,34 +174,34 @@ export default function HomeClient() {
         <div className="absolute top-0 left-0 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-16 flex flex-col items-center text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-16 flex flex-col items-center text-center">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-8">
+          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
             Search. Learn. Play.
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
             Search &amp;{" "}
             <span className="relative">
               <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             </span>
           </h1>
 
-          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-8 leading-relaxed">
+          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-4 leading-relaxed">
             Look up words instantly, then reinforce your learning through 45+ interactive games designed for all ages.
           </p>
 
           {/* Search */}
-          <div className="w-full max-w-3xl mb-4">
+          <div className="w-full max-w-3xl mb-2">
             <SearchBox onSearch={handleSearch} />
           </div>
 
           {/* Recent searches */}
           {mounted && (
-            <div className="flex items-center gap-2 flex-wrap justify-center mb-10">
+            <div className="flex items-center gap-2 flex-wrap justify-center mb-6">
               <span className="text-[11px] text-gray-600 font-semibold uppercase tracking-widest">Recent:</span>
               {recentSearches.length === 0 && <span className="text-[11px] text-gray-700">None yet</span>}
               {recentSearches.map(w => (
@@ -219,7 +219,7 @@ export default function HomeClient() {
 
           {/* Popular Games moved to hero */}
           <div className="w-full max-w-3xl">
-            <div className="flex items-end justify-between mb-5">
+            <div className="flex items-end justify-between mb-3">
               <div className="text-left">
                 <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
                 <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
