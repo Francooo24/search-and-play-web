@@ -243,8 +243,18 @@ export default function AchievementsPage() {
 
           {/* ── Filters ── */}
           {!loading && achievements.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <div className="flex gap-2 overflow-x-auto pb-1 flex-1 scrollbar-none">
+            <div className="flex flex-col gap-3 mb-8">
+              {/* Row 1: All / Earned / Locked */}
+              <div className="flex gap-2">
+                {(["all", "earned", "locked"] as const).map(f => (
+                  <FilterChip key={f} active={filter === f} onClick={() => setFilter(f)}
+                    activeClass="bg-orange-500/15 border-orange-500/35 text-orange-300">
+                    {f === "earned" ? "✓ Earned" : f === "locked" ? "🔒 Locked" : "All"}
+                  </FilterChip>
+                ))}
+              </div>
+              {/* Row 2: Category chips */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                 <FilterChip active={activeGroup === "all"} onClick={() => setActiveGroup("all")}
                   activeClass="bg-amber-500/15 border-amber-500/35 text-amber-300">
                   All
@@ -261,14 +271,6 @@ export default function AchievementsPage() {
                     </FilterChip>
                   );
                 })}
-              </div>
-              <div className="flex gap-2 flex-shrink-0">
-                {(["all", "earned", "locked"] as const).map(f => (
-                  <FilterChip key={f} active={filter === f} onClick={() => setFilter(f)}
-                    activeClass="bg-orange-500/15 border-orange-500/35 text-orange-300">
-                    {f === "earned" ? "✓ Earned" : f === "locked" ? "🔒 Locked" : "All"}
-                  </FilterChip>
-                ))}
               </div>
             </div>
           )}
