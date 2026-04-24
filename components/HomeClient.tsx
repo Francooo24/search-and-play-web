@@ -319,7 +319,7 @@ export default function HomeClient() {
           </div>
 
           {/* Stats row */}
-          <div className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16">
+          <div ref={statsInView.ref} className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16">
             {[
               { value: "45",  label: "Word Games",   icon: "🎮", desc: "Games to play",      color: "from-orange-500/20 to-amber-500/5",   border: "border-orange-500/25",  glow: "shadow-orange-500/20" },
               { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥", desc: "Registered users",  color: "from-violet-500/20 to-purple-500/5",  border: "border-violet-500/25",  glow: "shadow-violet-500/20" },
@@ -413,10 +413,10 @@ export default function HomeClient() {
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
 
             <div className="relative px-8 py-14 sm:px-16 sm:py-16">
-              <div className="flex flex-col lg:flex-row items-center gap-12">
+              <div className="flex flex-col items-center gap-10 text-center">
 
                 {/* Left — text */}
-                <div className="flex-1 text-center lg:text-left">
+                <div className="flex-1 text-center">
                   <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
                     <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
                     Get Started — It&apos;s Free
@@ -425,7 +425,7 @@ export default function HomeClient() {
                     Ready to Play
                     <span className="block bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">&amp; Learn?</span>
                   </h2>
-                  <p className="text-gray-400 text-base leading-relaxed max-w-md">
+                  <p className="text-gray-400 text-base leading-relaxed max-w-md mx-auto">
                     Create a free account to save words, track your scores, and compete on the leaderboard.
                   </p>
                 </div>
