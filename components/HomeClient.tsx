@@ -95,7 +95,7 @@ function DailyChallengeBanner() {
 }
 
 function TopPlayers() {
-  const [players, setPlayers] = useState<{ player_name: string; total_score: number; country?: string | null }[]>([]);
+  const [players, setPlayers] = useState<{ player_name: string; total_score: number; country?: string | null; age_group?: string | null }[]>([]);
 
   useEffect(() => {
     fetch("/api/leaderboard?period=all&offset=0", { cache: "no-store" })
@@ -117,6 +117,18 @@ function TopPlayers() {
     return code.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
   }
 
+  function ageBadge(age_group?: string | null) {
+    if (!age_group) return null;
+    const map: Record<string, { label: string; cls: string }> = {
+      kids:  { label: "🧒 Kids",  cls: "bg-blue-500/15 border-blue-500/30 text-blue-300"    },
+      teen:  { label: "🧑 Teen",  cls: "bg-green-500/15 border-green-500/30 text-green-300"  },
+      adult: { label: "🔞 Adult", cls: "bg-orange-500/15 border-orange-500/30 text-orange-300" },
+    };
+    const b = map[age_group];
+    if (!b) return null;
+    return <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${b.cls}`}>{b.label}</span>;
+  }
+
   return (
     <div className="space-y-3">
       {players.map((p, i) => (
@@ -127,7 +139,10 @@ function TopPlayers() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white font-bold text-sm truncate">{p.player_name} {flag(p.country)}</p>
-            <p className="text-gray-600 text-xs">Rank #{i + 1}</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <p className="text-gray-600 text-xs">Rank #{i + 1}</p>
+              {ageBadge(p.age_group)}
+            </div>
           </div>
           <div className="text-right flex-shrink-0">
             <p className="text-orange-400 font-black text-sm">{p.total_score.toLocaleString()}</p>
@@ -183,7 +198,7 @@ export default function HomeClient() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
             Search &amp;{" "}
             <span className="relative">
               <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
@@ -250,7 +265,7 @@ export default function HomeClient() {
           </div>
 
           {/* Stats row moved below popular games */}
-          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
             {[
               { value: "45",  label: "Word Games",     icon: "🎮" },
               { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
@@ -273,7 +288,7 @@ export default function HomeClient() {
 
           {/* Daily Challenge — wider */}
           <div className="lg:col-span-3 flex flex-col gap-4">
-            <div className="text-center lg:text-left">
+            <div className="text-center">
               <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
               <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
             </div>
