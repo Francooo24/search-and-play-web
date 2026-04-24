@@ -17,23 +17,7 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-
   useEffect(() => { setMounted(true); }, []);
-
-  useEffect(() => {
-    if (!session?.user) return;
-    const poll = () => {
-      const since = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
-      fetch(`/api/notifications?since=${encodeURIComponent(since)}`)
-        .then(r => r.json())
-        .then(d => setUnreadCount(d.unread ?? 0))
-        .catch(() => {});
-    };
-    poll();
-    const id = setInterval(poll, 60_000);
-    return () => clearInterval(id);
-  }, [session]);
 
   const isAdmin = (session?.user as any)?.is_admin;
 

@@ -76,7 +76,8 @@ export default function NotificationsPage() {
       .then(r => r.json())
       .then(d => {
         setNotifications(d.notifications ?? []);
-        localStorage.setItem("notif_last_read", new Date().toISOString());
+        // Mark as read AFTER we've captured lastRead above, so newCount is accurate
+        setTimeout(() => localStorage.setItem("notif_last_read", new Date().toISOString()), 0);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -262,9 +263,6 @@ export default function NotificationsPage() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            {isNew && (
-                              <span className="text-[9px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">New</span>
-                            )}
                             <span className={`text-[10px] font-bold uppercase tracking-wider ${cat.color}`}>{cat.type}</span>
                           </div>
                           <p className="text-white font-semibold text-sm leading-relaxed">{n.activity}</p>
