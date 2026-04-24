@@ -1,7 +1,7 @@
 -- PostgreSQL version — run once to seed all achievements
--- Clear old data
-DELETE FROM user_achievements;
-DELETE FROM achievements;
+-- Clear old data (safe even if tables are empty)
+DELETE FROM user_achievements WHERE TRUE;
+DELETE FROM achievements WHERE TRUE;
 
 -- ── Milestone: Games Played ──────────────────────────────────────────────────
 INSERT INTO achievements (name, description, icon, condition_type, condition_value, game_specific) VALUES
