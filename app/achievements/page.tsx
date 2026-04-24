@@ -67,14 +67,19 @@ export default function AchievementsPage() {
   useEffect(() => {
     if (status === "loading") return;
     if (!session?.user) { setLoading(false); return; }
-    fetch("/api/achievements", { credentials: "include", cache: "no-store" })
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setAchievements(data);
-        else if (data?.error) setError(data.error);
-      })
-      .catch(() => setError("Could not load achievements."))
-      .finally(() => setLoading(false));
+    // First run the check to award any earned achievements, then fetch the list
+    fetch("/api/achievements/check", { method: "POST", credentials: "include" })
+      .catch(() => {})
+      .finally(() => {
+        fetch("/api/achievements", { credentials: "include", cache: "no-store" })
+          .then(r => r.json())
+          .then(data => {
+            if (Array.isArray(data)) setAchievements(data);
+            else if (data?.error) setError(data.error);
+          })
+          .catch(() => setError("Could not load achievements."))
+          .finally(() => setLoading(false));
+      });
   }, [session, status]);
 
   const total        = achievements.length;
