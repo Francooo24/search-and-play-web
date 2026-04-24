@@ -142,7 +142,7 @@ export default function HomeClient() {
   const { data: session } = useSession();
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
-  const [homeStats, setHomeStats] = useState<{ words: number; games: number } | null>(null);
+  const [homeStats, setHomeStats] = useState<{ plays: number; players: number; games: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/home-stats").then(r => r.json()).then(d => setHomeStats(d)).catch(() => {});
@@ -238,8 +238,8 @@ export default function HomeClient() {
             <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Word Games</p>
           </div>
           <div>
-            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.words.toLocaleString() : "—"}</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Words Searched</p>
+            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.plays.toLocaleString() : "—"}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Games Played</p>
           </div>
           <div>
             <p className="text-3xl font-black text-white mb-1.5">3</p>
