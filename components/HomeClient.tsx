@@ -233,9 +233,9 @@ export default function HomeClient() {
           )}
 
           {/* Popular Games moved to hero */}
-          <div className="w-full max-w-3xl">
+          <div className="w-full max-w-5xl">
             <div className="flex items-end justify-between mb-3">
-              <div className="text-left">
+              <div className="text-left pl-0">
                 <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
                 <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
               </div>
@@ -247,7 +247,7 @@ export default function HomeClient() {
               {FEATURED_GAMES.map(g => (
                 <Link key={g.slug} href={`/games/${g.slug}`}
                   className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/15 bg-[#0a0a0f] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
-                  <div className={`relative h-44 bg-gradient-to-br ${g.color} flex items-center justify-center overflow-hidden`}>
+                  <div className={`relative h-56 bg-gradient-to-br ${g.color} flex items-center justify-center overflow-hidden`}>
                     <div className="absolute inset-0 bg-black/10" />
                     <span className="text-7xl group-hover:scale-110 transition-transform duration-500 relative z-10">{g.icon}</span>
                     <span className={`absolute top-3 right-3 text-[10px] font-black px-2.5 py-1 rounded-full border ${g.badgeColor}`}>{g.badge}</span>
@@ -265,7 +265,7 @@ export default function HomeClient() {
           </div>
 
           {/* Stats row moved below popular games */}
-          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16">
             {[
               { value: "45",  label: "Word Games",     icon: "🎮" },
               { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
@@ -288,7 +288,7 @@ export default function HomeClient() {
 
           {/* Daily Challenge — wider */}
           <div className="lg:col-span-3 flex flex-col gap-4">
-            <div className="text-center">
+            <div className="text-left">
               <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
               <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
             </div>
