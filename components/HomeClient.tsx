@@ -62,7 +62,7 @@ function DailyChallengeBanner() {
   const authed = status === "authenticated";
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-5 p-6 sm:p-8 w-full
+    <div className={`relative overflow-hidden rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-5 p-10 sm:p-12 w-full
       ${completed ? "border-green-500/25 bg-gradient-to-br from-green-500/8 to-transparent" : "border-orange-500/25 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent"}`}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.06),transparent_60%)] pointer-events-none" />
       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${completed ? "bg-green-500/15 border border-green-500/25" : "bg-orange-500/15 border border-orange-500/25"}`}>
@@ -199,7 +199,7 @@ export default function HomeClient() {
 
           {/* Headline */}
           <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Search &amp;{" "}
+            Search &amp; Learn.{" "}
             <span className="relative">
               <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             </span>
@@ -272,10 +272,10 @@ export default function HomeClient() {
               { value: "3",   label: "Age Groups",     icon: "🎯" },
               { value: "Free", label: "Always Free",   icon: "✨" },
             ].map(s => (
-              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-4 py-6 flex flex-col items-center gap-2">
-                <span className="text-4xl">{s.icon}</span>
-                <p className="text-4xl font-black text-white">{s.value}</p>
-                <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-6 py-8 flex flex-col items-center gap-3">
+                <span className="text-5xl">{s.icon}</span>
+                <p className="text-5xl font-black text-white">{s.value}</p>
+                <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
               </div>
             ))}
           </div>

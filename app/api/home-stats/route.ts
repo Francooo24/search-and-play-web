@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const [playersRes, playsRes] = await Promise.all([
-      pool.query("SELECT COUNT(*) AS total FROM players WHERE status = 'active'"),
+      pool.query("SELECT COUNT(*) AS total FROM players WHERE status = 'active' AND is_admin = FALSE"),
       pool.query("SELECT COUNT(*) AS total FROM leaderboard"),
     ]);
     return NextResponse.json({
