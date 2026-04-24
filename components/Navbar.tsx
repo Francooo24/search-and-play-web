@@ -122,7 +122,7 @@ export default function Navbar() {
                       </Link>
                       <Link href="/notifications" onClick={() => { setDropdownOpen(false); setUnreadCount(0); localStorage.setItem("notif_last_read", new Date().toISOString()); }} className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition">
                         <span>🔔</span> Notifications
-                        {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                        {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 99 ? "99+" : unreadCount}</span>}
                       </Link>
                       <div className="border-t border-white/8 mx-3" />
                       <button onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-b-xl transition">
@@ -207,7 +207,7 @@ export default function Navbar() {
               </Link>
               <Link href="/notifications" onClick={() => { setMenuOpen(false); setUnreadCount(0); localStorage.setItem("notif_last_read", new Date().toISOString()); }} className="flex items-center gap-3 py-4 px-6 rounded-xl hover:bg-white/5 text-base font-medium transition">
                 <span>🔔</span> Notifications
-                {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+                {unreadCount > 0 && <span className="ml-auto bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{unreadCount > 99 ? "99+" : unreadCount}</span>}
               </Link>
               <button onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }); }} className="bg-gradient-to-r from-red-600 to-red-700 py-4 px-6 rounded-xl text-base font-bold transition text-left">Log Out</button>
             </>

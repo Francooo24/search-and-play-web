@@ -55,6 +55,8 @@
 .animate-scale-in     { animation: scaleIn   0.5s cubic-bezier(0.16,1,0.3,1) both; }
 .animate-float        { animation: floatY    4s ease-in-out infinite; }
 .animate-count-up     { animation: countUp   0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.scrollbar-none       { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 :root {
   --glass: rgba(20, 20, 30, 0.58);

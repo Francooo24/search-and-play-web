@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -15,12 +15,12 @@ interface Achievement {
 }
 
 const GROUPS = [
-  { key: "games_played",  label: "Games Played",  icon: "🎮", color: "text-blue-400",   border: "border-blue-500/30",   bg: "bg-blue-500/10"   },
-  { key: "total_points",  label: "Total Points",  icon: "💰", color: "text-emerald-400",border: "border-emerald-500/30",bg: "bg-emerald-500/10"},
-  { key: "score",         label: "High Score",    icon: "🏆", color: "text-yellow-400", border: "border-yellow-500/30", bg: "bg-yellow-500/10" },
-  { key: "searches",      label: "Word Searches", icon: "🔍", color: "text-purple-400", border: "border-purple-500/30", bg: "bg-purple-500/10" },
-  { key: "favorites",     label: "Favorites",     icon: "⭐", color: "text-pink-400",   border: "border-pink-500/30",   bg: "bg-pink-500/10"   },
-  { key: "game_specific", label: "Game Badges",   icon: "🏅", color: "text-orange-400", border: "border-orange-500/30", bg: "bg-orange-500/10" },
+  { key: "games_played",  label: "Games Played",  icon: "🎮", grad: "from-blue-600 to-indigo-600",    ring: "ring-blue-500/40",   glow: "shadow-blue-500/20",   pill: "bg-blue-500/10 border-blue-500/25 text-blue-300"   },
+  { key: "total_points",  label: "Total Points",  icon: "💰", grad: "from-emerald-500 to-teal-600",   ring: "ring-emerald-500/40",glow: "shadow-emerald-500/20",pill: "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"},
+  { key: "score",         label: "High Score",    icon: "🏆", grad: "from-yellow-500 to-amber-600",   ring: "ring-yellow-500/40", glow: "shadow-yellow-500/20", pill: "bg-yellow-500/10 border-yellow-500/25 text-yellow-300" },
+  { key: "searches",      label: "Word Searches", icon: "🔍", grad: "from-violet-500 to-purple-600",  ring: "ring-violet-500/40", glow: "shadow-violet-500/20", pill: "bg-violet-500/10 border-violet-500/25 text-violet-300" },
+  { key: "favorites",     label: "Favorites",     icon: "⭐", grad: "from-pink-500 to-rose-600",      ring: "ring-pink-500/40",   glow: "shadow-pink-500/20",   pill: "bg-pink-500/10 border-pink-500/25 text-pink-300"       },
+  { key: "game_specific", label: "Game Badges",   icon: "🏅", grad: "from-orange-500 to-red-500",     ring: "ring-orange-500/40", glow: "shadow-orange-500/20", pill: "bg-orange-500/10 border-orange-500/25 text-orange-300"  },
 ];
 
 function groupOf(a: Achievement) {
@@ -31,25 +31,52 @@ function fmt(d: string) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function AnimatedProgressRing({ pct, size = 120, stroke = 8 }: { pct: number; size?: number; stroke?: number }) {
-  const r = (size - stroke) / 2;
+function useCountUp(target: number, duration = 1000) {
+  const [val, setVal] = useState(0);
+  const raf = useRef<number>(0);
+  useEffect(() => {
+    if (target === 0) { setVal(0); return; }
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      setVal(Math.round(p * target));
+      if (p < 1) raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [target, duration]);
+  return val;
+}
+
+function ProgressRing({ pct, size = 110, stroke = 9 }: { pct: number; size?: number; stroke?: number }) {
+  const r    = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const dash = (pct / 100) * circ;
   return (
-    <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={stroke} />
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke="url(#ring-grad)" strokeWidth={stroke}
+    <svg width={size} height={size} className="-rotate-90" aria-hidden>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none"
+        stroke="url(#pg)" strokeWidth={stroke}
         strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
-        style={{ transition: "stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)" }} />
+        style={{ transition: "stroke-dasharray 1.4s cubic-bezier(0.4,0,0.2,1)" }} />
       <defs>
-        <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#f97316" />
-          <stop offset="50%" stopColor="#fbbf24" />
-          <stop offset="100%" stopColor="#f59e0b" />
+        <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#f97316" />
+          <stop offset="50%"  stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#facc15" />
         </linearGradient>
       </defs>
     </svg>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 flex flex-col gap-3 animate-pulse">
+      <div className="w-14 h-14 rounded-xl bg-white/5 mx-auto" />
+      <div className="h-3 bg-white/5 rounded-full w-3/4 mx-auto" />
+      <div className="h-2.5 bg-white/5 rounded-full w-1/2 mx-auto" />
+    </div>
   );
 }
 
@@ -59,7 +86,7 @@ export default function AchievementsPage() {
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
   const [filter, setFilter]             = useState<"all" | "earned" | "locked">("all");
-  const [activeGroup, setActiveGroup]   = useState<string>("all");
+  const [activeGroup, setActiveGroup]   = useState("all");
   const [mounted, setMounted]           = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
@@ -67,7 +94,6 @@ export default function AchievementsPage() {
   useEffect(() => {
     if (status === "loading") return;
     if (!session?.user) { setLoading(false); return; }
-    // First run the check to award any earned achievements, then fetch the list
     fetch("/api/achievements/check", { method: "POST", credentials: "include" })
       .catch(() => {})
       .finally(() => {
@@ -82,297 +108,324 @@ export default function AchievementsPage() {
       });
   }, [session, status]);
 
-  const total        = achievements.length;
-  const earnedCount  = achievements.filter(a => a.earned_at).length;
-  const lockedCount  = total - earnedCount;
-  const progress     = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
-  const recentBadge  = achievements.filter(a => a.earned_at).sort((a, b) => new Date(b.earned_at!).getTime() - new Date(a.earned_at!).getTime())[0];
+  const total       = achievements.length;
+  const earnedCount = achievements.filter(a => a.earned_at).length;
+  const lockedCount = total - earnedCount;
+  const progress    = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
+  const recentBadge = achievements
+    .filter(a => a.earned_at)
+    .sort((a, b) => new Date(b.earned_at!).getTime() - new Date(a.earned_at!).getTime())[0];
+
+  const animEarned = useCountUp(earnedCount, 900);
+  const animLocked = useCountUp(lockedCount, 900);
 
   if (!session?.user && !loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-        <div className="bg-[#0f0f18] border border-white/8 rounded-3xl p-12 text-center max-w-md w-full">
+      <div className="flex items-center justify-center min-h-[70vh] px-4">
+        <div className="relative bg-[#0d0d16] border border-white/8 rounded-3xl p-12 text-center max-w-sm w-full overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.06),transparent_60%)] pointer-events-none" />
           <div className="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-4xl mx-auto mb-5">🔒</div>
-          <h2 className="text-2xl font-black text-white mb-2">Sign in to view achievements</h2>
-          <p className="text-gray-500 text-sm mb-6">Your badges and progress are saved to your account.</p>
-          <Link href="/login" className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-8 py-3 rounded-xl hover:from-orange-600 hover:to-amber-600 transition shadow-lg shadow-orange-500/20">
-            Sign In
+          <h2 className="text-xl font-black text-white mb-2">Sign in to view achievements</h2>
+          <p className="text-gray-500 text-sm mb-7">Your badges and progress are saved to your account.</p>
+          <Link href="/login" className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-orange-500/25">
+            Sign In →
           </Link>
         </div>
       </div>
     );
   }
 
-  const visibleAchievements = achievements
+  const visible = achievements
     .filter(a => activeGroup === "all" || groupOf(a) === activeGroup)
-    .filter(a => {
-      if (filter === "earned") return !!a.earned_at;
-      if (filter === "locked") return !a.earned_at;
-      return true;
-    });
+    .filter(a => filter === "earned" ? !!a.earned_at : filter === "locked" ? !a.earned_at : true);
 
   return (
-    <div className="flex flex-col items-center px-4 sm:px-6 py-8 md:py-10 w-full min-h-screen relative z-10" suppressHydrationWarning>
-      {mounted && <>
+    <div className="w-full min-h-screen px-4 sm:px-6 py-10 md:py-14 relative z-10" suppressHydrationWarning>
+      {mounted && (
+        <div className="max-w-5xl mx-auto">
 
-      {/* ── Hero ── */}
-      <div className="w-full max-w-5xl mb-10 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-black uppercase tracking-widest px-5 py-2 rounded-full mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Your Progress
+          {/* ── Ambient glow ── */}
+          <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+            <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-amber-500/4 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-600/3 rounded-full blur-[100px]" />
           </div>
-          <h1 className="text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Achieve<span className="bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent">ments</span>
-          </h1>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Earn badges by playing games, searching words, and hitting milestones.
-          </p>
-        </div>
 
-        {/* ── Stats Row ── */}
-        {!loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {/* Progress Ring Card */}
-            <div className="col-span-2 md:col-span-1 relative overflow-hidden bg-gradient-to-br from-[#1a1008] to-[#0f0f18] border border-amber-500/25 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 shadow-xl shadow-amber-500/5">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.08),transparent_60%)] pointer-events-none" />
-              <div className="relative">
-                <AnimatedProgressRing pct={progress} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-white">{progress}%</span>
-                  <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Done</span>
+          {/* ── Header ── */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-amber-500/8 border border-amber-500/20 text-amber-400 text-[11px] font-black uppercase tracking-[0.2em] px-5 py-2 rounded-full mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Your Progress
+            </div>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-4"
+              style={{ fontFamily: "'Playfair Display', serif" }}>
+              Achieve<span className="bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent">ments</span>
+            </h1>
+            <p className="text-gray-500 text-base max-w-md mx-auto">
+              Earn badges by playing games, searching words, and hitting milestones.
+            </p>
+          </div>
+
+          {/* ── Stats ── */}
+          {!loading && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+
+              {/* Ring */}
+              <div className="col-span-2 md:col-span-1 relative overflow-hidden bg-gradient-to-br from-[#18100a] to-[#0d0d16] border border-amber-500/20 rounded-2xl p-5 flex flex-col items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.07),transparent_65%)] pointer-events-none" />
+                <div className="relative">
+                  <ProgressRing pct={progress} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-xl font-black text-white">{progress}%</span>
+                    <span className="text-[9px] text-amber-400 font-bold uppercase tracking-widest">Done</span>
+                  </div>
+                </div>
+                <p className="text-white font-black text-base">{earnedCount}<span className="text-gray-600 font-normal text-sm"> / {total}</span></p>
+              </div>
+
+              {/* Unlocked */}
+              <div className="relative overflow-hidden bg-[#0d0d16] border border-emerald-500/20 rounded-2xl p-5 flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+                <span className="text-2xl mb-2">🏆</span>
+                <div>
+                  <p className="text-3xl font-black text-white">{animEarned}</p>
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mt-0.5">Unlocked</p>
                 </div>
               </div>
-              <p className="text-white font-black text-lg">{earnedCount}<span className="text-gray-500 font-normal text-sm"> / {total}</span></p>
-            </div>
 
-            {/* Earned */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/25 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-2xl mb-3">🏆</div>
-              <div>
-                <p className="text-4xl font-black text-white mb-1">{earnedCount}</p>
-                <p className="text-xs text-emerald-400 font-bold uppercase tracking-widest">Unlocked</p>
+              {/* Locked */}
+              <div className="relative overflow-hidden bg-[#0d0d16] border border-white/8 rounded-2xl p-5 flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/2 rounded-full blur-2xl pointer-events-none" />
+                <span className="text-2xl mb-2">🔒</span>
+                <div>
+                  <p className="text-3xl font-black text-white">{animLocked}</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Locked</p>
+                </div>
+              </div>
+
+              {/* Latest */}
+              <div className="col-span-2 md:col-span-1 relative overflow-hidden bg-[#0d0d16] border border-orange-500/20 rounded-2xl p-5 flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-28 h-28 bg-orange-500/5 rounded-full blur-2xl pointer-events-none" />
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-orange-400 font-black uppercase tracking-widest">Latest Badge</p>
+                  <span className="text-xl">{recentBadge?.icon ?? "🎯"}</span>
+                </div>
+                <div>
+                  <p className="text-white font-black text-sm leading-tight">{recentBadge?.name ?? "None yet"}</p>
+                  <p className="text-gray-600 text-[11px] mt-1">
+                    {recentBadge ? fmt(recentBadge.earned_at!) : "Play to earn your first!"}
+                  </p>
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Locked */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-slate-500/10 to-gray-500/5 border border-slate-500/20 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
-              <div className="w-12 h-12 rounded-2xl bg-slate-500/15 border border-slate-500/25 flex items-center justify-center text-2xl mb-3">🔒</div>
-              <div>
-                <p className="text-4xl font-black text-white mb-1">{lockedCount}</p>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Locked</p>
+          {/* ── Progress bar ── */}
+          {!loading && (
+            <div className="bg-[#0d0d16] border border-white/6 rounded-2xl px-5 py-4 mb-8">
+              <div className="flex items-center justify-between mb-2.5">
+                <p className="text-xs font-bold text-white">Overall Progress</p>
+                <p className="text-xs font-black text-amber-400">{earnedCount} / {total} badges</p>
+              </div>
+              <div className="h-2.5 bg-white/4 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 relative overflow-hidden transition-all duration-1000"
+                  style={{ width: `${progress}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[shimmer_2s_infinite]" />
+                </div>
+              </div>
+              <div className="flex justify-between mt-1.5">
+                <span className="text-[10px] text-gray-700">Beginner</span>
+                <span className="text-[10px] text-gray-700">Legend</span>
               </div>
             </div>
+          )}
 
-            {/* Most Recent */}
-            <div className="col-span-2 md:col-span-1 relative overflow-hidden bg-gradient-to-br from-orange-500/10 to-amber-500/5 border border-orange-500/25 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs text-orange-400 font-black uppercase tracking-widest">Latest Badge</p>
-                <span className="text-xl">{recentBadge?.icon ?? "🎯"}</span>
+          {/* ── Filters ── */}
+          {!loading && achievements.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <div className="flex gap-2 overflow-x-auto pb-1 flex-1 scrollbar-none">
+                <FilterChip active={activeGroup === "all"} onClick={() => setActiveGroup("all")}
+                  activeClass="bg-amber-500/15 border-amber-500/35 text-amber-300">
+                  All
+                  <Count n={achievements.length} />
+                </FilterChip>
+                {GROUPS.map(g => {
+                  const n = achievements.filter(a => groupOf(a) === g.key).length;
+                  if (!n) return null;
+                  return (
+                    <FilterChip key={g.key} active={activeGroup === g.key} onClick={() => setActiveGroup(g.key)}
+                      activeClass={g.pill}>
+                      {g.icon} {g.label}
+                      <Count n={n} />
+                    </FilterChip>
+                  );
+                })}
               </div>
-              <div>
-                <p className="text-white font-black text-base leading-tight">{recentBadge?.name ?? "None yet"}</p>
-                <p className="text-gray-500 text-xs mt-1">{recentBadge ? fmt(recentBadge.earned_at!) : "Play to earn your first!"}</p>
+              <div className="flex gap-2 flex-shrink-0">
+                {(["all", "earned", "locked"] as const).map(f => (
+                  <FilterChip key={f} active={filter === f} onClick={() => setFilter(f)}
+                    activeClass="bg-orange-500/15 border-orange-500/35 text-orange-300">
+                    {f === "earned" ? "✓ Earned" : f === "locked" ? "🔒 Locked" : "All"}
+                  </FilterChip>
+                ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ── Progress Bar ── */}
-        {!loading && (
-          <div className="bg-[#0a0a12] border border-white/8 rounded-2xl p-5 mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-bold text-white">Overall Progress</p>
-              <p className="text-sm font-black text-amber-400">{earnedCount} / {total} badges</p>
+          {/* ── Error ── */}
+          {error && (
+            <div className="bg-red-500/8 border border-red-500/20 rounded-2xl p-4 text-center mb-6">
+              <p className="text-red-400 text-sm">⚠️ {error}</p>
             </div>
-            <div className="h-3 bg-white/5 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 transition-all duration-1000 relative overflow-hidden"
-                style={{ width: `${progress}%` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-              </div>
+          )}
+
+          {/* ── Skeleton ── */}
+          {loading && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {[...Array(12)].map((_, i) => <SkeletonCard key={i} />)}
             </div>
-            <div className="flex justify-between mt-2">
-              <p className="text-xs text-gray-600">Beginner</p>
-              <p className="text-xs text-gray-600">Master</p>
-            </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      <div className="w-full max-w-5xl">
-
-        {/* ── Controls ── */}
-        {!loading && achievements.length > 0 && (
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            {/* Group filter chips */}
-            <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
-              <button onClick={() => setActiveGroup("all")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
-                  activeGroup === "all"
-                    ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
-                    : "bg-white/5 border-white/8 text-gray-500 hover:text-gray-300"
-                }`}>
-                All <span className="ml-1 text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{achievements.length}</span>
-              </button>
-              {GROUPS.map(g => {
-                const count = achievements.filter(a => groupOf(a) === g.key).length;
-                if (count === 0) return null;
-                return (
-                  <button key={g.key} onClick={() => setActiveGroup(g.key)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
-                      activeGroup === g.key
-                        ? `${g.bg} ${g.border} ${g.color}`
-                        : "bg-white/5 border-white/8 text-gray-500 hover:text-gray-300"
-                    }`}>
-                    <span>{g.icon}</span>
-                    {g.label}
-                    <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Earned/Locked filter */}
-            <div className="flex gap-2 flex-shrink-0">
-              {(["all", "earned", "locked"] as const).map(f => (
-                <button key={f} onClick={() => setFilter(f)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all border ${
-                    filter === f
-                      ? "bg-orange-500/20 border-orange-500/40 text-orange-300"
-                      : "bg-white/5 border-white/8 text-gray-500 hover:text-gray-300"
-                  }`}>
-                  {f === "earned" ? "✓ Earned" : f === "locked" ? "🔒 Locked" : "All"}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Error ── */}
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center mb-6">
-            <p className="text-red-400 text-sm">⚠️ {error}</p>
-          </div>
-        )}
-
-        {/* ── Loading ── */}
-        {loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="h-48 rounded-2xl bg-white/3 animate-pulse" />
-            ))}
-          </div>
-        )}
-
-        {/* ── Badge Groups ── */}
-        {!loading && (
-          activeGroup === "all"
-            ? GROUPS.map(group => {
-                const items = visibleAchievements.filter(a => groupOf(a) === group.key);
-                if (items.length === 0) return null;
-                const groupEarned = items.filter(a => a.earned_at).length;
-                return (
-                  <div key={group.key} className="mb-12">
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className={`w-9 h-9 rounded-xl ${group.bg} border ${group.border} flex items-center justify-center text-lg`}>
-                        {group.icon}
+          {/* ── Badge sections ── */}
+          {!loading && (
+            activeGroup === "all"
+              ? GROUPS.map(g => {
+                  const items = visible.filter(a => groupOf(a) === g.key);
+                  if (!items.length) return null;
+                  const gEarned = items.filter(a => a.earned_at).length;
+                  return (
+                    <section key={g.key} className="mb-14">
+                      <div className="flex items-center gap-3 mb-5">
+                        <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${g.grad} flex items-center justify-center text-base shadow-lg ${g.glow}`}>
+                          {g.icon}
+                        </div>
+                        <div>
+                          <h2 className="text-xs font-black uppercase tracking-[0.15em] text-white">{g.label}</h2>
+                          <p className="text-[10px] text-gray-600">{gEarned} of {items.length} unlocked</p>
+                        </div>
+                        <div className="flex-1 h-px bg-white/5 mx-2" />
+                        <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full bg-gradient-to-r ${g.grad} transition-all duration-700`}
+                            style={{ width: `${items.length ? (gEarned / items.length) * 100 : 0}%` }} />
+                        </div>
                       </div>
-                      <div>
-                        <h2 className={`text-sm font-black uppercase tracking-widest ${group.color}`}>{group.label}</h2>
-                        <p className="text-gray-600 text-xs">{groupEarned} of {items.length} unlocked</p>
-                      </div>
-                      <div className="flex-1 h-px bg-white/5 ml-2" />
-                      <div className="h-1.5 w-24 bg-white/5 rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full transition-all duration-700 ${group.bg.replace("/10", "/60")}`}
-                          style={{ width: `${items.length > 0 ? (groupEarned / items.length) * 100 : 0}%` }} />
-                      </div>
-                    </div>
-                    <BadgeGrid items={items} />
-                  </div>
-                );
-              })
-            : (() => {
-                if (visibleAchievements.length === 0) return (
-                  <div className="flex flex-col items-center py-20 gap-4">
-                    <div className="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-4xl">🏅</div>
-                    <p className="text-white font-bold text-lg">No badges here yet</p>
-                    <p className="text-gray-500 text-sm">Keep playing to unlock these badges!</p>
-                  </div>
-                );
-                return <BadgeGrid items={visibleAchievements} />;
-              })()
-        )}
-      </div>
-      </>}
+                      <BadgeGrid items={items} grad={g.grad} ring={g.ring} glow={g.glow} />
+                    </section>
+                  );
+                })
+              : visible.length === 0
+                ? <EmptyState />
+                : <BadgeGrid items={visible}
+                    grad={GROUPS.find(g => g.key === activeGroup)?.grad ?? "from-amber-500 to-orange-500"}
+                    ring={GROUPS.find(g => g.key === activeGroup)?.ring ?? "ring-amber-500/40"}
+                    glow={GROUPS.find(g => g.key === activeGroup)?.glow ?? "shadow-amber-500/20"} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function BadgeGrid({ items }: { items: Achievement[] }) {
+/* ── Sub-components ─────────────────────────────────────────────────────── */
+
+function FilterChip({ active, onClick, activeClass, children }: {
+  active: boolean; onClick: () => void; activeClass: string; children: React.ReactNode;
+}) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {items.map((a, idx) => {
-        const isEarned = !!a.earned_at;
-        return (
-          <div key={a.id}
-            className={`relative rounded-2xl p-5 flex flex-col items-center text-center gap-3 transition-all duration-300 group cursor-default
-              ${isEarned
-                ? "bg-gradient-to-b from-amber-500/12 via-orange-500/5 to-transparent border border-amber-500/30 hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgba(251,191,36,0.15)] hover:border-amber-400/50"
-                : "bg-[#0a0a12] border border-white/5 hover:border-white/10"
-              }`}
-            style={{ animationDelay: `${idx * 30}ms` }}
-          >
-            {/* Glow for earned */}
-            {isEarned && (
-              <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.08),transparent_60%)] pointer-events-none" />
-            )}
+    <button onClick={onClick}
+      className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all duration-200
+        ${active ? activeClass : "bg-white/4 border-white/8 text-gray-500 hover:text-gray-300 hover:border-white/15"}`}>
+      {children}
+    </button>
+  );
+}
 
-            {/* Rank number */}
-            <div className={`absolute top-3 left-3 text-[10px] font-black px-1.5 py-0.5 rounded-md ${
-              isEarned ? "bg-amber-500/20 text-amber-400" : "bg-white/5 text-gray-700"
-            }`}>
-              #{a.id}
-            </div>
+function Count({ n }: { n: number }) {
+  return <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-full font-black">{n}</span>;
+}
 
-            {/* Icon */}
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-4xl transition-all duration-300 mt-2
-              ${isEarned
-                ? "bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 group-hover:scale-110 group-hover:rotate-3 shadow-lg shadow-amber-500/10"
-                : "bg-white/4 border border-white/8 grayscale opacity-30"
-              }`}>
-              {a.icon}
-            </div>
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center py-24 gap-4">
+      <div className="w-20 h-20 rounded-2xl bg-amber-500/8 border border-amber-500/15 flex items-center justify-center text-4xl">🏅</div>
+      <p className="text-white font-bold">No badges here yet</p>
+      <p className="text-gray-600 text-sm">Keep playing to unlock these!</p>
+      <Link href="/games" className="mt-2 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold rounded-xl transition shadow-lg shadow-orange-500/20">
+        Play Now →
+      </Link>
+    </div>
+  );
+}
 
-            {/* Text */}
-            <div className="space-y-1">
-              <p className={`font-black text-sm leading-tight ${isEarned ? "text-white" : "text-gray-600"}`}>
-                {a.name}
-              </p>
-              <p className={`text-[11px] leading-snug ${isEarned ? "text-gray-400" : "text-gray-700"}`}>
-                {a.description}
-              </p>
-            </div>
+function BadgeGrid({ items, grad, ring, glow }: {
+  items: Achievement[]; grad: string; ring: string; glow: string;
+}) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      {items.map((a, i) => <BadgeCard key={a.id} a={a} idx={i} grad={grad} ring={ring} glow={glow} />)}
+    </div>
+  );
+}
 
-            {/* Status badge */}
-            {isEarned ? (
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black text-amber-400 bg-amber-500/15 border border-amber-500/25 px-3 py-1 rounded-full flex items-center gap-1">
-                  <span>✓</span> Unlocked
-                </span>
-                <span className="text-[9px] text-gray-600">{fmt(a.earned_at!)}</span>
-              </div>
-            ) : (
-              <span className="text-[10px] font-semibold text-gray-700 bg-white/3 border border-white/6 px-3 py-1 rounded-full flex items-center gap-1">
-                <span>🔒</span> Locked
-              </span>
-            )}
-          </div>
-        );
-      })}
+function BadgeCard({ a, idx, grad, ring, glow }: {
+  a: Achievement; idx: number; grad: string; ring: string; glow: string;
+}) {
+  const earned = !!a.earned_at;
+  return (
+    <div
+      className={`group relative rounded-2xl flex flex-col items-center text-center p-5 gap-3 cursor-default select-none transition-all duration-300
+        ${earned
+          ? `bg-[#0f0f1a] border border-white/10 hover:-translate-y-1.5 hover:border-white/20 hover:shadow-2xl hover:${glow}`
+          : "bg-[#0a0a10] border border-white/4 opacity-60 hover:opacity-75"
+        }`}
+      style={{ animationDelay: `${idx * 25}ms` }}
+    >
+      {/* Earned top glow */}
+      {earned && (
+        <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${grad} opacity-60`} />
+      )}
+
+      {/* Shine sweep on hover */}
+      {earned && (
+        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/3 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </div>
+      )}
+
+      {/* Icon */}
+      <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mt-1 transition-all duration-300
+        ${earned
+          ? `bg-gradient-to-br ${grad} bg-opacity-20 ring-2 ${ring} group-hover:scale-110 group-hover:rotate-3 shadow-xl ${glow}`
+          : "bg-white/4 border border-white/6 grayscale"
+        }`}>
+        {a.icon}
+        {earned && (
+          <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-lg shadow-emerald-500/40">✓</span>
+        )}
+      </div>
+
+      {/* Text */}
+      <div className="space-y-1 flex-1">
+        <p className={`font-black text-sm leading-tight ${earned ? "text-white" : "text-gray-600"}`}>
+          {a.name}
+        </p>
+        <p className={`text-[11px] leading-snug ${earned ? "text-gray-400" : "text-gray-700"}`}>
+          {a.description}
+        </p>
+      </div>
+
+      {/* Footer */}
+      {earned ? (
+        <div className="flex flex-col items-center gap-0.5 w-full">
+          <div className={`w-full h-px bg-gradient-to-r ${grad} opacity-20`} />
+          <span className="text-[10px] text-gray-500 pt-1">{fmt(a.earned_at!)}</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1 text-[10px] text-gray-700">
+          <span>🔒</span> Locked
+        </div>
+      )}
     </div>
   );
 }

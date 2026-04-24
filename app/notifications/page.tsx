@@ -14,6 +14,13 @@ function timeAgo(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function fmtDate(dateStr: string) {
+  return new Date(dateStr).toLocaleString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  });
+}
+
 function categorize(activity: string): { type: string; icon: string; color: string; bg: string; border: string } {
   const a = activity.toLowerCase();
   if (a.includes("won") || a.includes("played") || a.includes("lost"))
@@ -261,7 +268,11 @@ export default function NotificationsPage() {
                             <span className={`text-[10px] font-bold uppercase tracking-wider ${cat.color}`}>{cat.type}</span>
                           </div>
                           <p className="text-white font-semibold text-sm leading-relaxed">{n.activity}</p>
-                          <p className="text-gray-600 text-xs mt-1">{timeAgo(n.created_at)}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-gray-600 text-xs">{timeAgo(n.created_at)}</p>
+                            <span className="text-gray-700 text-xs">·</span>
+                            <p className="text-gray-600 text-xs">{fmtDate(n.created_at)}</p>
+                          </div>
                         </div>
                       </div>
                     );
