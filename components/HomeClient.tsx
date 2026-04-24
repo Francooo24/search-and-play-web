@@ -403,62 +403,67 @@ export default function HomeClient() {
       {!session?.user && (
         <section ref={ctaInView.ref} className={`w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 transition-all duration-700 ${ctaInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
           <div className="relative overflow-hidden rounded-3xl border border-orange-500/20">
-            {/* Background */}
+            {/* Backgrounds */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1),transparent_70%)]" />
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent" />
-            <div className="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-amber-500/8 rounded-full blur-3xl pointer-events-none" />
-
+            <div className="absolute -top-32 -left-32 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none animate-float" />
+            <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/8 rounded-full blur-3xl pointer-events-none animate-float" style={{ animationDelay: "2s" }} />
             {/* Top accent */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/70 to-transparent" />
 
-            <div className="relative px-8 py-14 sm:px-16 sm:py-16">
-              <div className="flex flex-col items-center gap-10 text-center">
+            <div className="relative px-8 py-14 sm:px-16 sm:py-16 flex flex-col items-center text-center gap-8">
 
-                {/* Left — text */}
-                <div className="flex-1 text-center">
-                  <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-                    Get Started — It&apos;s Free
-                  </div>
-                  <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    Ready to Play
-                    <span className="block bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">&amp; Learn?</span>
-                  </h2>
-                  <p className="text-gray-400 text-base leading-relaxed max-w-md mx-auto">
-                    Create a free account to save words, track your scores, and compete on the leaderboard.
-                  </p>
-                </div>
-
-                {/* Right — features + buttons */}
-                <div className="flex-shrink-0 w-full lg:w-auto flex flex-col gap-5">
-                  {/* Feature list */}
-                  <div className="grid grid-cols-1 gap-3">
-                    {[
-                      { icon: "📚", text: "Save favorite words" },
-                      { icon: "🏆", text: "Track scores & achievements" },
-                      { icon: "🌍", text: "Compete on the leaderboard" },
-                      { icon: "🎮", text: "Access all 45 games" },
-                    ].map(f => (
-                      <div key={f.text} className="flex items-center gap-3 bg-white/3 border border-white/8 rounded-xl px-4 py-3">
-                        <span className="text-lg">{f.icon}</span>
-                        <span className="text-sm text-gray-300 font-semibold">{f.text}</span>
-                        <span className="ml-auto text-green-400 text-xs">✓</span>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link href="/signup" className="flex-1 text-center bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-sm px-8 py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/25 hover:-translate-y-0.5">
-                      Create Free Account
-                    </Link>
-                    <Link href="/login" className="flex-1 text-center border border-white/12 hover:border-orange-500/40 text-gray-400 hover:text-white font-bold text-sm px-8 py-3.5 rounded-2xl transition hover:-translate-y-0.5">
-                      Sign In
-                    </Link>
-                  </div>
-                </div>
-
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+                Get Started — It&apos;s Free
               </div>
+
+              {/* Headline */}
+              <div>
+                <h2 className="text-5xl sm:text-6xl font-black text-white leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  Ready to Play
+                </h2>
+                <h2 className="text-5xl sm:text-6xl font-black leading-tight bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  &amp; Learn?
+                </h2>
+                <p className="text-gray-400 text-base leading-relaxed max-w-lg mx-auto mt-4">
+                  Create a free account to save words, track your scores, and compete on the leaderboard.
+                </p>
+              </div>
+
+              {/* Feature grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-3xl">
+                {[
+                  { icon: "📚", title: "Save Words",       desc: "Bookmark favorites"       },
+                  { icon: "🏆", title: "Track Scores",     desc: "Achievements & history"   },
+                  { icon: "🌍", title: "Leaderboard",     desc: "Compete globally"         },
+                  { icon: "🎮", title: "45 Games",        desc: "All ages, all levels"     },
+                ].map((f, i) => (
+                  <div key={f.title}
+                    className="group relative overflow-hidden bg-white/3 hover:bg-white/6 border border-white/8 hover:border-orange-500/30 rounded-2xl p-5 flex flex-col items-center gap-2 transition-all duration-300 hover:-translate-y-1"
+                    style={{ animationDelay: `${i * 80}ms` }}>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-orange-500/5 to-transparent pointer-events-none" />
+                    <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{f.icon}</span>
+                    <p className="text-white font-black text-sm">{f.title}</p>
+                    <p className="text-gray-600 text-[11px] font-medium">{f.desc}</p>
+                    <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-400 text-[9px] font-black">✓</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                <Link href="/signup"
+                  className="flex-1 text-center bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base px-8 py-4 rounded-2xl transition-all shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/50">
+                  Create Free Account
+                </Link>
+                <Link href="/login"
+                  className="flex-1 text-center border border-white/15 hover:border-orange-500/40 bg-white/3 hover:bg-white/6 text-gray-300 hover:text-white font-bold text-base px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5">
+                  Sign In
+                </Link>
+              </div>
+
             </div>
           </div>
         </section>
