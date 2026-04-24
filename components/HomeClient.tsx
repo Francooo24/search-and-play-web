@@ -1,11 +1,25 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 
 const SearchBox = dynamic(() => import("@/components/SearchBox"), { ssr: false });
+
+// ── Scroll-triggered animation hook ──────────────────────────────────────────
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
 
 const FEATURED_GAMES = [
   { slug: "wordle",    name: "WordGuess",   icon: "📝", desc: "Guess the 5-letter word in 6 tries!",          color: "from-emerald-600 to-teal-500",  badge: "Teen",  badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
@@ -214,38 +228,43 @@ export default function HomeClient() {
     router.push(`/search?word=${encodeURIComponent(w.trim())}`);
   };
 
+  const statsInView    = useInView();
+  const gamesInView    = useInView();
+  const dailyInView    = useInView();
+  const catInView      = useInView();
+  const ctaInView      = useInView();
+
   return (
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
       <section className="w-full relative overflow-hidden">
-        {/* Background layers */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(249,115,22,0.12),transparent)] pointer-events-none" />
-        <div className="absolute top-0 left-0 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-0 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl pointer-events-none animate-float" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none animate-float" style={{ animationDelay: "2s" }} />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-16 flex flex-col items-center text-center">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+          <div className="animate-fade-in-down inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4" style={{ animationDelay: "0.1s" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
             Search. Learn. Play.
           </div>
 
           {/* Headline */}
-          <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="animate-fade-in-up text-6xl sm:text-7xl md:text-8xl font-black text-white tracking-tight leading-[1.05] mb-4 max-w-4xl" style={{ animationDelay: "0.2s", fontFamily: "'Playfair Display', serif" }}>
             Search. Learn &amp;{" "}
             <span className="relative">
               <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             </span>
           </h1>
 
-          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-4 leading-relaxed">
+          <p className="animate-fade-in-up text-gray-400 text-xl sm:text-2xl max-w-2xl mb-4 leading-relaxed" style={{ animationDelay: "0.3s" }}>
             Look up words instantly, then reinforce your learning through 45+ interactive games designed for all ages.
           </p>
 
           {/* Search */}
-          <div className="w-full max-w-3xl mb-2">
+          <div className="animate-fade-in-up w-full max-w-3xl mb-2" style={{ animationDelay: "0.4s" }}>
             <SearchBox onSearch={handleSearch} />
           </div>
 
@@ -267,8 +286,8 @@ export default function HomeClient() {
             </div>
           )}
 
-          {/* Popular Games moved to hero */}
-          <div className="w-full max-w-5xl">
+          {/* Popular Games */}
+          <div ref={gamesInView.ref} className={`w-full max-w-5xl transition-all duration-700 ${gamesInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
             <div className="flex items-end justify-between mb-3">
               <div className="text-left pl-0">
                 <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
@@ -308,8 +327,8 @@ export default function HomeClient() {
               { value: "Free", label: "Always Free", icon: "✨", desc: "No cost, ever",     color: "from-emerald-500/20 to-teal-500/5",  border: "border-emerald-500/25", glow: "shadow-emerald-500/20" },
             ].map((s, i) => (
               <div key={s.label}
-                className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br ${s.color} ${s.border} px-6 py-8 flex flex-col items-center gap-3 hover:shadow-xl ${s.glow} transition-all duration-300 hover:-translate-y-1.5`}
-                style={{ animationDelay: `${i * 100}ms` }}>
+                className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br ${s.color} ${s.border} px-6 py-8 flex flex-col items-center gap-3 hover:shadow-xl ${s.glow} transition-all duration-300 hover:-translate-y-1.5 ${statsInView.visible ? "animate-count-up" : "opacity-0"}`}
+                style={{ animationDelay: `${i * 120}ms` }}>
                 {/* Shine overlay */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
                 {/* Top accent */}
@@ -327,7 +346,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── DAILY CHALLENGE + TOP PLAYERS ── */}
-      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 pb-12">
+      <section ref={dailyInView.ref} className={`w-full max-w-5xl mx-auto px-4 sm:px-6 pb-12 transition-all duration-700 ${dailyInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
           {/* Daily Challenge — wider */}
@@ -357,7 +376,7 @@ export default function HomeClient() {
 
       {/* ── BROWSE CATEGORIES ── */}
       <section className="w-full border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14">
+        <div ref={catInView.ref} className={`max-w-5xl mx-auto px-4 sm:px-6 py-14 transition-all duration-700 ${catInView.visible ? "opacity-100" : "opacity-0"}`}>
           <div className="flex items-end justify-between mb-10">
             <div>
               <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
@@ -368,7 +387,7 @@ export default function HomeClient() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {CATEGORIES.map((cat, i) => (
               <Link key={cat.label} href={`/search?word=${encodeURIComponent(cat.label)}`}
-                className={`group relative overflow-hidden rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-2 border bg-gradient-to-br ${cat.color} ${cat.border} ${cat.hover} hover:shadow-xl hover:shadow-black/30`}
+                className={`group relative overflow-hidden rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-2 border bg-gradient-to-br ${cat.color} ${cat.border} ${cat.hover} hover:shadow-xl hover:shadow-black/30 ${catInView.visible ? "animate-scale-in" : "opacity-0"}`}
                 style={{ animationDelay: `${i * 80}ms` }}>
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
                 <div className="text-4xl mb-3 group-hover:scale-125 group-hover:-rotate-6 transition-transform duration-300">{cat.emoji}</div>
@@ -382,7 +401,7 @@ export default function HomeClient() {
 
       {/* ── CTA ── */}
       {!session?.user && (
-        <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <section ref={ctaInView.ref} className={`w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 transition-all duration-700 ${ctaInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
           <div className="relative overflow-hidden rounded-3xl border border-orange-500/20">
             {/* Background */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1),transparent_70%)]" />
