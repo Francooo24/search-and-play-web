@@ -1,9 +1,20 @@
-const { Pool } = require("pg");
-const fs = require("fs");
+const fs   = require("fs");
 const path = require("path");
 
+// Load .env.local manually (no dotenv dependency needed)
+const envPath = path.join(__dirname, "..", ".env.local");
+if (fs.existsSync(envPath)) {
+  fs.readFileSync(envPath, "utf8").split("\n").forEach(line => {
+    const [key, ...rest] = line.split("=");
+    if (key && rest.length && !process.env[key.trim()])
+      process.env[key.trim()] = rest.join("=").trim();
+  });
+}
+
+const { Pool } = require("pg");
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || "postgresql://games_greek_dictionary_user:8fpM7uQHOErYUz7tRdVPL3uzgtgBVMMD@dpg-d78tr5vfte5s739b8e3g-a.oregon-postgres.render.com/games_greek_dictionary",
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
@@ -12,10 +23,9 @@ async function migrate() {
   try {
     await client.query("BEGIN");
 
-    // Drop old broken achievements table (wrong schema: had player_id + achievement_key)
-    await client.query(`DROP TABLE IF EXISTS achievements CASCADE`);
+    await client.query(`DROP TABLE IF EXISTS user_achievements`);
+    await client.query(`DROP TABLE IF EXISTS achievements`);
 
-    // Recreate achievements with the correct schema
     await client.query(`
       CREATE TABLE achievements (
         id              BIGSERIAL PRIMARY KEY,
@@ -28,9 +38,8 @@ async function migrate() {
       )
     `);
 
-    // Create user_achievements junction table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS user_achievements (
+      CREATE TABLE user_achievements (
         id             BIGSERIAL PRIMARY KEY,
         user_id        BIGINT NOT NULL REFERENCES players(id) ON DELETE CASCADE,
         achievement_id BIGINT NOT NULL REFERENCES achievements(id) ON DELETE CASCADE,
@@ -39,9 +48,7 @@ async function migrate() {
       )
     `);
 
-    // Seed all achievements
-    const seedPath = path.join(__dirname, "..", "achievements_seed.sql");
-    const seed = fs.readFileSync(seedPath, "utf8");
+    const seed = fs.readFileSync(path.join(__dirname, "..", "achievements_seed.sql"), "utf8");
     await client.query(seed);
 
     await client.query("COMMIT");
