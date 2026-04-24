@@ -72,12 +72,12 @@ export default function NotificationsPage() {
     const prev = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
     setLastRead(prev);
 
-    const now = new Date().toISOString();
-    localStorage.setItem("notif_last_read", now);
-
     fetch(`/api/notifications?t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
-      .then(d => setNotifications(d.notifications ?? []))
+      .then(d => {
+        setNotifications(d.notifications ?? []);
+        localStorage.setItem("notif_last_read", new Date().toISOString());
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [status]);

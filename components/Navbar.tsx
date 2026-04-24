@@ -23,11 +23,16 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!session?.user) return;
-    const since = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
-    fetch(`/api/notifications?since=${encodeURIComponent(since)}`)
-      .then(r => r.json())
-      .then(d => setUnreadCount(d.unread ?? 0))
-      .catch(() => {});
+    const poll = () => {
+      const since = localStorage.getItem("notif_last_read") ?? new Date(0).toISOString();
+      fetch(`/api/notifications?since=${encodeURIComponent(since)}`)
+        .then(r => r.json())
+        .then(d => setUnreadCount(d.unread ?? 0))
+        .catch(() => {});
+    };
+    poll();
+    const id = setInterval(poll, 60_000);
+    return () => clearInterval(id);
   }, [session]);
 
   const isAdmin = (session?.user as any)?.is_admin;
