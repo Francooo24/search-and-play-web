@@ -166,7 +166,7 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-4 sm:px-6 pt-4 pb-32 relative overflow-hidden">
+      <section className="w-full flex flex-col items-center text-center px-4 sm:px-6 pt-4 pb-20 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-tight mb-5 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -239,7 +239,7 @@ export default function HomeClient() {
           </div>
           <div>
             <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.words.toLocaleString() : "—"}</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Words Available</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Words Searched</p>
           </div>
           <div>
             <p className="text-3xl font-black text-white mb-1.5">3</p>
