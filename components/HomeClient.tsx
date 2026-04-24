@@ -234,11 +234,11 @@ export default function HomeClient() {
       <section className="w-full border-y border-white/5 bg-white/2 py-6 mb-10">
         <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           <div>
-            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.games.toLocaleString() : "50+"}</p>
+            <p className="text-3xl font-black text-white mb-1.5">45</p>
             <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Word Games</p>
           </div>
           <div>
-            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.words.toLocaleString() : "10K+"}</p>
+            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.words.toLocaleString() : "—"}</p>
             <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Words Available</p>
           </div>
           <div>
