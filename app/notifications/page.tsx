@@ -141,12 +141,12 @@ export default function NotificationsPage() {
 
           {/* Stats Overview */}
           {!loading && notifications.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
               <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/5 border border-orange-500/20 rounded-2xl p-5 text-center">
                 <p className="text-3xl font-black text-white mb-1">{notifications.length}</p>
                 <p className="text-xs text-orange-300 uppercase tracking-widest font-bold">Total Activity</p>
               </div>
-              <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 rounded-2xl p-5 text-center">
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 rounded-2xl p-5 text-center">
                 <p className="text-3xl font-black text-white mb-1">{categoryCounts.filter(c => c.count > 0).length}</p>
                 <p className="text-xs text-purple-300 uppercase tracking-widest font-bold">Categories</p>
               </div>
