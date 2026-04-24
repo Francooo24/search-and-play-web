@@ -1,6 +1,6 @@
 const CACHE = "snp-v1";
 const OFFLINE_URL = "/offline";
-const STATIC = ["/", "/games", "/offline", "/manifest.json"];
+const STATIC = ["/", "/offline", "/manifest.json"];
 
 self.addEventListener("install", e => {
   e.waitUntil(
