@@ -179,14 +179,14 @@ export default function HomeClient() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-            Greek Dictionary & Word Games Platform
+            Search. Learn. Play.
           </div>
 
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Search Any Word.{" "}
+            Search &amp;{" "}
             <span className="relative">
-              <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Master It.</span>
+              <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Play.</span>
             </span>
           </h1>
 
@@ -217,53 +217,53 @@ export default function HomeClient() {
             </div>
           )}
 
-          {/* Stats row */}
-          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Popular Games moved to hero */}
+          <div className="w-full max-w-3xl">
+            <div className="flex items-end justify-between mb-5">
+              <div className="text-left">
+                <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
+                <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
+              </div>
+              <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/25 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+                All 45 Games →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {FEATURED_GAMES.map(g => (
+                <Link key={g.slug} href={`/games/${g.slug}`}
+                  className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/15 bg-[#0a0a0f] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
+                  <div className={`relative h-44 bg-gradient-to-br ${g.color} flex items-center justify-center overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/10" />
+                    <span className="text-7xl group-hover:scale-110 transition-transform duration-500 relative z-10">{g.icon}</span>
+                    <span className={`absolute top-3 right-3 text-[10px] font-black px-2.5 py-1 rounded-full border ${g.badgeColor}`}>{g.badge}</span>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <p className="text-white font-black text-base mb-1">{g.name}</p>
+                    <p className="text-gray-500 text-xs leading-relaxed flex-1">{g.desc}</p>
+                    <div className="mt-4 flex items-center gap-1.5 text-orange-400 text-xs font-bold group-hover:gap-2.5 transition-all">
+                      Play Now <span>→</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats row moved below popular games */}
+          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
               { value: "45",  label: "Word Games",     icon: "🎮" },
               { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
               { value: "3",   label: "Age Groups",     icon: "🎯" },
               { value: "Free", label: "Always Free",   icon: "✨" },
             ].map(s => (
-              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-4 py-4 flex flex-col items-center gap-1">
-                <span className="text-lg">{s.icon}</span>
-                <p className="text-2xl font-black text-white">{s.value}</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-4 py-6 flex flex-col items-center gap-2">
+                <span className="text-4xl">{s.icon}</span>
+                <p className="text-4xl font-black text-white">{s.value}</p>
+                <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── POPULAR GAMES ── */}
-      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
-            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
-          </div>
-          <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/25 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
-            All 45 Games →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {FEATURED_GAMES.map(g => (
-            <Link key={g.slug} href={`/games/${g.slug}`}
-              className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/15 bg-[#0a0a0f] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
-              <div className={`relative h-44 bg-gradient-to-br ${g.color} flex items-center justify-center overflow-hidden`}>
-                <div className="absolute inset-0 bg-black/10" />
-                <span className="text-7xl group-hover:scale-110 transition-transform duration-500 relative z-10">{g.icon}</span>
-                <span className={`absolute top-3 right-3 text-[10px] font-black px-2.5 py-1 rounded-full border ${g.badgeColor}`}>{g.badge}</span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col">
-                <p className="text-white font-black text-base mb-1">{g.name}</p>
-                <p className="text-gray-500 text-xs leading-relaxed flex-1">{g.desc}</p>
-                <div className="mt-4 flex items-center gap-1.5 text-orange-400 text-xs font-bold group-hover:gap-2.5 transition-all">
-                  Play Now <span>→</span>
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       </section>
 
@@ -273,7 +273,7 @@ export default function HomeClient() {
 
           {/* Daily Challenge — wider */}
           <div className="lg:col-span-3 flex flex-col gap-4">
-            <div>
+            <div className="text-center lg:text-left">
               <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
               <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
             </div>
