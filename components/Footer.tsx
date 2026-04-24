@@ -23,8 +23,6 @@ export default function Footer() {
               {[
                 { label: "Dictionary",  href: "/" },
                 { label: "Games",       href: "/games" },
-                { label: "Leaderboard", href: "/leaderboard" },
-                { label: "Culture",     href: "/culture" },
               ].map((l, i, arr) => (
                 <span key={l.href} className="flex items-center gap-6">
                   <Link href={l.href} className="text-slate-500 hover:text-orange-400 transition-colors">{l.label}</Link>

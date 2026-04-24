@@ -14,12 +14,12 @@ const FEATURED_GAMES = [
 ];
 
 const CATEGORIES = [
-  { emoji: "🌿", label: "Nature",   color: "from-green-500/20 to-emerald-500/5",   border: "border-green-500/20",  hover: "hover:border-green-400/50"  },
-  { emoji: "❤️", label: "Emotions", color: "from-rose-500/20 to-pink-500/5",       border: "border-rose-500/20",   hover: "hover:border-rose-400/50"   },
-  { emoji: "🏛️", label: "History",  color: "from-amber-500/20 to-yellow-500/5",    border: "border-amber-500/20",  hover: "hover:border-amber-400/50"  },
-  { emoji: "🔬", label: "Science",  color: "from-cyan-500/20 to-blue-500/5",       border: "border-cyan-500/20",   hover: "hover:border-cyan-400/50"   },
-  { emoji: "🎨", label: "Arts",     color: "from-purple-500/20 to-violet-500/5",   border: "border-purple-500/20", hover: "hover:border-purple-400/50" },
-  { emoji: "🧠", label: "Mind",     color: "from-indigo-500/20 to-blue-500/5",     border: "border-indigo-500/20", hover: "hover:border-indigo-400/50" },
+  { emoji: "🌿", label: "Nature",   color: "from-green-500/25 to-emerald-600/10",  border: "border-green-500/25",  hover: "hover:border-green-400/60"  },
+  { emoji: "❤️", label: "Emotions", color: "from-rose-500/25 to-pink-600/10",      border: "border-rose-500/25",   hover: "hover:border-rose-400/60"   },
+  { emoji: "🏛️", label: "History",  color: "from-amber-500/25 to-yellow-600/10",  border: "border-amber-500/25",  hover: "hover:border-amber-400/60"  },
+  { emoji: "🔬", label: "Science",  color: "from-cyan-500/25 to-blue-600/10",      border: "border-cyan-500/25",   hover: "hover:border-cyan-400/60"   },
+  { emoji: "🎨", label: "Arts",     color: "from-purple-500/25 to-violet-600/10",  border: "border-purple-500/25", hover: "hover:border-purple-400/60" },
+  { emoji: "🧠", label: "Mind",     color: "from-indigo-500/25 to-blue-600/10",   border: "border-indigo-500/25", hover: "hover:border-indigo-400/60" },
 ];
 
 function DailyChallengeBanner() {
@@ -299,18 +299,27 @@ export default function HomeClient() {
             </div>
           </div>
 
-          {/* Stats row moved below popular games */}
+          {/* Stats row */}
           <div className="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16">
             {[
-              { value: "45",  label: "Word Games",     icon: "🎮" },
-              { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
-              { value: "3",   label: "Age Groups",     icon: "🎯" },
-              { value: "Free", label: "Always Free",   icon: "✨" },
-            ].map(s => (
-              <div key={s.label} className="bg-white/3 border border-white/8 rounded-3xl px-8 py-10 flex flex-col items-center gap-4">
-                <span className="text-6xl">{s.icon}</span>
-                <p className="text-6xl font-black text-white">{s.value}</p>
-                <p className="text-base text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              { value: "45",  label: "Word Games",   icon: "🎮", desc: "Games to play",      color: "from-orange-500/20 to-amber-500/5",   border: "border-orange-500/25",  glow: "shadow-orange-500/20" },
+              { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥", desc: "Registered users",  color: "from-violet-500/20 to-purple-500/5",  border: "border-violet-500/25",  glow: "shadow-violet-500/20" },
+              { value: "3",   label: "Age Groups",   icon: "🎯", desc: "Kids, Teen, Adult", color: "from-cyan-500/20 to-blue-500/5",       border: "border-cyan-500/25",    glow: "shadow-cyan-500/20"    },
+              { value: "Free", label: "Always Free", icon: "✨", desc: "No cost, ever",     color: "from-emerald-500/20 to-teal-500/5",  border: "border-emerald-500/25", glow: "shadow-emerald-500/20" },
+            ].map((s, i) => (
+              <div key={s.label}
+                className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br ${s.color} ${s.border} px-6 py-8 flex flex-col items-center gap-3 hover:shadow-xl ${s.glow} transition-all duration-300 hover:-translate-y-1.5`}
+                style={{ animationDelay: `${i * 100}ms` }}>
+                {/* Shine overlay */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+                {/* Top accent */}
+                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full bg-gradient-to-r ${s.color.replace('/20', '/80').replace('/5', '/40')}`} />
+                <span className="text-5xl group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
+                <p className="text-5xl font-black text-white tracking-tight">{s.value}</p>
+                <div className="text-center">
+                  <p className="text-sm font-black text-gray-300 uppercase tracking-widest">{s.label}</p>
+                  <p className="text-[11px] text-gray-600 mt-0.5 font-medium">{s.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -348,19 +357,23 @@ export default function HomeClient() {
 
       {/* ── BROWSE CATEGORIES ── */}
       <section className="w-full border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-          <div className="flex items-end justify-between mb-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14">
+          <div className="flex items-end justify-between mb-10">
             <div>
               <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
               <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Topic</h2>
+              <p className="text-gray-500 text-sm mt-1">Search words by category and discover new vocabulary</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-            {CATEGORIES.map(cat => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {CATEGORIES.map((cat, i) => (
               <Link key={cat.label} href={`/search?word=${encodeURIComponent(cat.label)}`}
-                className={`group rounded-2xl p-5 text-center transition-all duration-200 hover:-translate-y-1 border bg-gradient-to-br ${cat.color} ${cat.border} ${cat.hover} hover:shadow-lg`}>
-                <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">{cat.emoji}</div>
-                <div className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors">{cat.label}</div>
+                className={`group relative overflow-hidden rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-2 border bg-gradient-to-br ${cat.color} ${cat.border} ${cat.hover} hover:shadow-xl hover:shadow-black/30`}
+                style={{ animationDelay: `${i * 80}ms` }}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+                <div className="text-4xl mb-3 group-hover:scale-125 group-hover:-rotate-6 transition-transform duration-300">{cat.emoji}</div>
+                <div className="text-sm font-black text-gray-200 group-hover:text-white transition-colors tracking-wide">{cat.label}</div>
+                <div className="mt-2 text-[10px] text-gray-600 group-hover:text-gray-400 transition-colors font-semibold uppercase tracking-widest">Explore →</div>
               </Link>
             ))}
           </div>
@@ -370,23 +383,63 @@ export default function HomeClient() {
       {/* ── CTA ── */}
       {!session?.user && (
         <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-          <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent p-10 sm:p-14 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.07),transparent_70%)] pointer-events-none" />
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
-            <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-4">Get Started — It&apos;s Free</p>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 relative" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Ready to Play &amp; Learn?
-            </h2>
-            <p className="text-gray-400 text-base mb-8 max-w-md mx-auto leading-relaxed">
-              Create a free account to save words, track your scores, and compete on the leaderboard.
-            </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base px-8 py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/25">
-                Create Free Account
-              </Link>
-              <Link href="/login" className="border border-white/12 hover:border-white/25 text-gray-400 hover:text-white font-bold text-base px-8 py-3.5 rounded-2xl transition">
-                Sign In
-              </Link>
+          <div className="relative overflow-hidden rounded-3xl border border-orange-500/20">
+            {/* Background */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1),transparent_70%)]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent" />
+            <div className="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-amber-500/8 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Top accent */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
+
+            <div className="relative px-8 py-14 sm:px-16 sm:py-16">
+              <div className="flex flex-col lg:flex-row items-center gap-12">
+
+                {/* Left — text */}
+                <div className="flex-1 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+                    Get Started — It&apos;s Free
+                  </div>
+                  <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    Ready to Play
+                    <span className="block bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">&amp; Learn?</span>
+                  </h2>
+                  <p className="text-gray-400 text-base leading-relaxed max-w-md">
+                    Create a free account to save words, track your scores, and compete on the leaderboard.
+                  </p>
+                </div>
+
+                {/* Right — features + buttons */}
+                <div className="flex-shrink-0 w-full lg:w-auto flex flex-col gap-5">
+                  {/* Feature list */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {[
+                      { icon: "📚", text: "Save favorite words" },
+                      { icon: "🏆", text: "Track scores & achievements" },
+                      { icon: "🌍", text: "Compete on the leaderboard" },
+                      { icon: "🎮", text: "Access all 45 games" },
+                    ].map(f => (
+                      <div key={f.text} className="flex items-center gap-3 bg-white/3 border border-white/8 rounded-xl px-4 py-3">
+                        <span className="text-lg">{f.icon}</span>
+                        <span className="text-sm text-gray-300 font-semibold">{f.text}</span>
+                        <span className="ml-auto text-green-400 text-xs">✓</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link href="/signup" className="flex-1 text-center bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-sm px-8 py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/25 hover:-translate-y-0.5">
+                      Create Free Account
+                    </Link>
+                    <Link href="/login" className="flex-1 text-center border border-white/12 hover:border-orange-500/40 text-gray-400 hover:text-white font-bold text-sm px-8 py-3.5 rounded-2xl transition hover:-translate-y-0.5">
+                      Sign In
+                    </Link>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         </section>
