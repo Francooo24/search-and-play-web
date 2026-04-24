@@ -8,25 +8,18 @@ import dynamic from "next/dynamic";
 const SearchBox = dynamic(() => import("@/components/SearchBox"), { ssr: false });
 
 const FEATURED_GAMES = [
-  { slug: "wordle",    name: "WordGuess",   icon: "📝", desc: "Guess the 5-letter word in 6 tries!",          color: "from-emerald-500 to-teal-400",  badge: "Teen"  },
-  { slug: "wordblitz", name: "Word Blitz",  icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-500 to-amber-400",   badge: "Adult" },
-  { slug: "memory",    name: "Memory Game", icon: "🧠", desc: "Flip cards and find all matching pairs!",       color: "from-blue-500 to-cyan-400",     badge: "Kids"  },
+  { slug: "wordle",    name: "WordGuess",   icon: "📝", desc: "Guess the 5-letter word in 6 tries!",          color: "from-emerald-600 to-teal-500",  badge: "Teen",  badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
+  { slug: "wordblitz", name: "Word Blitz",  icon: "⚡", desc: "Type as many words as you can in 60 seconds!", color: "from-orange-600 to-amber-500",   badge: "Adult", badgeColor: "bg-orange-500/20 text-orange-300 border-orange-500/30"   },
+  { slug: "memory",    name: "Memory Game", icon: "🧠", desc: "Flip cards and find all matching pairs!",       color: "from-blue-600 to-cyan-500",     badge: "Kids",  badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30"         },
 ];
 
 const CATEGORIES = [
-  { emoji: "🌿", label: "Nature",   words: ["ocean","forest","mountain","river","storm"] },
-  { emoji: "❤️", label: "Emotions", words: ["love","joy","grief","hope","fear"] },
-  { emoji: "🏛️", label: "History",  words: ["empire","ancient","myth","war","hero"] },
-  { emoji: "🔬", label: "Science",  words: ["atom","energy","gravity","cell","light"] },
-  { emoji: "🎨", label: "Arts",     words: ["music","poetry","drama","color","dance"] },
-  { emoji: "🧠", label: "Mind",     words: ["logic","wisdom","memory","dream","soul"] },
-];
-
-const STATS = [
-  { value: "50+",  label: "Word Games"      },
-  { value: "10K+", label: "Words Available" },
-  { value: "3",    label: "Age Groups"      },
-  { value: "Free", label: "Always"          },
+  { emoji: "🌿", label: "Nature",   color: "from-green-500/20 to-emerald-500/5",   border: "border-green-500/20",  hover: "hover:border-green-400/50"  },
+  { emoji: "❤️", label: "Emotions", color: "from-rose-500/20 to-pink-500/5",       border: "border-rose-500/20",   hover: "hover:border-rose-400/50"   },
+  { emoji: "🏛️", label: "History",  color: "from-amber-500/20 to-yellow-500/5",    border: "border-amber-500/20",  hover: "hover:border-amber-400/50"  },
+  { emoji: "🔬", label: "Science",  color: "from-cyan-500/20 to-blue-500/5",       border: "border-cyan-500/20",   hover: "hover:border-cyan-400/50"   },
+  { emoji: "🎨", label: "Arts",     color: "from-purple-500/20 to-violet-500/5",   border: "border-purple-500/20", hover: "hover:border-purple-400/50" },
+  { emoji: "🧠", label: "Mind",     color: "from-indigo-500/20 to-blue-500/5",     border: "border-indigo-500/20", hover: "hover:border-indigo-400/50" },
 ];
 
 function DailyChallengeBanner() {
@@ -69,31 +62,33 @@ function DailyChallengeBanner() {
   const authed = status === "authenticated";
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border px-8 py-7 flex items-center gap-6 w-full
-      ${completed ? "border-green-500/30 bg-green-500/5" : "border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent"}`}>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(249,115,22,0.08),transparent_60%)] pointer-events-none" />
-      <div className="text-5xl flex-shrink-0">{completed ? "✅" : "⚡"}</div>
+    <div className={`relative overflow-hidden rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center gap-5 p-6 sm:p-8 w-full
+      ${completed ? "border-green-500/25 bg-gradient-to-br from-green-500/8 to-transparent" : "border-orange-500/25 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent"}`}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(249,115,22,0.06),transparent_60%)] pointer-events-none" />
+      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${completed ? "bg-green-500/15 border border-green-500/25" : "bg-orange-500/15 border border-orange-500/25"}`}>
+        {completed ? "✅" : "⚡"}
+      </div>
       <div className="flex-1 min-w-0 relative">
-        <p className="text-sm font-black uppercase tracking-widest text-orange-400 mb-1">Daily Challenge</p>
+        <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-1">Daily Challenge</p>
         {!authed ? (
-          <p className="text-white font-bold text-xl">Sign in to see today&apos;s challenge</p>
+          <p className="text-white font-bold text-lg">Sign in to see today&apos;s challenge</p>
         ) : !challenge ? (
-          <p className="text-white font-bold text-xl">No challenge available today</p>
+          <p className="text-white font-bold text-lg">No challenge available today</p>
         ) : completed ? (
-          <p className="text-white font-bold text-xl">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
+          <p className="text-white font-bold text-lg">Complete! Next in <span className="text-green-400 font-mono">{countdown}</span></p>
         ) : (
           <>
-            <p className="text-white font-bold text-xl truncate">{challenge.title}</p>
-            <p className="text-gray-500 text-base mt-1">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · +{challenge.bonus_points} pts</p>
+            <p className="text-white font-bold text-lg truncate">{challenge.title}</p>
+            <p className="text-gray-500 text-sm mt-1">Resets in <span className="text-orange-400 font-mono font-bold">{countdown}</span> · <span className="text-amber-400 font-bold">+{challenge.bonus_points} pts</span></p>
           </>
         )}
       </div>
       {!authed ? (
-        <Link href="/login" className="flex-shrink-0 text-base font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-7 py-3 rounded-xl transition">Sign In</Link>
+        <Link href="/login" className="flex-shrink-0 text-sm font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl transition shadow-lg shadow-orange-500/20">Sign In</Link>
       ) : completed ? (
-        <Link href="/daily-challenge" className="flex-shrink-0 text-base font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-7 py-3 rounded-xl transition">View</Link>
+        <Link href="/daily-challenge" className="flex-shrink-0 text-sm font-black border border-green-500/30 text-green-400 hover:bg-green-500/10 px-6 py-2.5 rounded-xl transition">View</Link>
       ) : challenge ? (
-        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-base font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-7 py-3 rounded-xl transition whitespace-nowrap">Play Now →</Link>
+        <Link href={GAME_LINKS[challenge.game] ?? "/daily-challenge"} className="flex-shrink-0 text-sm font-black bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl transition shadow-lg shadow-orange-500/20 whitespace-nowrap">Play Now →</Link>
       ) : null}
     </div>
   );
@@ -109,10 +104,13 @@ function TopPlayers() {
       .catch(() => {});
   }, []);
 
-  if (players.length === 0) return null;
+  if (players.length === 0) return (
+    <div className="text-center py-10 text-gray-600 text-sm">No players yet — be the first!</div>
+  );
 
   const medals = ["🥇", "🥈", "🥉"];
   const AVATAR_COLORS = ["from-violet-500 to-purple-700", "from-blue-500 to-cyan-600", "from-emerald-500 to-teal-700"];
+  const RANK_BG = ["bg-amber-500/10 border-amber-500/20", "bg-gray-500/10 border-gray-500/20", "bg-orange-800/10 border-orange-800/20"];
 
   function flag(code?: string | null) {
     if (!code || code.length !== 2) return "";
@@ -120,17 +118,21 @@ function TopPlayers() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {players.map((p, i) => (
-        <div key={i} className="flex items-center gap-5 bg-white/3 hover:bg-white/5 border border-white/8 rounded-2xl px-6 py-5 transition">
-          <span className="text-3xl w-9 text-center flex-shrink-0">{medals[i]}</span>
-          <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-lg flex-shrink-0`}>
+        <div key={i} className={`flex items-center gap-4 border rounded-2xl px-5 py-4 transition hover:-translate-y-0.5 ${RANK_BG[i]}`}>
+          <div className="w-8 text-center text-xl flex-shrink-0">{medals[i]}</div>
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${AVATAR_COLORS[i]} flex items-center justify-center font-black text-white text-base flex-shrink-0`}>
             {p.player_name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-base truncate">{p.player_name} {flag(p.country)}</p>
+            <p className="text-white font-bold text-sm truncate">{p.player_name} {flag(p.country)}</p>
+            <p className="text-gray-600 text-xs">Rank #{i + 1}</p>
           </div>
-          <p className="text-orange-400 font-black text-base flex-shrink-0">{p.total_score.toLocaleString()} pts</p>
+          <div className="text-right flex-shrink-0">
+            <p className="text-orange-400 font-black text-sm">{p.total_score.toLocaleString()}</p>
+            <p className="text-gray-600 text-[10px] uppercase tracking-wide">pts</p>
+          </div>
         </div>
       ))}
     </div>
@@ -166,158 +168,180 @@ export default function HomeClient() {
     <div className="flex-grow flex flex-col items-center relative z-10" suppressHydrationWarning>
 
       {/* ── HERO ── */}
-      <section className="w-full flex flex-col items-center text-center px-4 sm:px-6 pt-4 pb-20 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-orange-500/8 rounded-full blur-3xl pointer-events-none" />
+      <section className="w-full relative overflow-hidden">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(249,115,22,0.12),transparent)] pointer-events-none" />
+        <div className="absolute top-0 left-0 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-tight mb-5 max-w-5xl text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Search. Learn. <span className="relative inline-block">
-            <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">Play.</span>
-            <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full opacity-60" />
-          </span>
-        </h1>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-16 flex flex-col items-center text-center">
 
-        <p className="text-gray-400 text-xl sm:text-2xl max-w-4xl mb-5 leading-relaxed">
-          Your all-in-one English dictionary and word games platform — search any word, then play to master it.
-        </p>
-
-        <div className="w-full max-w-4xl mb-2">
-          <SearchBox onSearch={handleSearch} />
-        </div>
-
-        {mounted && (
-          <div className="flex items-center gap-2 flex-wrap justify-center mb-3">
-            <span className="text-xs text-gray-600 font-semibold uppercase tracking-widest">Recent Searches:</span>
-            {recentSearches.length === 0 && <span className="text-xs text-gray-700">None yet</span>}
-            {recentSearches.map(w => (
-              <button key={w} onClick={() => handleSearch(w)}
-                className="text-xs bg-white/5 hover:bg-orange-500/15 border border-white/10 hover:border-orange-500/30 text-gray-400 hover:text-orange-300 px-3 py-1 rounded-full transition flex items-center gap-1">
-                <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {w}
-              </button>
-            ))}
-            {recentSearches.length > 0 && (
-              <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
-                className="text-[10px] text-gray-600 hover:text-gray-400 transition">clear</button>
-            )}
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+            Greek Dictionary & Word Games Platform
           </div>
-        )}
 
-        {/* Popular Games */}
-        <div className="w-full max-w-4xl mb-10 mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
-            <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">All Games →</Link>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {FEATURED_GAMES.map(g => (
-              <Link key={g.slug} href={`/games/${g.slug}`}
-                className="group relative overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1 flex flex-col min-h-[200px]">
-                <div className={`w-full flex-1 bg-gradient-to-br ${g.color} flex items-center justify-center text-[80px] group-hover:scale-105 transition-transform duration-300`}>
-                  {g.icon}
-                </div>
-                <div className="p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-white font-black text-sm">{g.name}</p>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/8 text-white/80 border border-white/10">{g.badge}</span>
-                  </div>
-                  <p className="text-white/60 text-xs leading-relaxed">{g.desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+          {/* Headline */}
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Search Any Word.{" "}
+            <span className="relative">
+              <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 bg-clip-text text-transparent">Master It.</span>
+            </span>
+          </h1>
 
-      {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-6 mb-10">
-        <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          <div>
-            <p className="text-3xl font-black text-white mb-1.5">45</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Word Games</p>
-          </div>
-          <div>
-            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.plays.toLocaleString() : "—"}</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Games Played</p>
-          </div>
-          <div>
-            <p className="text-3xl font-black text-white mb-1.5">3</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Age Groups</p>
-          </div>
-          <div>
-            <p className="text-3xl font-black text-white mb-1.5">Free</p>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Always</p>
-          </div>
-        </div>
-      </section>
+          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mb-8 leading-relaxed">
+            Look up words instantly, then reinforce your learning through 45+ interactive games designed for all ages.
+          </p>
 
-      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 space-y-10 pb-16">
-
-        {/* ── DAILY CHALLENGE ── */}
-        <section>
-          <div className="mb-6">
-            <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
-            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
+          {/* Search */}
+          <div className="w-full max-w-3xl mb-4">
+            <SearchBox onSearch={handleSearch} />
           </div>
-          <DailyChallengeBanner />
-        </section>
 
-{/* ── TOP PLAYERS ── */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Rankings</p>
-              <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Top Players</h2>
+          {/* Recent searches */}
+          {mounted && (
+            <div className="flex items-center gap-2 flex-wrap justify-center mb-10">
+              <span className="text-[11px] text-gray-600 font-semibold uppercase tracking-widest">Recent:</span>
+              {recentSearches.length === 0 && <span className="text-[11px] text-gray-700">None yet</span>}
+              {recentSearches.map(w => (
+                <button key={w} onClick={() => handleSearch(w)}
+                  className="text-[11px] bg-white/5 hover:bg-orange-500/15 border border-white/8 hover:border-orange-500/30 text-gray-500 hover:text-orange-300 px-3 py-1 rounded-full transition">
+                  {w}
+                </button>
+              ))}
+              {recentSearches.length > 0 && (
+                <button onClick={() => { setRecentSearches([]); localStorage.removeItem("recent_searches"); }}
+                  className="text-[10px] text-gray-700 hover:text-gray-500 transition">clear</button>
+              )}
             </div>
-            <Link href="/leaderboard" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-5 py-2.5 rounded-xl transition">
-              Full Board →
-            </Link>
-          </div>
-          <TopPlayers />
-        </section>
+          )}
 
-        {/* ── BROWSE CATEGORIES ── */}
-        <section>
-          <div className="mb-6">
-            <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
-            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Category</h2>
+          {/* Stats row */}
+          <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { value: "45",  label: "Word Games",     icon: "🎮" },
+              { value: homeStats ? homeStats.players.toLocaleString() : "—", label: "Active Players", icon: "👥" },
+              { value: "3",   label: "Age Groups",     icon: "🎯" },
+              { value: "Free", label: "Always Free",   icon: "✨" },
+            ].map(s => (
+              <div key={s.label} className="bg-white/3 border border-white/8 rounded-2xl px-4 py-4 flex flex-col items-center gap-1">
+                <span className="text-lg">{s.icon}</span>
+                <p className="text-2xl font-black text-white">{s.value}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-5 mb-6">
-            {CATEGORIES.map((cat, i) => (
+        </div>
+      </section>
+
+      {/* ── POPULAR GAMES ── */}
+      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Featured</p>
+            <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
+          </div>
+          <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/25 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">
+            All 45 Games →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {FEATURED_GAMES.map(g => (
+            <Link key={g.slug} href={`/games/${g.slug}`}
+              className="group relative overflow-hidden rounded-3xl border border-white/8 hover:border-white/15 bg-[#0a0a0f] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
+              <div className={`relative h-44 bg-gradient-to-br ${g.color} flex items-center justify-center overflow-hidden`}>
+                <div className="absolute inset-0 bg-black/10" />
+                <span className="text-7xl group-hover:scale-110 transition-transform duration-500 relative z-10">{g.icon}</span>
+                <span className={`absolute top-3 right-3 text-[10px] font-black px-2.5 py-1 rounded-full border ${g.badgeColor}`}>{g.badge}</span>
+              </div>
+              <div className="p-5 flex-1 flex flex-col">
+                <p className="text-white font-black text-base mb-1">{g.name}</p>
+                <p className="text-gray-500 text-xs leading-relaxed flex-1">{g.desc}</p>
+                <div className="mt-4 flex items-center gap-1.5 text-orange-400 text-xs font-bold group-hover:gap-2.5 transition-all">
+                  Play Now <span>→</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DAILY CHALLENGE + TOP PLAYERS ── */}
+      <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+          {/* Daily Challenge — wider */}
+          <div className="lg:col-span-3 flex flex-col gap-4">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Today</p>
+              <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Daily Challenge</h2>
+            </div>
+            <DailyChallengeBanner />
+          </div>
+
+          {/* Top Players — narrower */}
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Rankings</p>
+                <h2 className="text-2xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Top Players</h2>
+              </div>
+              <Link href="/leaderboard" className="text-xs font-bold text-orange-400 hover:text-orange-300 transition mb-0.5">
+                Full Board →
+              </Link>
+            </div>
+            <TopPlayers />
+          </div>
+        </div>
+      </section>
+
+      {/* ── BROWSE CATEGORIES ── */}
+      <section className="w-full border-t border-white/5 bg-white/[0.01]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-2">Explore</p>
+              <h2 className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Browse by Topic</h2>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+            {CATEGORIES.map(cat => (
               <Link key={cat.label} href={`/search?word=${encodeURIComponent(cat.label)}`}
-                className="rounded-2xl p-5 text-center transition-all duration-200 hover:-translate-y-1 border block border-white/8 bg-white/3 hover:border-orange-500/50 hover:bg-orange-500/10 hover:shadow-lg hover:shadow-orange-500/10">
-                <div className="text-4xl mb-3">{cat.emoji}</div>
-                <div className="text-sm font-bold text-gray-300">{cat.label}</div>
+                className={`group rounded-2xl p-5 text-center transition-all duration-200 hover:-translate-y-1 border bg-gradient-to-br ${cat.color} ${cat.border} ${cat.hover} hover:shadow-lg`}>
+                <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">{cat.emoji}</div>
+                <div className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors">{cat.label}</div>
               </Link>
             ))}
           </div>
+        </div>
+      </section>
 
-        </section>
-
-        {/* ── CTA ── */}
-        {!session?.user && (
-          <section className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent p-12 sm:p-16 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.08),transparent_70%)] pointer-events-none" />
-            <p className="text-sm font-black uppercase tracking-widest text-orange-400 mb-4">Get Started</p>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
+      {/* ── CTA ── */}
+      {!session?.user && (
+        <section className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+          <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/8 via-amber-500/4 to-transparent p-10 sm:p-14 text-center">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.07),transparent_70%)] pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+            <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-4">Get Started — It&apos;s Free</p>
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 relative" style={{ fontFamily: "'Playfair Display', serif" }}>
               Ready to Play &amp; Learn?
             </h2>
-            <p className="text-gray-400 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
+            <p className="text-gray-400 text-base mb-8 max-w-md mx-auto leading-relaxed">
               Create a free account to save words, track your scores, and compete on the leaderboard.
             </p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-lg px-10 py-4 rounded-2xl transition shadow-lg shadow-orange-500/20">
+              <Link href="/signup" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base px-8 py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/25">
                 Create Free Account
               </Link>
-              <Link href="/login" className="border border-white/15 hover:border-white/30 text-gray-300 hover:text-white font-bold text-lg px-10 py-4 rounded-2xl transition">
+              <Link href="/login" className="border border-white/12 hover:border-white/25 text-gray-400 hover:text-white font-bold text-base px-8 py-3.5 rounded-2xl transition">
                 Sign In
               </Link>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
+      )}
 
-      </div>
     </div>
   );
 }
