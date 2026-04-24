@@ -142,6 +142,11 @@ export default function HomeClient() {
   const { data: session } = useSession();
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [homeStats, setHomeStats] = useState<{ words: number; games: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/home-stats").then(r => r.json()).then(d => setHomeStats(d)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -200,7 +205,7 @@ export default function HomeClient() {
         )}
 
         {/* Popular Games */}
-        <div className="w-full max-w-4xl mb-10">
+        <div className="w-full max-w-4xl mb-10 mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-black text-white text-left" style={{ fontFamily: "'Playfair Display', serif" }}>Popular Games</h2>
             <Link href="/games" className="text-sm font-bold text-orange-400 hover:text-orange-300 border border-orange-500/30 hover:border-orange-400/50 px-4 py-2 rounded-xl transition">All Games →</Link>
@@ -226,14 +231,24 @@ export default function HomeClient() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="w-full border-y border-white/5 bg-white/2 py-10 mb-10">
-        <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
-          {STATS.map(s => (
-            <div key={s.label}>
-              <p className="text-5xl font-black text-white mb-3">{s.value}</p>
-              <p className="text-sm text-gray-500 uppercase tracking-widest font-semibold">{s.label}</p>
-            </div>
-          ))}
+      <section className="w-full border-y border-white/5 bg-white/2 py-6 mb-10">
+        <div className="max-w-5xl mx-auto px-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          <div>
+            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.games.toLocaleString() : "50+"}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Word Games</p>
+          </div>
+          <div>
+            <p className="text-3xl font-black text-white mb-1.5">{homeStats ? homeStats.words.toLocaleString() : "10K+"}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Words Available</p>
+          </div>
+          <div>
+            <p className="text-3xl font-black text-white mb-1.5">3</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Age Groups</p>
+          </div>
+          <div>
+            <p className="text-3xl font-black text-white mb-1.5">Free</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Always</p>
+          </div>
         </div>
       </section>
 
