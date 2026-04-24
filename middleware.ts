@@ -43,6 +43,5 @@ export const config = {
     "/stats/:path*",
     "/achievements/:path*",
     "/daily-challenge/:path*",
-    "/((?!manifest.json|favicon.ico|icons|sw.js|_next|api).*)",
   ],
 };
