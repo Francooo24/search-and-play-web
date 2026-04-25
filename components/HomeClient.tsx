@@ -400,8 +400,7 @@ export default function HomeClient() {
       </section>
 
       {/* ── CTA ── */}
-      {!session?.user && (
-        <section ref={ctaInView.ref} className={`w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 transition-all duration-700 ${ctaInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
+      {!session?.user && <section ref={ctaInView.ref} className={`w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 transition-all duration-700 ${ctaInView.visible ? "animate-fade-in-up opacity-100" : "opacity-0 translate-y-8"}`}>
           <div className="relative overflow-hidden rounded-3xl border border-orange-500/20">
             {/* Backgrounds */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.1),transparent_70%)]" />
@@ -466,8 +465,7 @@ export default function HomeClient() {
 
             </div>
           </div>
-        </section>
-      )}
+        </section>}
 
     </div>
   );
