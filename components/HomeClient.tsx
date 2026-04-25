@@ -453,13 +453,13 @@ export default function HomeClient() {
               </div>
 
               {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+              <div className="flex flex-col items-center gap-4 w-full max-w-sm">
                 <Link href="/signup"
-                  className="flex-1 text-center bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base px-8 py-4 rounded-2xl transition-all shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/50">
+                  className="w-full text-center bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base px-8 py-4 rounded-2xl transition-all shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/50">
                   Create Free Account
                 </Link>
                 <Link href="/login"
-                  className="flex-1 text-center border border-white/15 hover:border-orange-500/40 bg-white/3 hover:bg-white/6 text-gray-300 hover:text-white font-bold text-base px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5">
+                  className="text-center border border-white/15 hover:border-orange-500/40 bg-white/3 hover:bg-white/6 text-gray-300 hover:text-white font-bold text-base px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5">
                   Sign In
                 </Link>
               </div>
