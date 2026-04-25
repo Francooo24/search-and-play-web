@@ -16,7 +16,6 @@ const kronaOne = Krona_One({ subsets: ["latin"], weight: "400", variable: "--fon
 export const metadata: Metadata = {
   title: "Search & Play",
   description: "Greek dictionary and word games",
-  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
@@ -28,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${kronaOne.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <SessionProvider>

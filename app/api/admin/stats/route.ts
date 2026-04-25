@@ -29,8 +29,22 @@ export async function GET() {
     const peak     = Math.max(...dataPoints);
     const bestDay  = labels[dataPoints.indexOf(peak)] ?? "N/A";
 
+    // Derive notifications from activity_logs
     const { rows: notifications } = await pool.query(
-      "SELECT message, created_at FROM notifications ORDER BY created_at DESC LIMIT 50"
+      `SELECT
+         CASE
+           WHEN activity ILIKE 'Logged in%'
+             THEN '🔐 ' || COALESCE(player_name, 'Someone') || ' logged in'
+           WHEN activity ILIKE 'Played%'
+             THEN '🎮 ' || COALESCE(player_name, 'A player') || ' ' || activity
+           WHEN activity ILIKE 'Searched for%'
+             THEN '🔍 ' || COALESCE(player_name, 'Someone') || ' ' || activity
+           ELSE '📌 ' || COALESCE(player_name, 'A player') || ' ' || activity
+         END AS message,
+         created_at
+       FROM activity_logs
+       ORDER BY created_at DESC
+       LIMIT 50`
     ).catch(() => ({ rows: [] }));
 
     const { rows: activityLogs } = await pool.query(
