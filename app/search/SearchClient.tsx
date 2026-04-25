@@ -51,82 +51,9 @@ const ALL_GAMES = [
   { slug: "deduction",       name: "Deduction",         icon: "🧩", desc: "Crack the secret 4-digit code in 8 tries!",            group: "adult" },
 ];
 
-// word-to-game relevance tags
-const GAME_TAGS: Record<string, string[]> = {
-  tictactoe:       ["strategy", "classic", "logic", "kids"],
-  memory:          ["memory", "match", "pairs", "kids", "animal", "food", "music"],
-  animalmatch:     ["animal", "sound", "match", "kids", "nature"],
-  colorwords:      ["color", "visual", "kids", "identify"],
-  countclick:      ["number", "count", "math", "kids"],
-  shapematch:      ["shape", "visual", "match", "kids", "geometry"],
-  rhymetime:       ["rhyme", "sound", "poetry", "kids", "music", "word"],
-  simplemath:      ["math", "number", "addition", "kids", "arithmetic"],
-  balloonpop:      ["number", "kids", "quick", "answer"],
-  caterpillarcount:["count", "number", "kids", "math"],
-  colormix:        ["color", "mix", "visual", "kids", "art"],
-  oddoneout:       ["logic", "classify", "kids", "category", "identify"],
-  hangman:         ["word", "letter", "guess", "spelling", "teen"],
-  wordle:          ["word", "letter", "guess", "5-letter", "teen"],
-  wordsearch:      ["word", "search", "find", "grid", "teen", "noun"],
-  spellingbee:     ["spelling", "word", "definition", "teen", "letter"],
-  synonymmatch:    ["synonym", "word", "match", "adjective", "teen", "vocabulary"],
-  scramble:        ["word", "scramble", "letters", "unscramble", "teen"],
-  abcorder:        ["alphabet", "order", "letter", "teen", "arrange"],
-  fillinblank:     ["sentence", "verb", "grammar", "teen", "complete"],
-  prefixsuffix:    ["prefix", "suffix", "word", "teen", "spelling"],
-  contextclues:    ["context", "meaning", "verb", "adjective", "teen", "sentence"],
-  picturepuzzle:   ["picture", "puzzle", "slide", "teen", "visual"],
-  triviablitz:     ["trivia", "fact", "knowledge", "teen", "history", "science", "sport", "country"],
-  flagquiz:        ["flag", "country", "geography", "teen", "nation"],
-  mathrace:        ["math", "algebra", "teen", "number", "equation"],
-  sentencefix:     ["sentence", "grammar", "fix", "teen", "verb", "adverb"],
-  crossword:       ["word", "clue", "grid", "adult", "noun", "vocabulary"],
-  cryptogram:      ["code", "decode", "cipher", "adult", "logic", "letter"],
-  wordblitz:       ["word", "fast", "type", "adult", "vocabulary"],
-  anagram:         ["word", "letters", "rearrange", "adult", "scramble"],
-  wordduel:        ["word", "guess", "adult", "5-letter", "duel"],
-  trivia:          ["trivia", "fact", "knowledge", "adult", "history", "science"],
-  vocabquiz:       ["vocabulary", "definition", "adult", "adjective", "synonym"],
-  idiomchallenge:  ["idiom", "phrase", "meaning", "adult", "expression"],
-  wordassoc:       ["association", "word", "chain", "adult", "adjective", "verb"],
-  wordbingo:       ["bingo", "word", "adult", "listen", "mark"],
-  wordchain:       ["chain", "word", "letter", "adult", "verb"],
-  wordconnect:     ["connect", "word", "letters", "adult"],
-  wordladder:      ["ladder", "word", "change", "adult", "letter"],
-  puzzle:          ["puzzle", "word", "unscramble", "adult", "tiles"],
-  debatethis:      ["debate", "argument", "opinion", "adult", "fact"],
-  fakeorfact:      ["fact", "fake", "truth", "adult", "knowledge"],
-  logicgrid:       ["logic", "deduce", "grid", "adult", "reasoning"],
-  deduction:       ["logic", "code", "deduce", "adult", "number", "reasoning"],
-};
-
-// rotating index stored in module scope — advances every call
-let rotateOffset = 0;
-
-function getRecommendedGames(word: string, meanings: any[]) {
-  const corpus = [
-    word.toLowerCase(),
-    meanings.map((m: any) => m.partOfSpeech ?? "").join(" ").toLowerCase(),
-    meanings.flatMap((m: any) => (m.definitions ?? []).map((d: any) => d.definition ?? "")).join(" ").toLowerCase(),
-    meanings.flatMap((m: any) => m.synonyms ?? []).join(" ").toLowerCase(),
-  ].join(" ");
-
-  // score each game: count how many of its tags appear in the corpus
-  const scored = ALL_GAMES.map(g => ({
-    ...g,
-    score: (GAME_TAGS[g.slug] ?? []).filter(tag => corpus.includes(tag)).length,
-  }));
-
-  // separate relevant (score > 0) from the rest
-  const relevant = scored.filter(g => g.score > 0).sort((a, b) => b.score - a.score);
-  const rest     = scored.filter(g => g.score === 0);
-
-  // rotate the non-relevant pool so every search surfaces different games
-  const rotated = [...rest.slice(rotateOffset), ...rest.slice(0, rotateOffset)];
-  rotateOffset = (rotateOffset + 4) % Math.max(rest.length, 1);
-
-  // fill up to 4: relevant first, then rotated
-  return [...relevant, ...rotated].slice(0, 4);
+function getRecommendedGames() {
+  const shuffled = [...ALL_GAMES].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 4);
 }
 
 const GROUP_COLOR: Record<string, string> = {
@@ -268,14 +195,14 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
         {/* Game Recommendations - only show if logged in */}
         {isLoggedIn && (() => {
-          const recommended = getRecommendedGames(word, allMeanings);
+          const recommended = getRecommendedGames();
           if (recommended.length === 0) return null;
           return (
             <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
               <div className="mb-5">
                 <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
-                <h3 className="text-xl font-black text-white">Practice &ldquo;{word}&rdquo; with these games</h3>
-                <p className="text-gray-500 text-sm mt-1">Based on this word, these games will help you master it!</p>
+                <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
+                <p className="text-gray-500 text-sm mt-1">Here are some random games for you to try!</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {recommended.map(g => (
