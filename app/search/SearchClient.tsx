@@ -51,9 +51,9 @@ const ALL_GAMES = [
   { slug: "deduction",       name: "Deduction",         icon: "🧩", desc: "Crack the secret 4-digit code in 8 tries!",            group: "adult" },
 ];
 
-function getRecommendedGames() {
-  const shuffled = [...ALL_GAMES].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 4);
+function getRecommendedGames(group: string) {
+  const pool = group === "all" ? ALL_GAMES : ALL_GAMES.filter(g => g.group === group);
+  return [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
 }
 
 const GROUP_COLOR: Record<string, string> = {
@@ -72,6 +72,8 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 }) {
   const [saved, setSaved] = useState(isSaved);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [gameGroup, setGameGroup] = useState("all");
+  const [recommended, setRecommended] = useState(() => getRecommendedGames("all"));
 
   useEffect(() => {
     const controller = new AbortController();
@@ -194,33 +196,45 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
         )}
 
         {/* Game Recommendations - only show if logged in */}
-        {isLoggedIn && (() => {
-          const recommended = getRecommendedGames();
-          if (recommended.length === 0) return null;
-          return (
-            <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
-              <div className="mb-5">
-                <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
-                <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
-                <p className="text-gray-500 text-sm mt-1">Here are some random games for you to try!</p>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {recommended.map(g => (
-                  <Link key={g.slug} href={`/games/${g.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
-                    <div className={`h-20 bg-gradient-to-br ${GROUP_COLOR[g.group]} flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300`}>
-                      {g.icon}
-                    </div>
-                    <div className="p-3">
-                      <p className="text-white font-black text-xs mb-0.5">{g.name}</p>
-                      <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">{g.desc}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+        {isLoggedIn && (
+          <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
+            <div className="mb-4">
+              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
+              <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
             </div>
-          );
-        })()}
+            {/* Group tabs */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {(["all", "kids", "teen", "adult"] as const).map(g => (
+                <button key={g} onClick={() => { setGameGroup(g); setRecommended(getRecommendedGames(g)); }}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition capitalize ${
+                    gameGroup === g
+                      ? "bg-orange-500 border-orange-500 text-white"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:border-orange-500/40 hover:text-orange-300"
+                  }`}>
+                  {g === "all" ? "🎲 All" : g === "kids" ? "🧒 Kids" : g === "teen" ? "🧑 Teen" : "🧑‍💼 Adult"}
+                </button>
+              ))}
+              <button onClick={() => setRecommended(getRecommendedGames(gameGroup))}
+                className="px-4 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-gray-400 hover:border-orange-500/40 hover:text-orange-300 transition">
+                🔀 Shuffle
+              </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {recommended.map(g => (
+                <Link key={g.slug} href={`/games/${g.slug}`}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
+                  <div className={`h-20 bg-gradient-to-br ${GROUP_COLOR[g.group]} flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300`}>
+                    {g.icon}
+                  </div>
+                  <div className="p-3">
+                    <p className="text-white font-black text-xs mb-0.5">{g.name}</p>
+                    <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">{g.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Link href="/" className="inline-block text-orange-400 hover:text-orange-300 transition text-sm mt-2">← Back to Home</Link>
       </div>
