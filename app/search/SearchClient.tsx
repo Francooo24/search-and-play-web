@@ -73,8 +73,8 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 }) {
   const [saved, setSaved] = useState(isSaved);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [gameGroup, setGameGroup] = useState(ageGroup);
-  const [recommended, setRecommended] = useState(() => getRecommendedGames(ageGroup));
+  const [showAll, setShowAll] = useState(false);
+  const recommended = getRecommendedGames(showAll ? "all" : ageGroup);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -199,26 +199,14 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
         {/* Game Recommendations - only show if logged in */}
         {isLoggedIn && (
           <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
-            <div className="mb-4">
+            <div className="mb-5">
               <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
               <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
-            </div>
-            {/* Group tabs */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {(["all", "kids", "teen", "adult"] as const).map(g => (
-                <button key={g} onClick={() => { setGameGroup(g); setRecommended(getRecommendedGames(g)); }}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition capitalize ${
-                    gameGroup === g
-                      ? "bg-orange-500 border-orange-500 text-white"
-                      : "bg-white/5 border-white/10 text-gray-400 hover:border-orange-500/40 hover:text-orange-300"
-                  }`}>
-                  {g === "all" ? "🎲 All" : g === "kids" ? "🧒 Kids" : g === "teen" ? "🧑 Teen" : "🧑‍💼 Adult"}
-                </button>
-              ))}
-              <button onClick={() => setRecommended(getRecommendedGames(gameGroup))}
-                className="px-4 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-gray-400 hover:border-orange-500/40 hover:text-orange-300 transition">
-                🔀 Shuffle
-              </button>
+              <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
+                <input type="checkbox" checked={showAll} onChange={e => setShowAll(e.target.checked)}
+                  className="accent-orange-500 w-4 h-4 cursor-pointer" />
+                <span className="text-gray-400 text-xs">Also show games from other age groups?</span>
+              </label>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {recommended.map(g => (
