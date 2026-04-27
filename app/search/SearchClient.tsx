@@ -62,18 +62,19 @@ const GROUP_COLOR: Record<string, string> = {
   adult: "from-orange-500 to-amber-400",
 };
 
-export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn }: {
+export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn, ageGroup }: {
   word: string;
   definition: any;
   phonetic: string;
   origin: string;
   isSaved: boolean;
   isLoggedIn: boolean;
+  ageGroup: string;
 }) {
   const [saved, setSaved] = useState(isSaved);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [gameGroup, setGameGroup] = useState("all");
-  const [recommended, setRecommended] = useState(() => getRecommendedGames("all"));
+  const [gameGroup, setGameGroup] = useState(ageGroup);
+  const [recommended, setRecommended] = useState(() => getRecommendedGames(ageGroup));
 
   useEffect(() => {
     const controller = new AbortController();
