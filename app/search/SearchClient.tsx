@@ -200,6 +200,9 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
             <div className="mb-5">
               <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
               <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
+              <p className="text-gray-500 text-sm mt-1">
+                Here are some random {ageGroup === "all" ? "" : ageGroup + " "}games for you to try!
+              </p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {recommended.map(g => (
