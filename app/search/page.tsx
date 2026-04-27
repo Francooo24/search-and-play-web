@@ -67,7 +67,6 @@ export default async function SearchPage({
 
   const session = await getServerSession(authOptions);
   let isSaved = false;
-  let ageGroup = "all";
   if (session) {
     const userId = (session.user as any).id;
     const { rows } = await pool.query(
@@ -75,10 +74,6 @@ export default async function SearchPage({
       [userId, word]
     );
     isSaved = rows.length > 0;
-    const age = (session.user as any).age as number | null;
-    if (age !== null && age !== undefined) {
-      ageGroup = age < 13 ? "kids" : age < 18 ? "teen" : "adult";
-    }
   }
 
   const definition = await fetchDefinition(word) ?? await fetchAIDefinition(word);
@@ -95,7 +90,6 @@ export default async function SearchPage({
         origin={origin}
         isSaved={isSaved}
         isLoggedIn={!!session}
-        ageGroup={ageGroup}
       />
     </>
   );

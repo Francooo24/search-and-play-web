@@ -62,19 +62,19 @@ const GROUP_COLOR: Record<string, string> = {
   adult: "from-orange-500 to-amber-400",
 };
 
-export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn, ageGroup }: {
+export default function SearchClient({ word, definition, phonetic, origin, isSaved, isLoggedIn }: {
   word: string;
   definition: any;
   phonetic: string;
   origin: string;
   isSaved: boolean;
   isLoggedIn: boolean;
-  ageGroup: string;
 }) {
   const [saved, setSaved] = useState(isSaved);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
-  const recommended = getRecommendedGames(showAll ? "all" : ageGroup);
+  const kidsGames  = getRecommendedGames("kids");
+  const teenGames  = getRecommendedGames("teen");
+  const adultGames = getRecommendedGames("adult");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -198,30 +198,31 @@ export default function SearchClient({ word, definition, phonetic, origin, isSav
 
         {/* Game Recommendations - only show if logged in */}
         {isLoggedIn && (
-          <div className="glass-card rounded-3xl p-7 border border-orange-500/20 bg-orange-500/5">
-            <div className="mb-5">
-              <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
-              <h3 className="text-xl font-black text-white">Games you might enjoy</h3>
-              <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
-                <input type="checkbox" checked={showAll} onChange={e => setShowAll(e.target.checked)}
-                  className="accent-orange-500 w-4 h-4 cursor-pointer" />
-                <span className="text-gray-400 text-xs">Also show games from other age groups?</span>
-              </label>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {recommended.map(g => (
-                <Link key={g.slug} href={`/games/${g.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
-                  <div className={`h-20 bg-gradient-to-br ${GROUP_COLOR[g.group]} flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300`}>
-                    {g.icon}
-                  </div>
-                  <div className="p-3">
-                    <p className="text-white font-black text-xs mb-0.5">{g.name}</p>
-                    <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">{g.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="space-y-6">
+            {([
+              { label: "🧒 Kids Games",  games: kidsGames,  color: "from-blue-500 to-cyan-400",     border: "border-blue-500/20",   bg: "bg-blue-500/5"   },
+              { label: "🧑 Teen Games",  games: teenGames,  color: "from-emerald-500 to-teal-400", border: "border-emerald-500/20", bg: "bg-emerald-500/5" },
+              { label: "🧑‍💼 Adult Games", games: adultGames, color: "from-orange-500 to-amber-400", border: "border-orange-500/20",  bg: "bg-orange-500/5"  },
+            ] as const).map(({ label, games, border, bg }) => (
+              <div key={label} className={`glass-card rounded-3xl p-7 border ${border} ${bg}`}>
+                <p className="text-xs font-black uppercase tracking-widest text-orange-400 mb-1">🎮 Recommended Games</p>
+                <h3 className="text-xl font-black text-white mb-5">{label}</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {games.map(g => (
+                    <Link key={g.slug} href={`/games/${g.slug}`}
+                      className="group flex flex-col overflow-hidden rounded-2xl border border-white/8 hover:border-white/20 bg-[#0a0a12] transition-all duration-300 hover:-translate-y-1">
+                      <div className={`h-20 bg-gradient-to-br ${GROUP_COLOR[g.group]} flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-300`}>
+                        {g.icon}
+                      </div>
+                      <div className="p-3">
+                        <p className="text-white font-black text-xs mb-0.5">{g.name}</p>
+                        <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">{g.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
